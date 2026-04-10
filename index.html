@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="Pt-BR">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distribuidora Serginho LTDA</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+       
+        <!-- Sidebar -->
+
+       <aside class="sidebar">
+            <img src="./assets/Logo.png" alt="Image not found.">
+
+            <ul>
+                <li>Dashboard</li>
+                <li>Pedidos</li>
+                <li>Estoque</li>
+                <li>Integrações</li>
+            </ul>
+       </aside>
+        
+       <!-- Conteúdo -->
+
+        <main class="main">
+        
+        <!-- Topbar --> 
+         
+        <div class="topbar">
+            <input type="text" placeholder="Buscar...">
+            <span>Usuário</span>
+        </div>
+
+        <h1>Dashboard</h1>
+
+        <!-- Cards -->
+         
+        <div class="cards">
+            <div class="card">
+                <p>Pedidos Hoje</p>
+                <H2>120</H2>
+            </div>
+            <div class="card">
+                <p>Em andamento</p>
+                <h2>85</h2>
+            </div>
+            <div class="card">
+                <p>Entregues</p>
+                <H2>205</H2>
+            </div>
+        </div>
+        
+        <!-- Tabela -->
+         <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Cliente</th>
+                    <th>Status</th>
+                    <th>Data</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <tr>
+                    <td>001</td>
+                    <td>Pedro</td>
+                    <td><span class="status pendente">Pendente</span></td>
+                    <td>30/03/2026</td>
+                    <td>R$199,90</td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>Riquelme</td>
+                    <td><span class="status entregue">Entregue</span></td>
+                    <td>24/03/2026</td>
+                    <td>R$304,90</td>
+                </tr>
+            </tbody>
+         </table>
+        
+        </main>
+    </div>      
+</body>
+</html>
