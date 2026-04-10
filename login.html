@@ -10,6 +10,27 @@
     <title>Login | Distribuidora Serginho LTDA</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
+<script>
+function login() {
+  const user = {
+    nome: "França",
+    email: "franca@email.com"
+  };
+
+  localStorage.setItem("user", JSON.stringify(user));
+  window.location.href = "index.html";
+}
+</script>
+
+<script>
+const user = localStorage.getItem("user");
+
+if (user) {
+  window.location.href = "index.html";
+}
+</script>
+
 <body class="login-page">
     <div class="login-container">
         <div class="login-card">
@@ -29,7 +50,7 @@
                     <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
                 </div>
                 <form action="index.html" method="GET">
-                    <button type="submit" class="btn-login">Entrar no Sistema</button>
+                    <button onclick="login()">Entrar</button>
                 </form>
                 <div class="login-footer">
                     <a href="#">Esqueceu sua senha?</a>

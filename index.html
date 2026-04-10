@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="Pt-BR">
 <head>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
@@ -11,31 +12,104 @@
 
     <link rel="stylesheet" href="style.css">
 </head>
+
+<script>
+function toggleMenu() {
+  const menu = document.getElementById("dropdown");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+function logout() {
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+
+document.addEventListener("click", function(e) {
+  const menu = document.getElementById("dropdown");
+  const user = document.querySelector(".user-menu");
+
+  if (!user.contains(e.target)) {
+    menu.style.display = "none";
+  }
+});
+</script>
+
+<script>
+const user = localStorage.getItem("user");
+
+if (!user) {
+  window.location.href = "login.html";
+}
+</script>
+
+<script>
+const userData = JSON.parse(localStorage.getItem("user"));
+
+if (userData) {
+  document.querySelector(".user-name").innerText = userData.nome;
+  document.querySelector(".user-email").innerText = userData.email;
+}
+</script>
+
 <body>
-    <div class="container">
-       
+    <div class="container">     
         <!-- Sidebar -->
 
        <aside class="sidebar">
             <img src="./assets/Logo.png" alt="Image not found.">
 
             <ul>
-                <li>Dashboard</li>
-                <li>Pedidos</li>
-                <li>Estoque</li>
-                <li>Integrações</li>
+                <ul>
+  <li class="active">
+    <a href="index.html">
+      <i data-lucide="layout-dashboard"></i> Dashboard
+    </a>
+  </li>
+
+  <li>
+    <a href="pedidos.html">
+      <i data-lucide="shopping-cart"></i> Pedidos
+    </a>
+  </li>
+
+  <li>
+    <a href="estoque.html">
+      <i data-lucide="boxes"></i> Estoque
+    </a>
+  </li>
+
+  <li>
+    <a href="integracoes.html">
+      <i data-lucide="plug"></i> Integrações
+    </a>
+  </li>
+</ul>
             </ul>
        </aside>
         
        <!-- Conteúdo -->
 
         <main class="main">
+            <div class="content">
         
         <!-- Topbar --> 
          
         <div class="topbar">
             <input type="text" placeholder="Buscar...">
-            <span>Usuário</span>
+            <div class="user-menu" onclick="toggleMenu()">
+            <img src="https://i.pravatar.cc/40" alt="avatar">
+            
+            <div class="user-info">
+                <span class="user-name">França</span>
+                <span class="user-email">franca@email.com</span>
+            </div>
+
+            <div class="dropdown" id="dropdown">
+                <a href="#">Perfil</a>
+                <a href="#">Configurações</a>
+                <a href="#" onclick="logout()">Sair</a>
+            </div>
+            </div>
         </div>
 
         <h1>Dashboard</h1>
@@ -45,7 +119,7 @@
         <div class="cards">
             <div class="card">
                 <p>Pedidos Hoje</p>
-                <H2>120</H2>
+                <h2>120</h2>
             </div>
             <div class="card">
                 <p>Em andamento</p>
@@ -86,8 +160,11 @@
                 </tr>
             </tbody>
          </table>
-        
+        </div>
         </main>
-    </div>      
+    </div> 
+    <script>
+  lucide.createIcons();
+</script>     
 </body>
 </html>
