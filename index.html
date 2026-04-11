@@ -1,170 +1,151 @@
 <!DOCTYPE html>
-<html lang="Pt-BR">
+<html lang="pt-br">
 <head>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Início | Distribuidora Serginho</title>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distribuidora Serginho LTDA</title>
-
-    <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
+<body>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <img src="./assets/Logo.png">
+
+    <ul>
+      <li class="active">
+        <a href="#"><i data-lucide="layout-dashboard"></i> Dashboard</a>
+      </li>
+      <li>
+        <a href="#"><i data-lucide="shopping-cart"></i> Pedidos</a>
+      </li>
+      <li>
+        <a href="#"><i data-lucide="boxes"></i> Estoque</a>
+      </li>
+      <li>
+        <a href="#"><i data-lucide="plug"></i> Integrações</a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="content">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+
+        <div class="topbar-actions">
+
+          <!-- BUSCA -->
+          <div class="search-box">
+            <input type="text" placeholder="Buscar...">
+          </div>
+
+          <!-- USER -->
+          <div class="user-menu" onclick="toggleMenu()">
+            <img src="https://i.pravatar.cc/40">
+
+            <div class="user-info">
+              <span class="user-name">França</span>
+              <span class="user-email">franca@email.com</span>
+            </div>
+
+            <div class="dropdown" id="dropdown">
+              <a href="#">Perfil</a>
+              <a href="#">Configurações</a>
+              <a href="#" onclick="logout()">Sair</a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <h1>Dashboard</h1>
+
+      <!-- CARDS -->
+      <div class="cards">
+        <div class="card">
+          <p>Pedidos Hoje</p>
+          <h2>120</h2>
+        </div>
+        <div class="card">
+          <p>Em andamento</p>
+          <h2>85</h2>
+        </div>
+        <div class="card">
+          <p>Entregues</p>
+          <h2>205</h2>
+        </div>
+      </div>
+
+      <!-- TABELA -->
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Status</th>
+            <th>Data</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+            <td>001</td>
+            <td>Pedro</td>
+            <td><span class="status pendente">Pendente</span></td>
+            <td>30/03/2026</td>
+            <td>R$199,90</td>
+          </tr>
+          <tr>
+            <td>002</td>
+            <td>Riquelme</td>
+            <td><span class="status entregue">Entregue</span></td>
+            <td>24/03/2026</td>
+            <td>R$304,90</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- JS CORRETO -->
 <script>
-function toggleMenu() {
+document.addEventListener("DOMContentLoaded", function () {
+
   const menu = document.getElementById("dropdown");
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
+  const user = document.querySelector(".user-menu");
+
+  window.toggleMenu = function () {
+    menu.classList.toggle("show");
+  };
+
+  document.addEventListener("click", function(e) {
+    if (!user.contains(e.target)) {
+      menu.classList.remove("show");
+    }
+  });
+
+});
 
 function logout() {
   localStorage.removeItem("user");
   window.location.href = "login.html";
 }
 
-document.addEventListener("click", function(e) {
-  const menu = document.getElementById("dropdown");
-  const user = document.querySelector(".user-menu");
-
-  if (!user.contains(e.target)) {
-    menu.style.display = "none";
-  }
-});
+lucide.createIcons();
 </script>
 
-<script>
-const user = localStorage.getItem("user");
-
-if (!user) {
-  window.location.href = "login.html";
-}
-</script>
-
-<script>
-const userData = JSON.parse(localStorage.getItem("user"));
-
-if (userData) {
-  document.querySelector(".user-name").innerText = userData.nome;
-  document.querySelector(".user-email").innerText = userData.email;
-}
-</script>
-
-<body>
-    <div class="container">     
-        <!-- Sidebar -->
-
-       <aside class="sidebar">
-            <img src="./assets/Logo.png" alt="Image not found.">
-
-            <ul>
-                <ul>
-  <li class="active">
-    <a href="index.html">
-      <i data-lucide="layout-dashboard"></i> Dashboard
-    </a>
-  </li>
-
-  <li>
-    <a href="pedidos.html">
-      <i data-lucide="shopping-cart"></i> Pedidos
-    </a>
-  </li>
-
-  <li>
-    <a href="estoque.html">
-      <i data-lucide="boxes"></i> Estoque
-    </a>
-  </li>
-
-  <li>
-    <a href="integracoes.html">
-      <i data-lucide="plug"></i> Integrações
-    </a>
-  </li>
-</ul>
-            </ul>
-       </aside>
-        
-       <!-- Conteúdo -->
-
-        <main class="main">
-            <div class="content">
-        
-        <!-- Topbar --> 
-         
-        <div class="topbar">
-            <input type="text" placeholder="Buscar...">
-            <div class="user-menu" onclick="toggleMenu()">
-            <img src="https://i.pravatar.cc/40" alt="avatar">
-            
-            <div class="user-info">
-                <span class="user-name">França</span>
-                <span class="user-email">franca@email.com</span>
-            </div>
-
-            <div class="dropdown" id="dropdown">
-                <a href="#">Perfil</a>
-                <a href="#">Configurações</a>
-                <a href="#" onclick="logout()">Sair</a>
-            </div>
-            </div>
-        </div>
-
-        <h1>Dashboard</h1>
-
-        <!-- Cards -->
-         
-        <div class="cards">
-            <div class="card">
-                <p>Pedidos Hoje</p>
-                <h2>120</h2>
-            </div>
-            <div class="card">
-                <p>Em andamento</p>
-                <h2>85</h2>
-            </div>
-            <div class="card">
-                <p>Entregues</p>
-                <H2>205</H2>
-            </div>
-        </div>
-        
-        <!-- Tabela -->
-         <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Status</th>
-                    <th>Data</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                <tr>
-                    <td>001</td>
-                    <td>Pedro</td>
-                    <td><span class="status pendente">Pendente</span></td>
-                    <td>30/03/2026</td>
-                    <td>R$199,90</td>
-                </tr>
-                <tr>
-                    <td>002</td>
-                    <td>Riquelme</td>
-                    <td><span class="status entregue">Entregue</span></td>
-                    <td>24/03/2026</td>
-                    <td>R$304,90</td>
-                </tr>
-            </tbody>
-         </table>
-        </div>
-        </main>
-    </div> 
-    <script>
-  lucide.createIcons();
-</script>     
 </body>
 </html>

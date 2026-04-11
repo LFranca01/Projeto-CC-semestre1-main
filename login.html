@@ -1,62 +1,95 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Distribuidora Serginho</title>
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login | Distribuidora Serginho LTDA</title>
-    <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="login.css">
 </head>
 
+<body>
+  <div class="login-container">
+
+    <!-- LADO ESQUERDO -->
+    <div class="login-left">
+        <img src="./assets/Logo.png">
+        <h1>Distribuidora Serginho</h1>
+        <p>Gerencie pedidos, estoque e entregas com eficiência.</p>
+    </div>
+
+    <!-- LADO DIREITO -->
+    <div class="login-right">
+      <div class="login-box">
+
+        <img src="./assets/Logo.png" class="logo">
+
+        <h2>Acesse sua conta</h2>
+
+        <form onsubmit="login(event)">
+          
+          <div class="input-group">
+            <input type="email" id="email" required>
+            <label>Email</label>
+          </div>
+
+          <div class="input-group">
+            <input type="password" id="senha" required>
+            <label>Senha</label>
+          </div>
+
+          <button type="submit">Entrar</button>
+
+          <p id="erro"></p>
+
+        </form>
+
+        <div class="login-footer">
+          <a href="#">Esqueceu sua senha?</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
 <script>
-function login() {
-  const user = {
-    nome: "França",
-    email: "franca@email.com"
+function login(event) {
+  event.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+  const erro = document.getElementById("erro");
+
+  const usuario = {
+    email: "admin@gmail.com",
+    senha: "admin",
+    nome: "França"
   };
 
-  localStorage.setItem("user", JSON.stringify(user));
-  window.location.href = "index.html";
+  if (!email || !senha) {
+    erro.innerText = "Preencha todos os campos.";
+    return;
+  }
+
+  if (email === usuario.email && senha === usuario.senha) {
+    localStorage.setItem("user", JSON.stringify(usuario));
+    window.location.href = "index.html";
+  } else {
+    erro.innerText = "Email ou senha inválidos.";
+  }
 }
-</script>
 
-<script>
+// bloqueia acesso se já estiver logado
 const user = localStorage.getItem("user");
-
 if (user) {
   window.location.href = "index.html";
 }
 </script>
 
-<body class="login-page">
-    <div class="login-container">
-        <div class="login-card">
-            <div class="login-header">
-                 <img src="./assets/Logo.png" alt="Image not found.">
-                <p>Acesse sua conta</p>
-            </div>
-
-            <form action="index.html" method="POST">
-                <div class="form-group">
-                    <label for="email">E-mail</label>
-                    <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="senha">Senha</label>
-                    <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
-                </div>
-                <form action="index.html" method="GET">
-                    <button onclick="login()">Entrar</button>
-                </form>
-                <div class="login-footer">
-                    <a href="#">Esqueceu sua senha?</a>
-                </div>
-            </form>
-        </div>
-    </div>
 </body>
 </html>
