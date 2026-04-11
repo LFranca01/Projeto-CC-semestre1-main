@@ -199,18 +199,64 @@ tr:hover {
 
 /* STATUS */
 .status {
-  padding: 5px 10px;
-  border-radius: 20px;
-  color: white;
+  padding: 6px 12px;
+  border-radius: 999px;
   font-size: 12px;
+  color: white;
+
+  cursor: pointer;
+  font-weight: 500;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  min-width: 100px;
+
+  transition: all 0.25s ease;
 }
 
+/* HOVER */
+.status:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+/* CLICK */
+.status:active {
+  transform: scale(0.95);
+}
+
+/* ANIMAÇÃO TROCA */
+.status.fade {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+/* CORES + SOMBRA */
 .pendente {
-  background: orange;
+  background: #f59e0b;
+}
+
+.pendente:hover {
+  box-shadow: 0 4px 10px rgba(245,158,11,0.3);
+}
+
+.enviado {
+  background: var(--primary);
+}
+
+.enviado:hover {
+  box-shadow: 0 4px 10px rgba(30,79,122,0.3);
 }
 
 .entregue {
-  background: var(--accent);
+  background: #10b981;
+}
+
+.entregue:hover {
+  box-shadow: 0 4px 10px rgba(16,185,129,0.3);
 }
 
 /* RESPONSIVO */

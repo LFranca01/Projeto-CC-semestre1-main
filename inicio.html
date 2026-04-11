@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Distribuidora Serginho</title>
+
+  <link rel="stylesheet" href="style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- 🔐 PROTEÇÃO DE ACESSO -->
+  <script src="auth.js"></script>
+
+  <script>
+    requireAuth();
+  </script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <img src="./assets/Logo.png" alt="Logo">
+
+    <ul>
+      <li class="active">
+        <a href="inicio.html">
+          <i data-lucide="layout-dashboard"></i> Dashboard
+        </a>
+      </li>
+
+      <li>
+        <a href="pedidos.html">
+          <i data-lucide="shopping-cart"></i> Pedidos
+        </a>
+      </li>
+
+      <li>
+        <a href="#">
+          <i data-lucide="boxes"></i> Estoque
+        </a>
+      </li>
+
+      <li>
+        <a href="#">
+          <i data-lucide="plug"></i> Integrações
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="content">
+
+      <!-- TOPBAR -->
+      <div class="topbar">
+
+        <div class="topbar-actions">
+
+          <!-- BUSCA -->
+          <div class="search-box">
+            <input type="text" placeholder="Buscar...">
+          </div>
+
+          <!-- USER -->
+          <div class="user-menu" onclick="toggleMenu()">
+            <img src="https://i.pravatar.cc/40" alt="avatar">
+
+            <div class="user-info">
+              <span class="user-name">Usuário</span>
+              <span class="user-email">email@email.com</span>
+            </div>
+
+            <div class="dropdown" id="dropdown">
+              <a href="#">Perfil</a>
+              <a href="#">Configurações</a>
+              <a href="#" onclick="logout()">Sair</a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- TÍTULO -->
+      <h1>Dashboard</h1>
+
+      <!-- CARDS -->
+      <div class="cards">
+        <div class="card">
+          <p>Pedidos Hoje</p>
+          <h2>120</h2>
+        </div>
+
+        <div class="card">
+          <p>Em andamento</p>
+          <h2>85</h2>
+        </div>
+
+        <div class="card">
+          <p>Entregues</p>
+          <h2>205</h2>
+        </div>
+      </div>
+
+      <!-- TABELA -->
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Status</th>
+            <th>Data</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr>
+          <tr>
+            <td>001</td>
+            <td>Pedro</td>
+            <td><span class="status pendente" onclick="trocarStatus(this)">⏳ Pendente</span></td>
+            <td>30/03/2026</td>
+            <td>R$199,90</td>
+          </tr>
+
+          <tr>
+            <td>002</td>
+            <td>Riquelme</td>
+            <td><span class="status entregue" onclick="trocarStatus(this)"> ✔ Entregue</span></td>
+            <td>24/03/2026</td>
+            <td>R$304,90</td>
+          </tr>
+
+          <tr>
+            <td>003</td>
+            <td>Camilly</td>
+            <td><span class="status enviado" onclick="trocarStatus(this)"> 🚚 Enviado</span></td>
+            <td>24/03/2026</td>
+            <td>R$304,90</td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </main>
+
+</div>
+
+<!-- JS -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const menu = document.getElementById("dropdown");
+  const userElement = document.querySelector(".user-menu");
+
+  /* 👤 USER DINÂMICO */
+  const user = getUser();
+
+  if (user) {
+    document.querySelector(".user-name").innerText = user.nome;
+    document.querySelector(".user-email").innerText = user.email;
+  }
+
+  /* 📂 DROPDOWN */
+  window.toggleMenu = function () {
+    menu.classList.toggle("show");
+  };
+
+  document.addEventListener("click", function(e) {
+    if (!userElement.contains(e.target)) {
+      menu.classList.remove("show");
+    }
+  });
+
+});
+
+/* 🚪 LOGOUT */
+function logout() {
+  localStorage.removeItem("user");
+  window.location.href = "index.html";
+}
+
+/* 🎨 ICONES */
+lucide.createIcons();
+</script>
+
+</body>
+</html>
