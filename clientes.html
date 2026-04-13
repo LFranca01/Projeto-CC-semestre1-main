@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Clientes</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="pedidos.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="auth.js"></script>
+  <script src="api.js"></script>
+  <script>requireAuth();</script>
+</head>
+<body>
+<div class="container">
+  <aside class="sidebar">
+    <img src="./assets/Logo.png">
+    <ul>
+      <li><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+      <li><a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
+      <li class="active"><a href="#"><i data-lucide="users"></i> Clientes</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="content">
+      <div class="topbar">
+        <div class="topbar-actions">
+          <div class="user-menu" onclick="toggleMenu()">
+            <img src="https://i.pravatar.cc/40">
+            <div class="user-info">
+              <span class="user-name"></span>
+              <span class="user-email"></span>
+            </div>
+            <div class="dropdown" id="dropdown">
+              <a href="#" onclick="logout()">Sair</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-header">
+        <h1>Clientes</h1>
+        <button class="btn-primary" onclick="abrirModal()">Novo Cliente</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="tabela-clientes"></tbody>
+      </table>
+
+      <div class="modal" id="modalCliente">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="tituloModal">Novo Cliente</h2>
+            <span onclick="fecharModal()" class="close">&times;</span>
+          </div>
+          <div class="modal-body">
+            <input type="text" id="nome" placeholder="Nome">
+            <input type="text" id="documento" placeholder="CPF ou CNPJ">
+            <input type="email" id="email" placeholder="Email">
+            <input type="text" id="telefone" placeholder="Telefone">
+          </div>
+          <div class="modal-footer">
+            <button class="btn-secondary" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-primary" onclick="salvarCliente()">Salvar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+let clienteEditando = null;
+
+document.addEventListener("DOMContentLoaded", () => {
+  const user = getUser();
+  if (user) {
+    document.querySelector(".user-name").innerText = user.nome;
+    document.querySelector(".user-email").innerText = user.email;
+  }
+
+  window.toggleMenu = () => {
+    document.getElementById("dropdown").classList.toggle("show");
+  };
+
+  document.addEventListener("click", (e) => {
+    if (!document.querySelector(".user-menu").contains(e.target)) {
+      document.getElementById("dropdown").classList.remove("show");
+    }
+  });
+
+  const inputDoc = document.getElementById("documento");
+  inputDoc.addEventListener("input", (e) => {
+    e.target.value = formatarDocumento(e.target.value);
+  });
+
+  renderClientes();
+  lucide.createIcons();
+});
+
+function renderClientes() {
+  const tabela = document.getElementById("tabela-clientes");
+  const clientes = getClientes();
+  tabela.innerHTML = "";
+
+  if (clientes.length === 0) {
+    tabela.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#888;">Nenhum cliente cadastrado</td></tr>`;
+    return;
+  }
+
+  clientes.forEach((c, index) => {
+    tabela.innerHTML += `
+      <tr onclick="abrirDetalhe(${c.id})" style="cursor:pointer">
+        <td>${String(index + 1).padStart(3, '0')}</td>
+        <td>${c.nome}</td>
+        <td>${c.email || "Sem email"}</td>
+        <td>${formatarTelefone(c.telefone)}</td>
+        <td>
+          <button onclick="event.stopPropagation(); editarCliente(${c.id})" class="btn-secondary">Editar</button>
+          <button onclick="event.stopPropagation(); removerCliente(${c.id})" class="btn-secondary">Excluir</button>
+        </td>
+      </tr>`;
+  });
+}
+
+function abrirDetalhe(id) { window.location.href = `cliente-detalhe.html?id=${id}`; }
+
+function abrirModal() {
+  clienteEditando = null;
+  document.getElementById("tituloModal").innerText = "Novo Cliente";
+  document.getElementById("modalCliente").style.display = "flex";
+  document.getElementById("nome").value = "";
+  document.getElementById("documento").value = "";
+  document.getElementById("email").value = "";
+  document.getElementById("telefone").value = "";
+}
+
+function fecharModal() { document.getElementById("modalCliente").style.display = "none"; }
+
+function editarCliente(id) {
+  const cliente = getClienteById(id);
+  if (!cliente) return;
+  clienteEditando = id;
+  document.getElementById("tituloModal").innerText = "Editar Cliente";
+  document.getElementById("modalCliente").style.display = "flex";
+  document.getElementById("nome").value = cliente.nome;
+  document.getElementById("documento").value = cliente.documento || "";
+  document.getElementById("email").value = cliente.email;
+  document.getElementById("telefone").value = cliente.telefone;
+}
+
+function salvarCliente() {
+  const nome = document.getElementById("nome").value.trim();
+  const documento = document.getElementById("documento").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const telefone = document.getElementById("telefone").value.trim();
+
+  if (!nome || !documento) { alert("Nome e Documento são obrigatórios"); return; }
+  if (email && !email.includes("@")) { alert("Email inválido"); return; }
+
+  const dados = { nome, documento, email, telefone };
+  if (clienteEditando) updateCliente(clienteEditando, dados);
+  else createCliente(dados);
+
+  renderClientes();
+  fecharModal();
+}
+
+function removerCliente(id) {
+  if (!confirm("Deseja excluir este cliente?")) return;
+  deleteCliente(id);
+  renderClientes();
+}
+</script>
+</body>
+</html>

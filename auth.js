@@ -2,12 +2,12 @@
 
 // pega usuário logado
 function getUser() {
-  return JSON.parse(localStorage.getItem("user"));
+  return JSON.parse(sessionStorage.getItem("user"));
 }
 
 // verifica se está logado
 function isAuthenticated() {
-  return !!localStorage.getItem("user");
+  return !!sessionStorage.getItem("user");
 }
 
 // força login
@@ -35,7 +35,7 @@ function login(email, senha) {
   if (email === usuarioPadrao.email && senha === usuarioPadrao.senha) {
 
     // salva sessão
-    localStorage.setItem("user", JSON.stringify(usuarioPadrao));
+    sessionStorage.setItem("user", JSON.stringify(usuarioPadrao));
 
     return { success: true };
   }
@@ -45,6 +45,6 @@ function login(email, senha) {
 
 // logout
 function logout() {
-  localStorage.removeItem("user");
+  sessionStorage.removeItem("user");
   window.location.replace("index.html");
 }

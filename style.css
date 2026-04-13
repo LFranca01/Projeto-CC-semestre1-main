@@ -35,9 +35,11 @@
 }
 
 .sidebar img {
-  width: 140px;
-  margin-bottom: 30px;
-  margin-left: 20px;
+  width: 100%;
+  max-width: 200px;
+  display: block;
+  margin: 0 auto 30px auto;
+  object-fit: contain; 
   filter: brightness(1.4) contrast(1.2);
 }
 
@@ -93,10 +95,20 @@
 .search-box {
   position: relative;
 }
+
 .search-box input {
-  padding: 10px 10px 10px 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid var(--border);
+  background: white;
+
+  transition: all 0.2s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(21,56,86,0.15);
 }
 
 /* USER */
@@ -110,6 +122,8 @@
 
 .user-menu img {
   border-radius: 50%;
+  width: 40px;
+  height: 40px;
 }
 
 .user-info {
@@ -130,12 +144,14 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  min-width: 160px;
 
   opacity: 0;
   transform: translateY(-10px);
   pointer-events: none;
 
-  transition: 0.2s;
+  transition: all 0.2s ease;
+  z-index: 999; /* evita bug */
 }
 
 .dropdown.show {
@@ -149,6 +165,7 @@
   padding: 12px;
   text-decoration: none;
   color: var(--text);
+  transition: 0.2s;
 }
 
 .dropdown a:hover {
@@ -167,7 +184,9 @@
   background: white;
   padding: 20px;
   border-radius: 12px;
-  transition: 0.2s;
+
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: all 0.2s ease;
 }
 
 .card:hover {
@@ -191,6 +210,7 @@ th, td {
 th {
   text-align: left;
   color: var(--text-light);
+  font-weight: 500;
 }
 
 tr:hover {
@@ -217,24 +237,20 @@ tr:hover {
   transition: all 0.25s ease;
 }
 
-/* HOVER */
 .status:hover {
   transform: translateY(-1px);
   opacity: 0.9;
 }
 
-/* CLICK */
 .status:active {
   transform: scale(0.95);
 }
 
-/* ANIMAÇÃO TROCA */
 .status.fade {
   opacity: 0;
   transform: scale(0.9);
 }
 
-/* CORES + SOMBRA */
 .pendente {
   background: #f59e0b;
 }
@@ -261,8 +277,13 @@ tr:hover {
 
 /* RESPONSIVO */
 @media (max-width: 768px) {
+
   .sidebar {
     display: none;
+  }
+
+  .main {
+    padding: 20px;
   }
 
   .cards {
@@ -271,5 +292,9 @@ tr:hover {
 
   .user-email {
     display: none;
+  }
+
+  .search-box input {
+    width: 140px;
   }
 }

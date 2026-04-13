@@ -107,7 +107,7 @@
   background: #d1d5db;
 }
 
-/* ================= STATUS (UPGRADE UX) ================= */
+/* ================= STATUS (UX FORTE) ================= */
 .status {
   padding: 6px 12px;
   border-radius: 999px;
@@ -120,9 +120,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 6px;
 
-  min-width: 100px;
+  min-width: 110px;
 
   transition: all 0.25s ease;
 }
@@ -130,7 +130,7 @@
 /* HOVER */
 .status:hover {
   transform: translateY(-1px);
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 /* CLICK */
@@ -144,7 +144,7 @@
   transform: scale(0.9);
 }
 
-/* CORES + SOMBRA */
+/* CORES */
 .pendente {
   background: #f59e0b;
 }
@@ -167,6 +167,11 @@
 
 .entregue:hover {
   box-shadow: 0 4px 10px rgba(16,185,129,0.3);
+}
+
+/* ================= TABELA ================= */
+table td {
+  vertical-align: middle;
 }
 
 /* ================= MODAL ================= */
@@ -236,7 +241,7 @@
   border: 1px solid var(--border);
 }
 
-/* remover setas */
+/* remover setas do number */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;

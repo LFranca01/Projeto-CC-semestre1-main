@@ -34,7 +34,12 @@ body {
 
 .login-left {
   flex: 1;
-  background: linear-gradient(215deg, var(--primary), var(--primary-dark));
+   background: linear-gradient(
+    to right,
+    #265527 0%,
+    #153856 45%,
+    #0b2840 90%
+  );
   color: white;
 
   display: flex;
@@ -46,23 +51,13 @@ body {
   overflow: hidden;
 }
 
-/* efeito decorativo */
-.login-left::before {
-  content: "";
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 50%;
-  top: -150px;
-  left: -150px;
-}
+
 
 /* LOGO ESQUERDA */
 .login-left img {
   width: 600px;
   margin-bottom: 30px;
-  margin-left: 25px;
+  margin-left: 20px;
   filter: brightness(1.4) contrast(1.1);
 }
 

@@ -1,98 +1,53 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedidos</title>
-
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="pedidos.css">
-
   <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- 🔐 PROTEÇÃO DE ACESSO -->
   <script src="auth.js"></script>
-
-  <script>
-    requireAuth();
-  </script>
-
+  <script src="api.js"></script>
+  <script>requireAuth();</script>
 </head>
-
 <body>
-
 <div class="container">
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <img src="./assets/Logo.png">
-
     <ul>
-      <li>
-        <a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
-      </li>
-
-      <li class="active">
-        <a href="#"><i data-lucide="shopping-cart"></i> Pedidos</a>
-      </li>
-
-      <li>
-        <a href="#"><i data-lucide="boxes"></i> Estoque</a>
-      </li>
-
-      <li>
-        <a href="#"><i data-lucide="plug"></i> Integrações</a>
-      </li>
+      <li><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+      <li class="active"><a href="#"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
+      <li><a href="clientes.html"><i data-lucide="users"></i> Clientes</a></li>
     </ul>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
     <div class="content">
-
-      <!-- TOPBAR -->
       <div class="topbar">
         <div class="topbar-actions">
-
-          <div class="search-box">
-            <input type="text" placeholder="Buscar...">
-          </div>
-
           <div class="user-menu" onclick="toggleMenu()">
             <img src="https://i.pravatar.cc/40">
-
             <div class="user-info">
-              <span class="user-name">Usuário</span>
-              <span class="user-email">email@email.com</span>
+              <span class="user-name"></span>
+              <span class="user-email"></span>
             </div>
-
             <div class="dropdown" id="dropdown">
-              <a href="#">Perfil</a>
-              <a href="#">Configurações</a>
               <a href="#" onclick="logout()">Sair</a>
             </div>
           </div>
-
         </div>
       </div>
 
-      <!-- HEADER -->
       <div class="page-header">
         <h1>Pedidos</h1>
-        <button class="btn-primary" onclick="abrirModal()">
-          <i data-lucide="plus"></i> Novo Pedido
-        </button>
+        <button class="btn-primary" onclick="abrirModal()">Novo Pedido</button>
       </div>
 
-      <!-- FILTRO -->
       <div class="filter-box">
-
         <div class="filter-group">
           <label>Buscar</label>
-          <input type="text" id="filtro-busca" placeholder="Cliente ou ID">
+          <input type="text" id="filtro-busca">
         </div>
-
         <div class="filter-group">
           <label>Status</label>
           <select id="filtro-status">
@@ -102,15 +57,12 @@
             <option>Entregue</option>
           </select>
         </div>
-
         <div class="filter-actions">
           <button class="btn-secondary" onclick="limparFiltro()">Limpar</button>
           <button class="btn-primary" onclick="filtrarPedidos()">Filtrar</button>
         </div>
-
       </div>
 
-      <!-- TABELA -->
       <table>
         <thead>
           <tr>
@@ -121,212 +73,124 @@
             <th>Total</th>
           </tr>
         </thead>
-
-        <tbody id="tabela-pedidos">
-          <tr>
-            <td>001</td>
-            <td>Pedro</td>
-            <td><span class="status pendente" onclick="trocarStatus(this)">⏳ Pendente</span></td>
-            <td>30/03/2026</td>
-            <td>R$199,90</td>
-          </tr>
-
-          <tr>
-            <td>002</td>
-            <td>Riquelme</td>
-            <td><span class="status entregue" onclick="trocarStatus(this)"> ✔ Entregue</span></td>
-            <td>24/03/2026</td>
-            <td>R$304,90</td>
-          </tr>
-
-          <tr>
-            <td>003</td>
-            <td>Camilly</td>
-            <td><span class="status enviado" onclick="trocarStatus(this)"> 🚚 Enviado</span></td>
-            <td>24/03/2026</td>
-            <td>R$304,90</td>
-          </tr>
-        </tbody>
+        <tbody id="tabela-pedidos"></tbody>
       </table>
 
-      <!-- MODAL -->
       <div class="modal" id="modalPedido">
-
         <div class="modal-content">
-
           <div class="modal-header">
             <h2>Novo Pedido</h2>
             <span onclick="fecharModal()" class="close">&times;</span>
           </div>
-
           <div class="modal-body">
-
-            <div class="form-group">
-              <label>Cliente</label>
-              <input type="text" id="cliente">
-            </div>
-
-            <div class="form-group">
-              <label>Valor</label>
-              <input type="number" id="valor">
-            </div>
-
+            <select id="clienteSelect"></select>
+            <div id="itens"></div>
+            <button class="btn-secondary" onclick="addItem()">+ Produto</button>
           </div>
-
           <div class="modal-footer">
             <button class="btn-secondary" onclick="fecharModal()">Cancelar</button>
-            <button type="button" class="btn-primary" onclick="salvarPedido()">Salvar</button>
+            <button class="btn-primary" onclick="salvarPedido()">Salvar</button>
           </div>
-
         </div>
-
       </div>
-
     </div>
   </main>
-
 </div>
 
-<!-- JS -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-
-  const menu = document.getElementById("dropdown");
-  const userMenu = document.querySelector(".user-menu");
-
-  const userData = JSON.parse(localStorage.getItem("user"));
-
-  const user = getUser();   
-
+document.addEventListener("DOMContentLoaded", () => {
+  const user = getUser();
   if (user) {
     document.querySelector(".user-name").innerText = user.nome;
     document.querySelector(".user-email").innerText = user.email;
   }
-
-  window.toggleMenu = function () {
-    menu.classList.toggle("show");
-  };
-
-  document.addEventListener("click", function(e) {
-    if (!user.contains(e.target)) {
-      menu.classList.remove("show");
+  window.toggleMenu = () => { document.getElementById("dropdown").classList.toggle("show"); };
+  document.addEventListener("click", (e) => {
+    if (!document.querySelector(".user-menu").contains(e.target)) {
+      document.getElementById("dropdown").classList.remove("show");
     }
   });
-
+  carregarClientes();
+  renderPedidos();
+  lucide.createIcons();
 });
 
-/* LOGOUT */
-function logout() {
-  localStorage.removeItem("user");
-  window.location.href = "index.html";
+function carregarClientes() {
+  const select = document.getElementById("clienteSelect");
+  const clientes = getClientes();
+  select.innerHTML = `<option value="">Selecione um cliente</option>`;
+  clientes.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.nome}</option>`; });
 }
 
-/* FILTRO */
+function addItem() {
+  const div = document.getElementById("itens");
+  div.innerHTML += `
+    <div class="item">
+      <input placeholder="Produto">
+      <input type="number" placeholder="Qtd">
+      <input type="number" placeholder="Preço">
+    </div>`;
+}
+
 function filtrarPedidos() {
   const busca = document.getElementById("filtro-busca").value.toLowerCase();
   const status = document.getElementById("filtro-status").value.toLowerCase();
-
-  const linhas = document.querySelectorAll("#tabela-pedidos tr");
-
-  linhas.forEach(linha => {
+  document.querySelectorAll("#tabela-pedidos tr").forEach(linha => {
     const texto = linha.innerText.toLowerCase();
-
-    const matchBusca = texto.includes(busca);
-    const matchStatus = status === "" || texto.includes(status);
-
-    linha.style.display = (matchBusca && matchStatus) ? "" : "none";
+    linha.style.display = (texto.includes(busca) && (status === "" || texto.includes(status))) ? "" : "none";
   });
 }
 
 function limparFiltro() {
   document.getElementById("filtro-busca").value = "";
   document.getElementById("filtro-status").value = "";
-  filtrarPedidos();
+  renderPedidos();
 }
 
-/* MODAL */
-function abrirModal() {
-  document.getElementById("modalPedido").style.display = "flex";
-  document.getElementById("cliente").value = "";
-  document.getElementById("valor").value = "";
-}
-
-function fecharModal() {
-  document.getElementById("modalPedido").style.display = "none";
-}
-
-/* STATUS DINÂMICO */
-function trocarStatus(el) {
-
-  el.classList.add("fade");
-
-  setTimeout(() => {
-
-    if (el.classList.contains("pendente")) {
-      el.classList.remove("pendente");
-      el.classList.add("enviado");
-      el.innerHTML = "🚚 Enviado";
-    } 
-    else if (el.classList.contains("enviado")) {
-      el.classList.remove("enviado");
-      el.classList.add("entregue");
-      el.innerHTML = "✔ Entregue";
-    } 
-    else {
-      el.classList.remove("entregue");
-      el.classList.add("pendente");
-      el.innerHTML = "⏳ Pendente";
-    }
-
-    el.classList.remove("fade");
-
-  }, 150);
-}
-
-/* SALVAR PEDIDO */
-function salvarPedido() {
-  const nome = document.getElementById("cliente").value.trim();
-  let valorInput = document.getElementById("valor").value.trim();
-
-  if (!nome || !valorInput) {
-    alert("Preencha todos os campos");
-    return;
-  }
-
-  valorInput = valorInput.replace(",", ".");
-  const valor = parseFloat(valorInput);
-
-  if (isNaN(valor)) {
-    alert("Valor inválido");
-    return;
-  }
-
-  const valorFormatado = valor.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL"
-  });
-
+function renderPedidos() {
   const tabela = document.getElementById("tabela-pedidos");
+  const pedidos = getPedidos();
+  tabela.innerHTML = "";
+  pedidos.forEach((p, index) => {
+    const cliente = getClienteById(p.clienteId);
+    tabela.innerHTML += `
+      <tr>
+        <td>${String(index + 1).padStart(3, "0")}</td>
+        <td>${cliente ? cliente.nome : p.cliente}</td>
+        <td>
+          <span class="status ${p.status.toLowerCase()}" onclick="trocarStatus(${p.id})">
+            ${getIcon(p.status)} ${p.status}
+          </span>
+        </td>
+        <td>${formatarData(p.data)}</td>
+        <td>R$ ${Number(p.total).toFixed(2)}</td>
+      </tr>`;
+  });
+}
 
-  const linhas = document.querySelectorAll("#tabela-pedidos tr");
-  let ultimoId = linhas.length + 1;
-  let idFormatado = String(ultimoId).padStart(3, "0");
+function trocarStatus(id) { updateStatus(id); renderPedidos(); }
+function getIcon(status) { return status === "Pendente" ? "⏳" : status === "Enviado" ? "🚚" : "✔"; }
+function abrirModal() { document.getElementById("modalPedido").style.display = "flex"; document.getElementById("itens").innerHTML = ""; }
+function fecharModal() { document.getElementById("modalPedido").style.display = "none"; }
 
-  tabela.innerHTML += `
-    <tr>
-      <td>${idFormatado}</td>
-      <td>${nome}</td>
-      <td><span class="status pendente" onclick="trocarStatus(this)">Pendente</span></td>
-      <td>${new Date().toLocaleDateString()}</td>
-      <td>${valorFormatado}</td>
-    </tr>
-  `;
-
+function salvarPedido() {
+  const clienteId = document.getElementById("clienteSelect").value;
+  if (!clienteId) { alert("Selecione um cliente"); return; }
+  const cliente = getClientes().find(c => c.id == clienteId);
+  const itens = [];
+  document.querySelectorAll(".item").forEach(i => {
+    const inputs = i.querySelectorAll("input");
+    const produto = inputs[0].value;
+    const qtd = parseFloat(inputs[1].value);
+    const preco = parseFloat(inputs[2].value);
+    if (produto && qtd && preco) itens.push({ produto, qtd, preco });
+  });
+  if (itens.length === 0) { alert("Adicione pelo menos 1 produto"); return; }
+  const total = itens.reduce((acc, i) => acc + (i.qtd * i.preco), 0);
+  createPedido({ clienteId, cliente: cliente.nome, itens, total, status: "Pendente" });
+  renderPedidos();
   fecharModal();
 }
-
-lucide.createIcons();
 </script>
-
 </body>
 </html>

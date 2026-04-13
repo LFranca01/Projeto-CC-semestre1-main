@@ -3,14 +3,14 @@
 <head>
 
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | Distribuidora Serginho</title>
+  <title>Dashboard</title>
 
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <!-- 🔐 PROTEÇÃO DE ACESSO -->
   <script src="auth.js"></script>
+  <script src="api.js"></script>
 
   <script>
     requireAuth();
@@ -22,90 +22,83 @@
 
 <div class="container">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <img src="./assets/Logo.png" alt="Logo">
+    <img src="./assets/Logo.png">
 
     <ul>
       <li class="active">
-        <a href="inicio.html">
-          <i data-lucide="layout-dashboard"></i> Dashboard
-        </a>
+        <a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
       </li>
-
       <li>
-        <a href="pedidos.html">
-          <i data-lucide="shopping-cart"></i> Pedidos
-        </a>
+        <a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a>
       </li>
-
       <li>
-        <a href="#">
-          <i data-lucide="boxes"></i> Estoque
-        </a>
-      </li>
-
-      <li>
-        <a href="#">
-          <i data-lucide="plug"></i> Integrações
-        </a>
+        <a href="clientes.html"><i data-lucide="users"></i> Clientes</a>
       </li>
     </ul>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
     <div class="content">
 
       <!-- TOPBAR -->
       <div class="topbar">
-
         <div class="topbar-actions">
 
-          <!-- BUSCA -->
           <div class="search-box">
-            <input type="text" placeholder="Buscar...">
+            <input type="text" id="busca-dashboard" placeholder="Buscar por ID ou cliente...">
           </div>
 
-          <!-- USER -->
           <div class="user-menu" onclick="toggleMenu()">
-            <img src="https://i.pravatar.cc/40" alt="avatar">
+            <img src="https://i.pravatar.cc/40">
 
             <div class="user-info">
-              <span class="user-name">Usuário</span>
-              <span class="user-email">email@email.com</span>
+              <span class="user-name"></span>
+              <span class="user-email"></span>
             </div>
 
             <div class="dropdown" id="dropdown">
-              <a href="#">Perfil</a>
-              <a href="#">Configurações</a>
               <a href="#" onclick="logout()">Sair</a>
             </div>
           </div>
 
         </div>
-
       </div>
 
-      <!-- TÍTULO -->
       <h1>Dashboard</h1>
 
       <!-- CARDS -->
       <div class="cards">
+
         <div class="card">
-          <p>Pedidos Hoje</p>
-          <h2>120</h2>
+          <p>Total de Pedidos</p>
+          <h2 id="totalPedidos">0</h2>
         </div>
 
         <div class="card">
-          <p>Em andamento</p>
-          <h2>85</h2>
+          <p>Pendentes</p>
+          <h2 id="pendentes">0</h2>
+        </div>
+
+        <div class="card">
+          <p>Enviados</p>
+          <h2 id="enviados">0</h2>
         </div>
 
         <div class="card">
           <p>Entregues</p>
-          <h2>205</h2>
+          <h2 id="entregues">0</h2>
         </div>
+
+        <div class="card">
+          <p>Faturamento</p>
+          <h2 id="faturamento">R$0,00</h2>
+        </div>
+
+        <div class="card">
+          <canvas id="graficoStatus"></canvas>
+        </div>
+
       </div>
 
       <!-- TABELA -->
@@ -120,32 +113,7 @@
           </tr>
         </thead>
 
-        <tbody>
-          <tr>
-          <tr>
-            <td>001</td>
-            <td>Pedro</td>
-            <td><span class="status pendente" onclick="trocarStatus(this)">⏳ Pendente</span></td>
-            <td>30/03/2026</td>
-            <td>R$199,90</td>
-          </tr>
-
-          <tr>
-            <td>002</td>
-            <td>Riquelme</td>
-            <td><span class="status entregue" onclick="trocarStatus(this)"> ✔ Entregue</span></td>
-            <td>24/03/2026</td>
-            <td>R$304,90</td>
-          </tr>
-
-          <tr>
-            <td>003</td>
-            <td>Camilly</td>
-            <td><span class="status enviado" onclick="trocarStatus(this)"> 🚚 Enviado</span></td>
-            <td>24/03/2026</td>
-            <td>R$304,90</td>
-          </tr>
-        </tbody>
+        <tbody id="tabela-dashboard"></tbody>
       </table>
 
     </div>
@@ -153,14 +121,12 @@
 
 </div>
 
-<!-- JS -->
 <script>
-document.addEventListener("DOMContentLoaded", function () {
 
-  const menu = document.getElementById("dropdown");
-  const userElement = document.querySelector(".user-menu");
+let graficoStatus; 
 
-  /* 👤 USER DINÂMICO */
+document.addEventListener("DOMContentLoaded", () => {
+
   const user = getUser();
 
   if (user) {
@@ -168,27 +134,155 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector(".user-email").innerText = user.email;
   }
 
-  /* 📂 DROPDOWN */
-  window.toggleMenu = function () {
-    menu.classList.toggle("show");
+  document
+    .getElementById("busca-dashboard")
+    .addEventListener("input", filtrarDashboard);
+
+  window.toggleMenu = () => {
+    document.getElementById("dropdown").classList.toggle("show");
   };
 
-  document.addEventListener("click", function(e) {
-    if (!userElement.contains(e.target)) {
-      menu.classList.remove("show");
+  document.addEventListener("click", (e) => {
+    if (!document.querySelector(".user-menu").contains(e.target)) {
+      document.getElementById("dropdown").classList.remove("show");
     }
   });
 
+  atualizarDashboard();
+  lucide.createIcons();
 });
 
-/* 🚪 LOGOUT */
-function logout() {
-  localStorage.removeItem("user");
-  window.location.href = "index.html";
+
+/* ================= DASHBOARD ================= */
+
+function atualizarDashboard() {
+  const pedidos = getPedidos();
+  const m = getMetricas();
+
+  document.getElementById("totalPedidos").innerText = m.total;
+  document.getElementById("pendentes").innerText = m.pendentes;
+  document.getElementById("enviados").innerText = m.enviados;
+  document.getElementById("entregues").innerText = m.enviados + m.pendentes < m.total 
+    ? m.total - (m.pendentes + m.enviados) 
+    : 0;
+
+  document.getElementById("faturamento").innerText =
+    m.faturamento.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL"
+    });
+
+  renderDashboard(pedidos);
+  renderGraficoStatus(pedidos);
 }
 
-/* 🎨 ICONES */
-lucide.createIcons();
+/* ================= GRAFICO ================= */
+
+function gerarDadosStatus(pedidos) {
+  let pendentes = 0;
+  let enviados = 0;
+  let entregues = 0;
+
+  pedidos.forEach(p => {
+    if (p.status === "Pendente") pendentes++;
+    if (p.status === "Enviado") enviados++;
+    if (p.status === "Entregue") entregues++;
+  });
+
+  return [pendentes, enviados, entregues];
+}
+
+function renderGraficoStatus(pedidos) {
+
+  const ctx = document.getElementById("graficoStatus");
+
+  const dados = gerarDadosStatus(pedidos);
+
+  if (graficoStatus) {
+    graficoStatus.destroy();
+  }
+
+  graficoStatus = new Chart(ctx, {
+    type: "pie",
+    data: {
+      labels: ["Pendentes", "Enviados", "Entregues"],
+      datasets: [{
+        data: dados
+      }]
+    },
+    options: {
+      responsive: true
+    }
+  });
+}
+
+/* ================= TABELA ================= */
+
+function renderDashboard(lista) {
+  const tabela = document.getElementById("tabela-dashboard");
+
+  tabela.innerHTML = "";
+
+  if (lista.length === 0) {
+    tabela.innerHTML = `
+      <tr>
+        <td colspan="5" style="text-align:center; color:#888;">
+          Nenhum pedido encontrado
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  lista.forEach(p => {
+    const cliente = getClienteById(p.clienteId);
+
+    tabela.innerHTML += `
+      <tr>
+        <td>${String(p.id).padStart(3, "0")}</td>
+        <td>${cliente ? cliente.nome : "N/A"}</td>
+        <td>
+          <span class="status ${p.status.toLowerCase()}">
+            ${getIcon(p.status)} ${p.status}
+          </span>
+        </td>
+        <td>${formatarData(p.data)}</td>
+        <td>${(p.total || 0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
+      </tr>
+    `;
+  });
+}
+
+/* ================= BUSCA ================= */
+
+function filtrarDashboard() {
+  const termo = document
+    .getElementById("busca-dashboard")
+    .value
+    .toLowerCase();
+
+  const pedidos = getPedidos();
+
+  const filtrados = pedidos.filter(p => {
+    const cliente = getClienteById(p.clienteId);
+
+    return (
+      String(p.id).includes(termo) ||
+      (cliente && cliente.nome.toLowerCase().includes(termo))
+    );
+  });
+
+  renderDashboard(filtrados);
+}
+
+/* ================= ICONES ================= */
+
+function getIcon(status) {
+  if (status === "Pendente") return "⏳";
+  if (status === "Enviado") return "🚚";
+  return "✔";
+}
+
 </script>
 
 </body>
