@@ -1,300 +1,83 @@
-/* ================= HEADER ================= */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
+/* 1. Header e Alinhamento */
+.page-header-pedidos {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    width: 100%;
 }
 
-.page-header h1 {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--text);
-}
-
-/* ================= FILTRO ================= */
 .filter-box {
-  display: inline-flex;
-  gap: 15px;
-  align-items: flex-end;
-
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-
-  margin-bottom: 25px;
-
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  border: 1px solid var(--border);
-}
-
-/* ================= GRUPOS ================= */
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.filter-group label {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-light);
-}
-
-/* INPUTS */
-.filter-group input,
-.filter-group select {
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: #fafafa;
-
-  transition: all 0.2s ease;
-}
-
-.filter-group input:focus,
-.filter-group select:focus {
-  outline: none;
-  border-color: var(--primary);
-  background: white;
-  box-shadow: 0 0 0 2px rgba(30,79,122,0.15);
-}
-
-/* ================= AÇÕES ================= */
-.filter-actions {
-  display: flex;
-  gap: 10px;
-}
-
-/* ================= BOTÕES ================= */
-.btn-primary {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-
-  background: var(--primary);
-  color: white;
-  border: none;
-
-  padding: 10px 16px;
-  border-radius: 8px;
-
-  cursor: pointer;
-  font-weight: 500;
-
-  transition: all 0.2s ease;
-}
-
-.btn-primary:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
-}
-
-.btn-secondary {
-  background: #e5e7eb;
-  border: none;
-
-  padding: 10px 16px;
-  border-radius: 8px;
-
-  cursor: pointer;
-  font-weight: 500;
-
-  transition: all 0.2s ease;
-}
-
-.btn-secondary:hover {
-  background: #d1d5db;
-}
-
-/* ================= STATUS (UX FORTE) ================= */
-.status {
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 12px;
-  color: white;
-
-  cursor: pointer;
-  font-weight: 500;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-
-  min-width: 110px;
-
-  transition: all 0.25s ease;
-}
-
-/* HOVER */
-.status:hover {
-  transform: translateY(-1px);
-  opacity: 0.95;
-}
-
-/* CLICK */
-.status:active {
-  transform: scale(0.95);
-}
-
-/* ANIMAÇÃO TROCA */
-.status.fade {
-  opacity: 0;
-  transform: scale(0.9);
-}
-
-/* CORES */
-.pendente {
-  background: #f59e0b;
-}
-
-.pendente:hover {
-  box-shadow: 0 4px 10px rgba(245,158,11,0.3);
-}
-
-.enviado {
-  background: var(--primary);
-}
-
-.enviado:hover {
-  box-shadow: 0 4px 10px rgba(30,79,122,0.3);
-}
-
-.entregue {
-  background: #10b981;
-}
-
-.entregue:hover {
-  box-shadow: 0 4px 10px rgba(16,185,129,0.3);
-}
-
-/* ================= TABELA ================= */
-table td {
-  vertical-align: middle;
-}
-
-/* ================= MODAL ================= */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  background: rgba(0,0,0,0.55);
-
-  display: none;
-  align-items: center;
-  justify-content: center;
-
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  background: white;
-  width: 420px;
-  max-width: 90%;
-
-  padding: 25px;
-  border-radius: 14px;
-
-  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-
-  animation: fadeIn 0.25s ease;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  margin-bottom: 15px;
-}
-
-.modal-header h2 {
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.close {
-  cursor: pointer;
-  font-size: 20px;
-  color: var(--text-light);
-
-  transition: 0.2s;
-}
-
-.close:hover {
-  color: var(--text);
-}
-
-.modal-body {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
-.modal-body input {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-}
-
-/* remover setas do number */
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  appearance: textfield;
-  -moz-appearance: textfield;
-}
-
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-
-  margin-top: 20px;
-}
-
-/* ================= ANIMAÇÃO ================= */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ================= RESPONSIVO ================= */
-@media (max-width: 768px) {
-
-  .filter-box {
-    flex-direction: column;
-    align-items: stretch;
+    background: var(--white);
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    margin: 0 auto 25px 0; 
+    max-width: 768px; /* Não ocupa a tela toda */
     width: 100%;
-  }
+}
 
-  .filter-group input,
-  .filter-group select {
-    width: 100%;
-  }
+/* 3. Grid de Filtros: Alinhamento de Botões e Campos */
+.filter-grid {
+    display: grid;
+    grid-template-columns: 2fr 1.2fr auto; 
+    gap: 20px;
+    align-items: flex-end; /* Alinha pela base dos inputs */
+}
 
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
+.filter-buttons {
+    display: flex;
     gap: 10px;
-  }
-
-  table {
-    display: block;
-    overflow-x: auto;
-  }
+    align-self: flex-end;
+    align-self: center;
 }
+
+/* 4. Customização do Modal de Novo Pedido */
+.pedido-modal-size {
+    max-width: 550px;
+}
+
+/* REMOÇÃO DO BOTÃO 'X' NO MODAL DE PEDIDOS */
+ .modal-header .close {
+    display: none !important;
+}
+
+/* Centraliza o título devido à ausência do botão fechar */
+ .modal-header h2 {
+    width: 100%;
+    text-align: center;
+}
+
+/* 5. Itens do Pedido (Inputs em linha) */
+.row-item-pedido {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.input-produto { flex: 2; height: 30px;}
+.input-qtd { flex: 0.5; }
+.input-preco { flex: 0.8; }
+
+.btn-add-item {
+    width: 100%;
+    padding: 10px;
+    background: #f9fafb;
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 15px;
+}
+
+/* 6. Cores de Status */
+.status {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.status.pendente { background: #fef3c7; color: #d97706; }
+.status.enviado { background: #dbeafe; color: #2563eb; }
+.status.entregue { background: #d1fae5; color: #059669; }
+

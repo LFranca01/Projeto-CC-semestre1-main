@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Estoque | Sistema Empresarial</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="logistica.css">
+  <link rel="stylesheet" href="pedidos.css">
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="auth.js"></script>
+  <script src="api.js"></script>
+  <script>requireAuth();</script>
+</head>
+<body>
+<div class="container">
+  <aside class="sidebar">
+    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
+    <ul>
+      <li><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+      <li><a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
+      <li><a href="clientes.html"><i data-lucide="users"></i> Clientes</a></li>
+      <li><a href="produtos.html"><i data-lucide="package"></i> Produtos</a></li>
+      <li class="active"><a href="estoque.html"><i data-lucide="archive"></i> Estoque</a></li>
+      <li><a href="logistica.html"><i data-lucide="truck"></i> Logística</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="content">
+      <div class="page-header">
+        <h1>Controle de Armazéns</h1>
+        <button class="btn-primary" onclick="abrirModal()">+ Movimentar Estoque</button>
+      </div>
+
+      <div class="section-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Filial</th>
+              <th>Produto</th>
+              <th>Qtd. Atual</th>
+              <th>Mín / Máx</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-estoque"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="modalEstoque" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Gerenciar Níveis de Estoque</h2>
+      <span class="close" onclick="fecharModal()">&times;</span>
+    </div>
+    <form onsubmit="event.preventDefault(); salvarEstoque();">
+      <div class="modal-body">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Filial (Armazém)</label>
+                <select id="idFilial" required></select>
+            </div>
+            <div class="form-group">
+                <label>Produto</label>
+                <select id="idProduto" required></select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Quantidade Atual no Local</label>
+            <input type="number" id="quantidadeAtual" required min="0">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Estoque Mínimo</label>
+                <input type="number" id="estoqueMinimo" placeholder="Alerta de falta">
+            </div>
+            <div class="form-group">
+                <label>Estoque Máximo</label>
+                <input type="number" id="estoqueMaximo" placeholder="Capacidade total">
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secundary" onclick="fecharModal()">Cancelar</button>
+        <button type="submit" class="btn-primary">Atualizar Saldo</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    renderEstoque();
+    carregarSelects();
+    lucide.createIcons();
+});
+
+function renderEstoque() {
+    const armazens = getArmazens();
+    const produtos = getProdutos();
+    const filiais = getFiliais();
+    const tabela = document.getElementById("tabela-estoque");
+
+    if (armazens.length === 0) {
+        tabela.innerHTML = '<tr><td colspan="6" style="text-align:center">Nenhum saldo registrado nos armazéns.</td></tr>';
+        return;
+    }
+
+    tabela.innerHTML = armazens.map(a => {
+        const prod = produtos.find(p => p.id == a.idProduto);
+        const fili = filiais.find(f => f.id == a.idFilial);
+        
+        let statusClass = "enviado"; // Verde
+        let statusText = "OK";
+        
+        if (a.quantidadeAtual <= a.estoqueMinimo) {
+            statusClass = "pendente"; // Amarelo/Laranja
+            statusText = "Crítico";
+        }
+
+        return `
+            <tr>
+                <td>${fili ? fili.nome : 'N/A'}</td>
+                <td><strong>${prod ? prod.nome : 'Excluído'}</strong></td>
+                <td>${a.quantidadeAtual}</td>
+                <td>${a.estoqueMinimo || 0} / ${a.estoqueMaximo || '-'}</td>
+                <td><span class="status ${statusClass}">${statusText}</span></td>
+                <td>
+                    <button onclick="prepararEdicao(${a.idFilial}, ${a.idProduto})" class="btn-icon"><i data-lucide="edit"></i></button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+    lucide.createIcons();
+}
+
+function carregarSelects() {
+    const filiais = getFiliais();
+    const produtos = getProdutos();
+    
+    document.getElementById("idFilial").innerHTML = filiais.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
+    document.getElementById("idProduto").innerHTML = produtos.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
+}
+
+function abrirModal() {
+    document.querySelector("form").reset();
+    document.getElementById("modalEstoque").style.display = "flex";
+}
+
+function fecharModal() {
+    document.getElementById("modalEstoque").style.display = "none";
+}
+
+function salvarEstoque() {
+    const dados = {
+        idFilial: document.getElementById("idFilial").value,
+        idProduto: document.getElementById("idProduto").value,
+        quantidadeAtual: document.getElementById("quantidadeAtual").value,
+        estoqueMinimo: document.getElementById("estoqueMinimo").value,
+        estoqueMaximo: document.getElementById("estoqueMaximo").value
+    };
+
+    updateEstoque(dados);
+    fecharModal();
+    renderEstoque();
+}
+
+function prepararEdicao(idFilial, idProduto) {
+    const armazens = getArmazens();
+    const item = armazens.find(a => a.idFilial == idFilial && a.idProduto == idProduto);
+    if(item) {
+        document.getElementById("idFilial").value = item.idFilial;
+        document.getElementById("idProduto").value = item.idProduto;
+        document.getElementById("quantidadeAtual").value = item.quantidadeAtual;
+        document.getElementById("estoqueMinimo").value = item.estoqueMinimo;
+        document.getElementById("estoqueMaximo").value = item.estoqueMaximo;
+        document.getElementById("modalEstoque").style.display = "flex";
+    }
+}
+</script>
+</body>
+</html>

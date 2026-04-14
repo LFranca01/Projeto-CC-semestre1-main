@@ -2,194 +2,327 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Pedidos</title>
+  <title>Pedidos | Serginho Leva Atras</title>
+  
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="logistica.css">
   <link rel="stylesheet" href="pedidos.css">
+
+
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="auth.js"></script>
   <script src="api.js"></script>
   <script>requireAuth();</script>
 </head>
 <body>
+
 <div class="container">
   <aside class="sidebar">
-    <img src="./assets/Logo.png">
+    <div class="sidebar-header">
+        <img src="./assets/Logo.png" alt="Logo">
+    </div>
     <ul>
       <li><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-      <li class="active"><a href="#"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
+      <li class="active"><a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
       <li><a href="clientes.html"><i data-lucide="users"></i> Clientes</a></li>
+      <li><a href="produtos.html"><i data-lucide="package"></i> Produtos</a></li>
+      <li><a href="financeiro.html"><i data-lucide="dollar-sign"></i> Financeiro</a></li>
+      <li><a href="logistica.html"><i data-lucide="truck"></i> Logística</a></li>
     </ul>
   </aside>
 
   <main class="main">
     <div class="content">
       <div class="topbar">
-        <div class="topbar-actions">
-          <div class="user-menu" onclick="toggleMenu()">
-            <img src="https://i.pravatar.cc/40">
-            <div class="user-info">
-              <span class="user-name"></span>
-              <span class="user-email"></span>
-            </div>
-            <div class="dropdown" id="dropdown">
-              <a href="#" onclick="logout()">Sair</a>
-            </div>
+        <div class="search-box">
+            <input type="text" id="filtro-busca-rapida" placeholder="Busca rápida..." onkeyup="filtrarPedidos()">
+        </div>
+        
+        <div class="user-menu-container">
+          <div class="user-menu">
+              <img src="https://i.pravatar.cc/100" id="userAvatar" onclick="expandirFoto(event)">
+              <div class="user-info" onclick="toggleMenu(event)">
+                  <span class="user-name" id="userName">Carregando...</span>
+              </div>
+              <i data-lucide="chevron-down" onclick="toggleMenu(event)"></i>
+          </div>
+          <div id="dropdown-user" class="dropdown-content">
+              <a href="javascript:void(0)" onclick="abrirModalPerfil(event)"><i data-lucide="user"></i> Perfil</a>
+              <a href="#" onclick="logout()"><i data-lucide="log-out"></i> Sair</a>
           </div>
         </div>
       </div>
 
-      <div class="page-header">
-        <h1>Pedidos</h1>
-        <button class="btn-primary" onclick="abrirModal()">Novo Pedido</button>
+      <div class="page-header-pedidos">
+        <h1>Gestão de Pedidos</h1>
+        <button class="btn-primary" onclick="abrirModalPedido()"><i data-lucide="plus"></i> Novo Pedido</button>
       </div>
 
       <div class="filter-box">
-        <div class="filter-group">
-          <label>Buscar</label>
-          <input type="text" id="filtro-busca">
-        </div>
-        <div class="filter-group">
-          <label>Status</label>
-          <select id="filtro-status">
-            <option value="">Todos</option>
-            <option>Pendente</option>
-            <option>Enviado</option>
-            <option>Entregue</option>
-          </select>
-        </div>
-        <div class="filter-actions">
-          <button class="btn-secondary" onclick="limparFiltro()">Limpar</button>
-          <button class="btn-primary" onclick="filtrarPedidos()">Filtrar</button>
+        <div class="filter-grid">
+          <div class="form-group">
+            <label>Buscar por Cliente ou ID</label>
+            <input type="text" id="filtro-busca" placeholder="Ex: João Silva">
+          </div>
+          <div class="form-group">
+            <label>Status</label>
+            <select id="filtro-status">
+              <option value="">Todos os Status</option>
+              <option value="Pendente">Pendente</option>
+              <option value="Enviado">Enviado</option>
+              <option value="Entregue">Entregue</option>
+            </select>
+          </div>
+          <div class="filter-buttons">
+            <button class="btn-secundary" onclick="limparFiltro()">Limpar</button>
+            <button class="btn-primary" onclick="filtrarPedidos()">Filtrar</button>
+          </div>
         </div>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Status</th>
-            <th>Data</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody id="tabela-pedidos"></tbody>
-      </table>
-
-      <div class="modal" id="modalPedido">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h2>Novo Pedido</h2>
-            <span onclick="fecharModal()" class="close">&times;</span>
-          </div>
-          <div class="modal-body">
-            <select id="clienteSelect"></select>
-            <div id="itens"></div>
-            <button class="btn-secondary" onclick="addItem()">+ Produto</button>
-          </div>
-          <div class="modal-footer">
-            <button class="btn-secondary" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-primary" onclick="salvarPedido()">Salvar</button>
-          </div>
-        </div>
+      <div class="section-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Status</th>
+              <th>Data</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-pedidos"></tbody>
+        </table>
       </div>
     </div>
   </main>
 </div>
 
+<div id="modal-zoom" class="modal" onclick="this.style.display='none'">
+    <div class="modal-content zoom-content">
+        <img id="img-zoom" src="" alt="Zoom">
+    </div>
+</div>
+
+<div id="modal-perfil" class="modal">
+    <div class="modal-content perfil-modal-size">
+        <div class="modal-header">
+            <h2>Ajustar Foto de Perfil</h2>
+            <span class="close" onclick="fecharModalPerfil()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Nome de Exibição</label>
+                <input type="text" id="edit-nome-user">
+            </div>
+            <div class="cropper-wrapper">
+                <img id="image-to-crop">
+            </div>
+            <div id="drop-area-perfil">
+                <button type="button" class="btn-secundary" onclick="document.getElementById('fileElem').click()">Mudar Foto</button>
+                <input type="file" id="fileElem" accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secundary" onclick="fecharModalPerfil()">Cancelar</button>
+            <button class="btn-primary" onclick="finalizarCorte()">Salvar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modalPedido" class="modal">
+    <div class="modal-content pedido-modal-size">
+        <div class="modal-header">
+            <h2>Novo Pedido</h2>
+            <span onclick="fecharModalPedido()" class="close">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Cliente</label>
+                <select id="clienteSelect"></select>
+            </div>
+            <div id="lista-itens-pedido"></div>
+            <button class="btn-add-item" onclick="addItem()">+ Adicionar Produto</button>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secundary" onclick="fecharModalPedido()">Cancelar</button>
+            <button class="btn-primary" onclick="salvarPedido()">Criar Pedido</button>
+        </div>
+    </div>
+</div>
+
 <script>
+let cropper;
+
 document.addEventListener("DOMContentLoaded", () => {
-  const user = getUser();
-  if (user) {
-    document.querySelector(".user-name").innerText = user.nome;
-    document.querySelector(".user-email").innerText = user.email;
-  }
-  window.toggleMenu = () => { document.getElementById("dropdown").classList.toggle("show"); };
-  document.addEventListener("click", (e) => {
-    if (!document.querySelector(".user-menu").contains(e.target)) {
-      document.getElementById("dropdown").classList.remove("show");
-    }
-  });
-  carregarClientes();
-  renderPedidos();
-  lucide.createIcons();
+    carregarDadosUsuario();
+    carregarClientes();
+    renderPedidos();
+    lucide.createIcons();
 });
 
+/* --- FUNÇÕES DE USUÁRIO (Sincronizadas com inicio.html) --- */
+function carregarDadosUsuario() {
+    const usuario = getUser();
+    if (usuario) {
+        document.getElementById("userName").textContent = usuario.nome;
+        if (usuario.foto) document.getElementById("userAvatar").src = usuario.foto;
+    }
+}
+
+function toggleMenu(event) {
+    if(event) event.stopPropagation();
+    document.getElementById("dropdown-user").classList.toggle("show");
+}
+
+window.onclick = function(event) {
+    if (!event.target.closest('.user-menu-container')) {
+        document.getElementById("dropdown-user").classList.remove("show");
+    }
+}
+
+function expandirFoto(event) {
+    event.stopPropagation();
+    const modal = document.getElementById("modal-zoom");
+    const imgZoom = document.getElementById("img-zoom");
+    imgZoom.src = document.getElementById("userAvatar").src;
+    modal.style.display = "flex";
+}
+
+function abrirModalPerfil(event) {
+    if(event) event.stopPropagation();
+    document.getElementById("dropdown-user").classList.remove("show");
+    const usuario = getUser();
+    document.getElementById("edit-nome-user").value = usuario.nome;
+    document.getElementById("modal-perfil").style.display = "flex";
+}
+
+function fecharModalPerfil() {
+    if (cropper) cropper.destroy();
+    document.getElementById("modal-perfil").style.display = "none";
+}
+
+function handleFiles(files) {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const image = document.getElementById('image-to-crop');
+            image.src = e.target.result;
+            if (cropper) cropper.destroy();
+            cropper = new Cropper(image, { aspectRatio: 1, viewMode: 1 });
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function finalizarCorte() {
+    const novoNome = document.getElementById("edit-nome-user").value;
+    if (!novoNome) return alert("Nome obrigatório");
+    let usuario = getUser();
+    usuario.nome = novoNome;
+    if (cropper) {
+        usuario.foto = cropper.getCroppedCanvas({ width: 400, height: 400 }).toDataURL('image/jpeg', 0.9);
+    }
+    sessionStorage.setItem("user", JSON.stringify(usuario));
+    carregarDadosUsuario();
+    fecharModalPerfil();
+}
+
+/* --- FUNÇÕES DE PEDIDOS --- */
 function carregarClientes() {
-  const select = document.getElementById("clienteSelect");
-  const clientes = getClientes();
-  select.innerHTML = `<option value="">Selecione um cliente</option>`;
-  clientes.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.nome}</option>`; });
-}
-
-function addItem() {
-  const div = document.getElementById("itens");
-  div.innerHTML += `
-    <div class="item">
-      <input placeholder="Produto">
-      <input type="number" placeholder="Qtd">
-      <input type="number" placeholder="Preço">
-    </div>`;
-}
-
-function filtrarPedidos() {
-  const busca = document.getElementById("filtro-busca").value.toLowerCase();
-  const status = document.getElementById("filtro-status").value.toLowerCase();
-  document.querySelectorAll("#tabela-pedidos tr").forEach(linha => {
-    const texto = linha.innerText.toLowerCase();
-    linha.style.display = (texto.includes(busca) && (status === "" || texto.includes(status))) ? "" : "none";
-  });
-}
-
-function limparFiltro() {
-  document.getElementById("filtro-busca").value = "";
-  document.getElementById("filtro-status").value = "";
-  renderPedidos();
+    const select = document.getElementById("clienteSelect");
+    const clientes = getClientes();
+    select.innerHTML = `<option value="">Escolha um cliente...</option>`;
+    clientes.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.nome}</option>`; });
 }
 
 function renderPedidos() {
-  const tabela = document.getElementById("tabela-pedidos");
-  const pedidos = getPedidos();
-  tabela.innerHTML = "";
-  pedidos.forEach((p, index) => {
-    const cliente = getClienteById(p.clienteId);
-    tabela.innerHTML += `
-      <tr>
-        <td>${String(index + 1).padStart(3, "0")}</td>
-        <td>${cliente ? cliente.nome : p.cliente}</td>
-        <td>
-          <span class="status ${p.status.toLowerCase()}" onclick="trocarStatus(${p.id})">
-            ${getIcon(p.status)} ${p.status}
-          </span>
-        </td>
-        <td>${formatarData(p.data)}</td>
-        <td>R$ ${Number(p.total).toFixed(2)}</td>
-      </tr>`;
-  });
+    const tabela = document.getElementById("tabela-pedidos");
+    const pedidos = getPedidos();
+    tabela.innerHTML = pedidos.map((p, index) => {
+        const cliente = getClienteById(p.clienteId);
+        return `
+            <tr>
+                <td>#${String(index + 1).padStart(3, '0')}</td>
+                <td>${cliente ? cliente.nome : p.cliente}</td>
+                <td><span class="status ${p.status.toLowerCase()}" onclick="trocarStatus(${p.id})">${p.status}</span></td>
+                <td>${formatarData(p.data)}</td>
+                <td class="bold">${formatarMoeda(p.total)}</td>
+            </tr>`;
+    }).join('');
+}
+
+function filtrarPedidos() {
+    const busca = document.getElementById("filtro-busca").value.toLowerCase();
+    const status = document.getElementById("filtro-status").value;
+    const buscaRapida = document.getElementById("filtro-busca-rapida").value.toLowerCase();
+    
+    document.querySelectorAll("#tabela-pedidos tr").forEach(linha => {
+        const texto = linha.innerText.toLowerCase();
+        const statusLinha = linha.querySelector(".status").innerText;
+        const bateBusca = texto.includes(busca) && texto.includes(buscaRapida);
+        const bateStatus = status === "" || statusLinha === status;
+        linha.style.display = (bateBusca && bateStatus) ? "" : "none";
+    });
+}
+
+function limparFiltro() {
+    document.getElementById("filtro-busca").value = "";
+    document.getElementById("filtro-status").value = "";
+    document.getElementById("filtro-busca-rapida").value = "";
+    filtrarPedidos();
 }
 
 function trocarStatus(id) { updateStatus(id); renderPedidos(); }
-function getIcon(status) { return status === "Pendente" ? "⏳" : status === "Enviado" ? "🚚" : "✔"; }
-function abrirModal() { document.getElementById("modalPedido").style.display = "flex"; document.getElementById("itens").innerHTML = ""; }
-function fecharModal() { document.getElementById("modalPedido").style.display = "none"; }
+
+function abrirModalPedido() { 
+    document.getElementById("modalPedido").style.display = "flex"; 
+    document.getElementById("lista-itens-pedido").innerHTML = ""; 
+    addItem(); 
+}
+
+function fecharModalPedido() { document.getElementById("modalPedido").style.display = "none"; }
+
+function addItem() {
+    const container = document.getElementById("lista-itens-pedido");
+    const itemDiv = document.createElement("div");
+    itemDiv.className = "row-item-pedido";
+    itemDiv.innerHTML = `
+        <input placeholder="Produto" class="input-produto">
+        <input type="number" placeholder="Qtd" class="input-qtd">
+        <input type="number" placeholder="R$" class="input-preco">
+    `;
+    container.appendChild(itemDiv);
+}
 
 function salvarPedido() {
-  const clienteId = document.getElementById("clienteSelect").value;
-  if (!clienteId) { alert("Selecione um cliente"); return; }
-  const cliente = getClientes().find(c => c.id == clienteId);
-  const itens = [];
-  document.querySelectorAll(".item").forEach(i => {
-    const inputs = i.querySelectorAll("input");
-    const produto = inputs[0].value;
-    const qtd = parseFloat(inputs[1].value);
-    const preco = parseFloat(inputs[2].value);
-    if (produto && qtd && preco) itens.push({ produto, qtd, preco });
-  });
-  if (itens.length === 0) { alert("Adicione pelo menos 1 produto"); return; }
-  const total = itens.reduce((acc, i) => acc + (i.qtd * i.preco), 0);
-  createPedido({ clienteId, cliente: cliente.nome, itens, total, status: "Pendente" });
-  renderPedidos();
-  fecharModal();
+    const clienteId = document.getElementById("clienteSelect").value;
+    if (!clienteId) return alert("Selecione um cliente");
+    
+    const itens = [];
+    document.querySelectorAll(".row-item-pedido").forEach(i => {
+        const p = i.querySelector(".input-produto").value;
+        const q = i.querySelector(".input-qtd").value;
+        const v = i.querySelector(".input-preco").value;
+        if (p) itens.push({ produto: p, qtd: q, preco: v });
+    });
+
+    if (itens.length === 0) return alert("Adicione produtos");
+
+    const total = itens.reduce((acc, i) => acc + (i.qtd * i.preco), 0);
+    const cliente = getClienteById(clienteId);
+
+    createPedido({ clienteId, cliente: cliente.nome, itens, total, status: "Pendente", data: new Date().toISOString() });
+    renderPedidos();
+    fecharModalPedido();
 }
 </script>
 </body>

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Logística | Serginho Leva Atras</title>
+  
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="logistica.css">
+  <link rel="stylesheet" href="pedidos.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="auth.js"></script>
+  <script src="api.js"></script>
+  <script>requireAuth();</script>
+</head>
+<body>
+
+<div class="container">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+        <img src="./assets/Logo.png" alt="Logo">
+    </div>
+    <ul>
+      <li><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+      <li><a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
+      <li><a href="clientes.html"><i data-lucide="users"></i> Clientes</a></li>
+      <li><a href="produtos.html"><i data-lucide="package"></i> Produtos</a></li>
+      <li><a href="financeiro.html"><i data-lucide="dollar-sign"></i> Financeiro</a></li>
+      <li class="active"><a href="logistica.html"><i data-lucide="truck"></i> Logística</a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <div class="content">
+      <div class="topbar">
+        <div class="search-box">
+            <input type="text" placeholder="Pesquisar entregas...">
+        </div>
+        
+        <div class="user-menu-container">
+          <div class="user-menu" onclick="toggleMenu(event)">
+              <img src="https://i.pravatar.cc/100" id="userAvatar">
+              <div class="user-info">
+                  <span class="user-name" id="userName">Carregando...</span>
+              </div>
+              <i data-lucide="chevron-down"></i>
+          </div>
+          <div id="dropdown-user" class="dropdown-content">
+              <a href="javascript:void(0)" onclick="abrirModalPerfil(event)"><i data-lucide="user"></i> Perfil</a>
+              <a href="#" onclick="logout()"><i data-lucide="log-out"></i> Sair</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-title-section">
+        <h1>Gerenciamento de Entregas</h1>
+      </div>
+
+      <div class="metrics-section">
+        <div class="card">
+          <div class="card-icon blue"><i data-lucide="package"></i></div>
+          <div class="card-info">
+            <p>Total em Trânsito</p>
+            <h2 id="total-transito">0</h2>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-icon orange"><i data-lucide="clock"></i></div>
+          <div class="card-info">
+            <p>Pendentes de Envio</p>
+            <h2 id="total-pendente-envio">0</h2>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <div class="filter-box">
+            <div class="filter-grid logistica-filters">
+              <div class="form-group">
+                <label>Código de Rastreio</label>
+                <input type="text" id="busca-rastreio" placeholder="Ex: BR123..." onkeyup="filtrarLogistica()">
+              </div>
+              <div class="form-group">
+                <label>Status</label>
+                <select id="filtro-status-log" onchange="filtrarLogistica()">
+                  <option value="">Todos os Status</option>
+                  <option value="Em Trânsito">Em Trânsito</option>
+                  <option value="Entregue">Entregue</option>
+                  <option value="Aguardando">Aguardando Coleta</option>
+                </select>
+              </div>
+              <div class="filter-buttons">
+                <button class="btn-secundary" onclick="limparFiltros()">Limpar</button>
+              </div>
+            </div>
+        </div>
+
+        <button class="btn-primary" onclick="abrirModal()">
+            <i data-lucide="plus"></i> Nova Expedição
+        </button>
+      </div>
+
+      <div class="section-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID Pedido</th>
+              <th>Cód. Rastreio</th>
+              <th>Data de Saída</th>
+              <th>Previsão</th>
+              <th>Status</th>
+              <th class="text-right">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-entregas"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="modalLogistica" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="tituloModal">Nova Expedição</h2>
+            <span class="close" onclick="fecharModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="form-grid-2col">
+                <div class="form-group full-width">
+                    <label>Pedido Pendente</label>
+                    <select id="pedidoId"></select>
+                </div>
+                <div class="form-group">
+                    <label>Código de Rastreio</label>
+                    <input type="text" id="codRastreio" placeholder="Digite o código">
+                </div>
+                <div class="form-group">
+                    <label>Transportadora</label>
+                    <input type="text" id="transportadora" placeholder="Ex: Correios">
+                </div>
+                <div class="form-group">
+                    <label>Data de Saída</label>
+                    <input type="date" id="dataSaida">
+                </div>
+                <div class="form-group">
+                    <label>Previsão de Entrega</label>
+                    <input type="date" id="previsaoEntrega">
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secundary" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-primary" onclick="salvarExpedicao()">Confirmar Envio</button>
+        </div>
+    </div>
+</div>
+
+<script>
+// Atualização de Ícones
+function atualizarIcones() {
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+}
+
+// INICIALIZAÇÃO VIA DOMCONTENTLOADED
+document.addEventListener("DOMContentLoaded", () => {
+    carregarDadosUsuario();
+    renderLogistica();
+    atualizarIcones();
+});
+
+function carregarDadosUsuario() {
+    const usuario = typeof getUser === 'function' ? getUser() : null;
+    if (usuario) {
+        document.getElementById("userName").textContent = usuario.nome;
+        if (usuario.foto) document.getElementById("userAvatar").src = usuario.foto;
+    }
+}
+
+// CONTROLE DO DROPDOWN DE PERFIL
+function toggleMenu(event) {
+    event.stopPropagation();
+    document.getElementById("dropdown-user").classList.toggle("show");
+}
+
+// FECHAR DROPDOWN AO CLICAR FORA
+window.onclick = function(event) {
+    if (!event.target.closest('.user-menu-container')) {
+        const dropdown = document.getElementById("dropdown-user");
+        if (dropdown && dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+        }
+    }
+}
+
+// FUNÇÃO PARA ABRIR O PERFIL
+function abrirModalPerfil(event) {
+    if (event) event.preventDefault();
+    if (typeof window.abrirModalEdicaoPerfil === 'function') {
+        window.abrirModalEdicaoPerfil();
+    } else {
+        alert("Acesse o Dashboard para editar seu perfil.");
+    }
+}
+
+function renderLogistica() {
+    const entregas = typeof getEntregas === 'function' ? (getEntregas() || []) : [];
+    const pedidos = typeof getPedidos === 'function' ? (getPedidos() || []) : [];
+    const tabela = document.getElementById("tabela-entregas");
+    
+    document.getElementById("total-transito").innerText = entregas.filter(e => e && e.status === "Em Trânsito").length;
+    document.getElementById("total-pendente-envio").innerText = pedidos.filter(p => p && p.status === "Pendente").length;
+
+    if (entregas.length === 0) {
+        tabela.innerHTML = '<tr><td colspan="6" class="text-center">Nenhuma expedição registrada.</td></tr>';
+    } else {
+        tabela.innerHTML = entregas.map(e => `
+            <tr>
+                <td class="bold">#${String(e.pedidoId || 0).padStart(3, '0')}</td>
+                <td><code>${e.codRastreio || '---'}</code></td>
+                <td>${typeof formatarData === 'function' ? formatarData(e.dataSaida) : e.dataSaida}</td>
+                <td>${typeof formatarData === 'function' ? formatarData(e.previsaoEntrega) : e.previsaoEntrega}</td>
+                <td><span class="status enviado">${e.status || 'Pendente'}</span></td>
+                <td class="text-right">
+                    <button class="btn-icon color-danger" onclick="deletarEntrega(${e.id})">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+    atualizarIcones();
+}
+
+function filtrarLogistica() {
+    const rastreio = document.getElementById("busca-rastreio").value.toLowerCase();
+    const status = document.getElementById("filtro-status-log").value.toLowerCase();
+
+    document.querySelectorAll("#tabela-entregas tr").forEach(linha => {
+        const texto = linha.innerText.toLowerCase();
+        const bateRastreio = texto.includes(rastreio);
+        const bateStatus = status === "" || texto.includes(status);
+        linha.style.display = (bateRastreio && bateStatus) ? "" : "none";
+    });
+}
+
+function limparFiltros() {
+    document.getElementById("busca-rastreio").value = "";
+    document.getElementById("filtro-status-log").value = "";
+    renderLogistica();
+}
+
+function abrirModal() {
+    carregarPedidosPendentes();
+    document.getElementById("modalLogistica").style.display = "flex";
+    atualizarIcones();
+}
+
+function fecharModal() {
+    document.getElementById("modalLogistica").style.display = "none";
+}
+
+function carregarPedidosPendentes() {
+    const pedidos = typeof getPedidos === 'function' ? (getPedidos() || []) : [];
+    const pendentes = pedidos.filter(p => p && p.status === "Pendente");
+    
+    const select = document.getElementById("pedidoId");
+    select.innerHTML = pendentes.length ? 
+        pendentes.map(p => `<option value="${p.id}">Pedido #${p.id} - ${typeof formatarMoeda === 'function' ? formatarMoeda(p.total) : p.total}</option>`).join('') :
+        '<option value="">Nenhum pedido pendente</option>';
+}
+
+function salvarExpedicao() {
+    const dados = {
+        pedidoId: document.getElementById("pedidoId").value,
+        codRastreio: document.getElementById("codRastreio").value,
+        dataSaida: document.getElementById("dataSaida").value,
+        previsaoEntrega: document.getElementById("previsaoEntrega").value,
+        status: "Em Trânsito"
+    };
+    if (!dados.pedidoId || !dados.codRastreio) return alert("Pedido e Rastreio são obrigatórios.");
+    
+    if (typeof createEntrega === 'function') {
+        createEntrega(dados);
+        fecharModal();
+        renderLogistica();
+    }
+}
+
+function deletarEntrega(id) {
+    if (confirm("Excluir este registro de logística?")) {
+        if (typeof deleteEntrega === 'function') {
+            deleteEntrega(id);
+            renderLogistica();
+        }
+    }
+}
+</script>
+</body>
+</html>

@@ -1,289 +1,345 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-
   <meta charset="UTF-8">
-  <title>Dashboard</title>
-
+  <title>Dashboard | Serginho Leva Atras</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="logistica.css">
+  <link rel="stylesheet" href="pedidos.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <script src="auth.js"></script>
   <script src="api.js"></script>
-
-  <script>
-    requireAuth();
-  </script>
-
+  <script>requireAuth();</script>
 </head>
-
 <body>
 
 <div class="container">
-
   <aside class="sidebar">
-    <img src="./assets/Logo.png">
-
+    <div class="sidebar-header">
+        <img src="./assets/Logo.png" alt="Logo">
+    </div>
     <ul>
-      <li class="active">
-        <a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a>
-      </li>
-      <li>
-        <a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a>
-      </li>
-      <li>
-        <a href="clientes.html"><i data-lucide="users"></i> Clientes</a>
-      </li>
+      <li class="active"><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
+      <li><a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
+      <li><a href="clientes.html"><i data-lucide="users"></i> Clientes</a></li>
+      <li><a href="produtos.html"><i data-lucide="package"></i> Produtos</a></li>
+      <li><a href="financeiro.html"><i data-lucide="dollar-sign"></i> Financeiro</a></li>
+      <li><a href="logistica.html"><i data-lucide="truck"></i> Logística</a></li>
     </ul>
   </aside>
 
   <main class="main">
     <div class="content">
-
-      <!-- TOPBAR -->
       <div class="topbar">
-        <div class="topbar-actions">
-
-          <div class="search-box">
-            <input type="text" id="busca-dashboard" placeholder="Buscar por ID ou cliente...">
+        <div class="search-box">
+            <input type="text" id="busca-dashboard" placeholder="Buscar pedidos..." onkeyup="filtrarDashboard()">
+        </div>
+        
+        <div class="user-menu-container">
+          <div class="user-menu">
+              <img src="https://i.pravatar.cc/100" id="userAvatar" onclick="expandirFoto(event)" style="cursor: zoom-in; object-fit: cover;">
+              <div class="user-info" onclick="toggleMenu(event)" style="cursor: pointer;">
+                  <span class="user-name" id="userName">Carregando...</span>
+              </div>
+              <i data-lucide="chevron-down" onclick="toggleMenu(event)" style="cursor: pointer;"></i>
           </div>
-
-          <div class="user-menu" onclick="toggleMenu()">
-            <img src="https://i.pravatar.cc/40">
-
-            <div class="user-info">
-              <span class="user-name"></span>
-              <span class="user-email"></span>
-            </div>
-
-            <div class="dropdown" id="dropdown">
-              <a href="#" onclick="logout()">Sair</a>
-            </div>
+          <div id="dropdown-user" class="dropdown-content">
+              <a href="javascript:void(0)" onclick="abrirModalPerfil(event)"><i data-lucide="user"></i> Perfil</a>
+              <a href="#" onclick="logout()"><i data-lucide="log-out"></i> Sair</a>
           </div>
-
         </div>
       </div>
 
-      <h1>Dashboard</h1>
-
-      <!-- CARDS -->
       <div class="cards">
-
         <div class="card">
-          <p>Total de Pedidos</p>
-          <h2 id="totalPedidos">0</h2>
+          <div class="card-icon blue"><i data-lucide="shopping-bag"></i></div>
+          <div class="card-info">
+            <p>Pedidos Totais</p>
+            <h2 id="card-total">0</h2>
+          </div>
         </div>
-
         <div class="card">
-          <p>Pendentes</p>
-          <h2 id="pendentes">0</h2>
+          <div class="card-icon green"><i data-lucide="trending-up"></i></div>
+          <div class="card-info">
+            <p>Faturamento</p>
+            <h2 id="card-faturamento">R$ 0,00</h2>
+          </div>
         </div>
-
         <div class="card">
-          <p>Enviados</p>
-          <h2 id="enviados">0</h2>
+          <div class="card-icon orange"><i data-lucide="clock"></i></div>
+          <div class="card-info">
+            <p>Pendentes</p>
+            <h2 id="card-pendentes">0</h2>
+          </div>
         </div>
-
-        <div class="card">
-          <p>Entregues</p>
-          <h2 id="entregues">0</h2>
-        </div>
-
-        <div class="card">
-          <p>Faturamento</p>
-          <h2 id="faturamento">R$0,00</h2>
-        </div>
-
-        <div class="card">
-          <canvas id="graficoStatus"></canvas>
-        </div>
-
       </div>
 
-      <!-- TABELA -->
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Status</th>
-            <th>Data</th>
-            <th>Total</th>
-          </tr>
-        </thead>
+      <div class="charts-container">
+        <div class="chart-card">
+            <h3>Vendas por Período</h3>
+            <canvas id="chartVendas"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Status dos Pedidos</h3>
+            <canvas id="chartStatus"></canvas>
+        </div>
+      </div>
 
-        <tbody id="tabela-dashboard"></tbody>
-      </table>
-
+      <div class="section-container">
+        <h3>Últimas Movimentações</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Cliente</th>
+              <th>Status</th>
+              <th>Data</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-dashboard"></tbody>
+        </table>
+      </div>
     </div>
   </main>
+</div>
 
+<div id="modal-zoom" class="modal" onclick="this.style.display='none'">
+    <div class="modal-content zoom-content">
+        <img id="img-zoom" src="" alt="Zoom de Perfil" style="image-rendering: auto;">
+    </div>
+</div>
+
+<div id="modal-perfil" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>Ajustar Foto de Perfil</h2>
+            <span class="close" onclick="fecharModalPerfil()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label>Nome de Exibição</label>
+                <input type="text" id="edit-nome-user">
+            </div>
+            
+            <label>Sua Foto</label>
+            <div class="cropper-wrapper" style="height: 300px; background: #eee; overflow: hidden; border-radius: 8px;">
+                <img id="image-to-crop" style="max-width: 100%;">
+            </div>
+
+            <div id="drop-area" style="margin-top: 10px;">
+                <button type="button" class="btn-secundary" onclick="document.getElementById('fileElem').click()">Mudar Foto</button>
+                <input type="file" id="fileElem" accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secundary" onclick="fecharModalPerfil()">Cancelar</button>
+            <button class="btn-primary" onclick="finalizarCorte()">Salvar Alterações</button>
+        </div>
+    </div>
 </div>
 
 <script>
-
-let graficoStatus; 
+let imagemBase64 = "";
+let chartVendasInstance = null;
+let chartStatusInstance = null;
+let cropper;
 
 document.addEventListener("DOMContentLoaded", () => {
-
-  const user = getUser();
-
-  if (user) {
-    document.querySelector(".user-name").innerText = user.nome;
-    document.querySelector(".user-email").innerText = user.email;
-  }
-
-  document
-    .getElementById("busca-dashboard")
-    .addEventListener("input", filtrarDashboard);
-
-  window.toggleMenu = () => {
-    document.getElementById("dropdown").classList.toggle("show");
-  };
-
-  document.addEventListener("click", (e) => {
-    if (!document.querySelector(".user-menu").contains(e.target)) {
-      document.getElementById("dropdown").classList.remove("show");
-    }
-  });
-
-  atualizarDashboard();
-  lucide.createIcons();
+    carregarDadosUsuario();
+    initDashboard();
+    lucide.createIcons(); // Carrega ícones apenas uma vez
 });
 
+function initDashboard() {
+    const dados = getMetricas();
+    document.getElementById("card-total").textContent = dados.total;
+    document.getElementById("card-faturamento").textContent = formatarMoeda(dados.faturamento);
+    document.getElementById("card-pendentes").textContent = dados.pendentes;
 
-/* ================= DASHBOARD ================= */
+    renderDashboard(getPedidos().slice(-10)); // Limitado para melhorar performance
+    renderCharts(dados);
+}
 
-function atualizarDashboard() {
-  const pedidos = getPedidos();
-  const m = getMetricas();
+/* --- CONTROLES DE INTERFACE --- */
+function toggleMenu(event) {
+    if(event) event.stopPropagation();
+    document.getElementById("dropdown-user").classList.toggle("show");
+}
 
-  document.getElementById("totalPedidos").innerText = m.total;
-  document.getElementById("pendentes").innerText = m.pendentes;
-  document.getElementById("enviados").innerText = m.enviados;
-  document.getElementById("entregues").innerText = m.enviados + m.pendentes < m.total 
-    ? m.total - (m.pendentes + m.enviados) 
-    : 0;
+window.onclick = function(event) {
+    if (!event.target.closest('.user-menu-container')) {
+        document.getElementById("dropdown-user").classList.remove("show");
+    }
+}
 
-  document.getElementById("faturamento").innerText =
-    m.faturamento.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL"
+/* --- ZOOM DE ALTA RESOLUÇÃO --- */
+function expandirFoto(event) {
+    event.stopPropagation();
+    const modal = document.getElementById("modal-zoom");
+    const imgZoom = document.getElementById("img-zoom");
+    const avatarOriginal = document.getElementById("userAvatar");
+    
+    // Se for Base64 (upload local), usa a resolução total salva
+    imgZoom.src = avatarOriginal.src;
+    modal.style.display = "flex";
+}
+
+/* --- PERFIL E UPLOAD --- */
+function abrirModalPerfil(event) {
+    if(event) event.stopPropagation();
+    document.getElementById("dropdown-user").classList.remove("show");
+    const usuario = getUser();
+    document.getElementById("edit-nome-user").value = usuario.nome;
+    document.getElementById("modal-perfil").style.display = "flex";
+}
+
+function fecharModalPerfil() {
+    if (cropper) cropper.destroy(); // Limpa a memória
+    document.getElementById("modal-perfil").style.display = "none";
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    handleFiles(e.dataTransfer.files);
+}
+
+function handleFiles(files) {
+    const file = files[0];
+    if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const image = document.getElementById('image-to-crop');
+            image.src = e.target.result;
+
+            // Destrói instância anterior se existir para evitar lentidão
+            if (cropper) cropper.destroy();
+
+            // Inicializa o editor de corte
+            cropper = new Cropper(image, {
+                aspectRatio: 1, // Força corte quadrado
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 1,
+                restore: false,
+                guides: true,
+                center: true,
+                highlight: false,
+                cropBoxMovable: true,
+                cropBoxResizable: true,
+                toggleDragModeOnDblclick: false,
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function salvarPerfil() {
+    const novoNome = document.getElementById("edit-nome-user").value;
+    if (!novoNome) return;
+
+    let usuario = getUser();
+    usuario.nome = novoNome;
+    if (imagemBase64) usuario.foto = imagemBase64;
+
+    sessionStorage.setItem("user", JSON.stringify(usuario));
+    document.getElementById("userName").textContent = usuario.nome;
+    document.getElementById("userAvatar").src = usuario.foto || "https://i.pravatar.cc/100";
+
+    fecharModalPerfil();
+}
+function finalizarCorte() {
+    const novoNome = document.getElementById("edit-nome-user").value;
+    if (!novoNome) return alert("O nome é obrigatório!");
+
+    let usuario = getUser();
+    usuario.nome = novoNome;
+
+    // Se o editor estiver ativo, pega a imagem cortada em alta resolução
+    if (cropper) {
+        const canvas = cropper.getCroppedCanvas({
+            width: 400, // Define o tamanho final da foto para performance
+            height: 400,
+        });
+        usuario.foto = canvas.toDataURL('image/jpeg', 0.9); // Salva em Base64 otimizado
+    }
+
+    sessionStorage.setItem("user", JSON.stringify(usuario));
+    
+    // Atualiza a interface
+    document.getElementById("userName").textContent = usuario.nome;
+    document.getElementById("userAvatar").src = usuario.foto || "https://i.pravatar.cc/100";
+
+    fecharModalPerfil();
+}
+
+function carregarDadosUsuario() {
+    const usuario = getUser();
+    if (usuario) {
+        document.getElementById("userName").textContent = usuario.nome;
+        if (usuario.foto) document.getElementById("userAvatar").src = usuario.foto;
+    }
+}
+
+/* --- RENDERIZAÇÃO OTIMIZADA --- */
+function renderCharts(dados) {
+    // Destrói instâncias antigas para evitar vazamento de memória
+    if(chartStatusInstance) chartStatusInstance.destroy();
+    if(chartVendasInstance) chartVendasInstance.destroy();
+
+    const ctxStatus = document.getElementById('chartStatus').getContext('2d');
+    chartStatusInstance = new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+            labels: ['Pendente', 'Enviado', 'Entregue'],
+            datasets: [{
+                data: [dados.pendentes, dados.enviados, dados.entregues],
+                backgroundColor: ['#f59e0b', '#3b82f6', '#10b981']
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
     });
 
-  renderDashboard(pedidos);
-  renderGraficoStatus(pedidos);
+    const ctxVendas = document.getElementById('chartVendas').getContext('2d');
+    chartVendasInstance = new Chart(ctxVendas, {
+        type: 'line',
+        data: {
+            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+            datasets: [{
+                label: 'Vendas (R$)',
+                data: [1200, 1900, 1500, 2500, 2200, 3000],
+                borderColor: '#153856',
+                tension: 0.4,
+                fill: true,
+                backgroundColor: 'rgba(21, 56, 86, 0.1)'
+            }]
+        },
+        options: { responsive: true, maintainAspectRatio: false }
+    });
 }
-
-/* ================= GRAFICO ================= */
-
-function gerarDadosStatus(pedidos) {
-  let pendentes = 0;
-  let enviados = 0;
-  let entregues = 0;
-
-  pedidos.forEach(p => {
-    if (p.status === "Pendente") pendentes++;
-    if (p.status === "Enviado") enviados++;
-    if (p.status === "Entregue") entregues++;
-  });
-
-  return [pendentes, enviados, entregues];
-}
-
-function renderGraficoStatus(pedidos) {
-
-  const ctx = document.getElementById("graficoStatus");
-
-  const dados = gerarDadosStatus(pedidos);
-
-  if (graficoStatus) {
-    graficoStatus.destroy();
-  }
-
-  graficoStatus = new Chart(ctx, {
-    type: "pie",
-    data: {
-      labels: ["Pendentes", "Enviados", "Entregues"],
-      datasets: [{
-        data: dados
-      }]
-    },
-    options: {
-      responsive: true
-    }
-  });
-}
-
-/* ================= TABELA ================= */
 
 function renderDashboard(lista) {
-  const tabela = document.getElementById("tabela-dashboard");
-
-  tabela.innerHTML = "";
-
-  if (lista.length === 0) {
-    tabela.innerHTML = `
-      <tr>
-        <td colspan="5" style="text-align:center; color:#888;">
-          Nenhum pedido encontrado
-        </td>
-      </tr>
-    `;
-    return;
-  }
-
-  lista.forEach(p => {
-    const cliente = getClienteById(p.clienteId);
-
-    tabela.innerHTML += `
-      <tr>
-        <td>${String(p.id).padStart(3, "0")}</td>
-        <td>${cliente ? cliente.nome : "N/A"}</td>
-        <td>
-          <span class="status ${p.status.toLowerCase()}">
-            ${getIcon(p.status)} ${p.status}
-          </span>
-        </td>
-        <td>${formatarData(p.data)}</td>
-        <td>${(p.total || 0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}</td>
-      </tr>
-    `;
-  });
+    const tabela = document.getElementById("tabela-dashboard");
+    // Uso de Template Strings de forma eficiente
+    tabela.innerHTML = lista.map(p => {
+        const cliente = getClienteById(p.clienteId);
+        return `
+            <tr>
+                <td>#${String(p.id).padStart(3, '0')}</td>
+                <td>${cliente ? cliente.nome : 'N/A'}</td>
+                <td><span class="status ${p.status.toLowerCase()}">${p.status}</span></td>
+                <td>${formatarData(p.data)}</td>
+                <td>${formatarMoeda(p.total)}</td>
+            </tr>
+        `;
+    }).join('');
 }
-
-/* ================= BUSCA ================= */
-
-function filtrarDashboard() {
-  const termo = document
-    .getElementById("busca-dashboard")
-    .value
-    .toLowerCase();
-
-  const pedidos = getPedidos();
-
-  const filtrados = pedidos.filter(p => {
-    const cliente = getClienteById(p.clienteId);
-
-    return (
-      String(p.id).includes(termo) ||
-      (cliente && cliente.nome.toLowerCase().includes(termo))
-    );
-  });
-
-  renderDashboard(filtrados);
-}
-
-/* ================= ICONES ================= */
-
-function getIcon(status) {
-  if (status === "Pendente") return "⏳";
-  if (status === "Enviado") return "🚚";
-  return "✔";
-}
-
 </script>
-
 </body>
 </html>
