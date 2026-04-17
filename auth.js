@@ -27,7 +27,7 @@ function redirectIfLogged() {
 // login fake (simula backend)
 function login(email, senha) {
   const usuarioPadrao = {
-    email: "admin@gmail.com",
+    email: "admin@sla.com",
     senha: "admin",
     nome: "França"
   };

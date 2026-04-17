@@ -2,295 +2,171 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Clientes | Serginho Leva Atras</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes | Distribuidora Serginho</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles/style.css">
+  <link rel="stylesheet" href="./styles/logistica.css">
+  <link rel="stylesheet" href="./styles/pedidos.css">
   
-  <link rel="stylesheet" href="style.css">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="auth.js"></script>
   <script src="api.js"></script>
   <script>requireAuth();</script>
 </head>
+
 <body>
-
-<div class="container">
-  <aside class="sidebar">
-    <div class="sidebar-header">
-        <img src="./assets/Logo.png" alt="Logo">
-    </div>
-    <ul>
-      <li><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-      <li><a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
-      <li class="active"><a href="clientes.html"><i data-lucide="users"></i> Clientes</a></li>
-      <li><a href="produtos.html"><i data-lucide="package"></i> Produtos</a></li>
-      <li><a href="financeiro.html"><i data-lucide="dollar-sign"></i> Financeiro</a></li>
-      <li><a href="logistica.html"><i data-lucide="truck"></i> Logística</a></li>
-    </ul>
-  </aside>
-
-  <main class="main">
-    <div class="content">
-      <div class="topbar">
-        <div class="search-box">
-            <input type="text" id="filtro-busca-rapida" placeholder="Busca rápida por nome..." onkeyup="filtrarClientes()">
-        </div>
-        
-        <div class="user-menu-container">
-          <div class="user-menu" onclick="toggleMenu(event)">
-              <img src="https://i.pravatar.cc/100" id="userAvatar">
-              <div class="user-info">
-                  <span class="user-name" id="userName">Carregando...</span>
-              </div>
-              <i data-lucide="chevron-down"></i>
-          </div>
-          <div id="dropdown-user" class="dropdown-content">
-              <a href="javascript:void(0)" onclick="abrirModalPerfil(event)"><i data-lucide="user"></i> Perfil</a>
-              <a href="#" onclick="logout()"><i data-lucide="log-out"></i> Sair</a>
-          </div>
-        </div>
+  <div class="container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+          <img src="./assets/Logo.png" alt="Logo">
       </div>
-
-      <div class="page-header-pedidos">
-        <h1>Gestão de Clientes</h1>
-        <button class="btn-primary" onclick="abrirModal()"><i data-lucide="plus"></i> Novo Cliente</button>
+      <nav>
+        <ul>
+          <li>
+            <a href="inicio.html">
+              <span class="material-icons-round">dashboard</span> Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="pedidos.html">
+              <span class="material-icons-round">inventory_2</span> Pedidos
+            </a>
+          </li>
+          <li class="active">
+            <a href="clientes.html">
+              <span class="material-icons-round">groups</span> Clientes
+            </a>
+          </li>
+          <li>
+            <a href="produtos.html">
+              <span class="material-icons-round">category</span> Catálogo
+            </a>
+          </li>
+          <li>
+            <a href="estoques.html">
+              <span class="material-icons-round">warehouse</span> Armazém
+            </a>
+          </li>
+          <li>
+            <a href="logistica.html">
+              <span class="material-icons-round">local_shipping</span> Logística
+            </a>
+          </li>
+          <li>
+            <a href="rh.html">
+              <span class="material-icons-round">badge</span> RH
+            </a>
+          </li>
+          <li>
+            <a href="financeiro.html">
+              <span class="material-icons-round">payments</span> Financeiro
+            </a>
+          </li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+          <button onclick="logout()" class="btn-logout">
+            <span class="material-icons-round">logout</span> Sair
+          </button>
       </div>
+    </aside>
 
-      <div class="filter-box">
-        <div class="filter-grid">
-          <div class="form-group">
-            <label>Filtrar por Documento</label>
-            <input type="text" id="filtro-documento" placeholder="CPF ou CNPJ">
-          </div>
-          <div class="form-group">
-            <label>Tipo</label>
-            <select id="filtro-tipo">
-              <option value="">Todos</option>
-              <option value="Física">Pessoa Física</option>
-              <option value="Jurídica">Pessoa Jurídica</option>
-            </select>
-          </div>
-          <div class="filter-buttons">
-            <button class="btn-secundary" onclick="limparFiltros()">Limpar</button>
-            <button class="btn-primary" onclick="filtrarClientes()">Filtrar</button>
-          </div>
-        </div>
-      </div>
+    <main class="main">
+      <header class="page-header-pedidos">
+        <h1>Gestão de Clientes (Vendedores)</h1>
+        <button class="btn-primary" onclick="abrirModal()">
+          <span class="material-icons-round">person_add</span> Novo Cliente
+        </button>
+      </header>
 
-      <div class="section-container">
-        <table>
+      <section class="table-container">
+        <table class="table-custom">
           <thead>
             <tr>
-              <th>Nome</th>
-              <th>Tipo</th>
+              <th>ID</th>
+              <th>Nome / Razão Social</th>
               <th>Documento</th>
+              <th>Cidade/Bairro</th>
               <th>Contato</th>
-              <th>Localização</th>
-              <th style="text-align: right;">Ações</th>
+              <th class="text-right">Ações</th>
             </tr>
           </thead>
-          <tbody id="tabela-clientes"></tbody>
+          <tbody id="tabela-clientes">
+            </tbody>
         </table>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalCliente" class="modal">
+    <div class="modal-content pedido-modal-size">
+      <div class="modal-header">
+        <h2 id="tituloModal">Cadastrar Cliente</h2>
       </div>
-    </div>
-  </main>
-</div>
-
-<div id="modalCliente" class="modal">
-    <div class="modal-content" style="max-width: 700px;">
-        <div class="modal-header">
-            <h2 id="tituloModal">Novo Cliente</h2>
-            <span class="close" onclick="fecharModal()">&times;</span>
-        </div>
+      <form id="form-cliente" onsubmit="salvarCliente(); return false;">
         <div class="modal-body">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Nome Completo / Razão Social</label>
-                    <input type="text" id="nome">
-                </div>
-                <div class="form-group">
-                    <label>Tipo de Pessoa</label>
-                    <select id="tipoPessoa">
-                        <option value="Física">Pessoa Física</option>
-                        <option value="Jurídica">Pessoa Jurídica</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Documento (CPF/CNPJ)</label>
-                    <input type="text" id="documento">
-                </div>
-                <div class="form-group">
-                    <label>Telefone</label>
-                    <input type="text" id="telefone">
-                </div>
-                <div class="form-group">
-                    <label>E-mail</label>
-                    <input type="email" id="email">
-                </div>
-                <div class="form-group">
-                    <label>CEP</label>
-                    <input type="text" id="cep" onblur="buscarEndereco()">
-                </div>
-                <div class="form-group">
-                    <label>Bairro</label>
-                    <input type="text" id="bairro">
-                </div>
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Logradouro (Rua, Número, Complemento)</label>
-                    <input type="text" id="rua">
-                </div>
+          <div class="input-group">
+            <label>Tipo de Pessoa</label>
+            <select id="tipoPessoa">
+              <option value="F">Física</option>
+              <option value="J">Jurídica</option>
+            </select>
+          </div>
+          
+          <div class="input-group">
+            <label>Nome Completo / Razão Social</label>
+            <input type="text" id="nome" required>
+          </div>
+
+          <div class="input-group">
+            <label>CPF / CNPJ</label>
+            <input type="text" id="documento" required>
+          </div>
+
+          <div class="filter-grid">
+            <div class="input-group">
+              <label>CEP</label>
+              <input type="text" id="cep" onblur="buscarEndereco()">
             </div>
+            <div class="input-group">
+              <label>Bairro</label>
+              <input type="text" id="bairro">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label>Logradouro (Rua/Av)</label>
+            <input type="text" id="rua">
+          </div>
         </div>
+
         <div class="modal-footer">
-            <button class="btn-secundary" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-primary" onclick="salvarCliente()">Salvar Cliente</button>
+          <button type="button" class="btn-secondary" onclick="fecharModal()">Cancelar</button>
+          <button type="submit" class="btn-primary">Salvar Cadastro</button>
         </div>
+      </form>
     </div>
-</div>
+  </div>
 
-<script>
-let clienteEditando = null;
-
-document.addEventListener("DOMContentLoaded", () => {
-    carregarDadosUsuario();
-    renderClientes();
-    lucide.createIcons();
-});
-
-function carregarDadosUsuario() {
-    const usuario = getUser(); // Puxa do api.js/sessionStorage
-    if (usuario) {
-        document.getElementById("userName").textContent = usuario.nome;
-        if (usuario.foto) document.getElementById("userAvatar").src = usuario.foto;
-    }
-}
-
-function toggleMenu(event) {
-    event.stopPropagation();
-    document.getElementById("dropdown-user").classList.toggle("show");
-}
-
-window.onclick = () => document.getElementById("dropdown-user").classList.remove("show");
-
-function renderClientes() {
-    const tabela = document.getElementById("tabela-clientes");
-    const clientes = getClientes(); // Puxa do seu Banco de Dados (api.js)
-    
-    tabela.innerHTML = clientes.map(c => `
-        <tr>
-            <td class="bold">${c.nome}</td>
-            <td><span class="status ${c.tipoPessoa === 'Física' ? 'pendente' : 'enviado'}">${c.tipoPessoa}</span></td>
-            <td>${c.documento}</td>
-            <td>${c.telefone}<br><small>${c.email}</small></td>
-            <td>${c.bairro} - ${c.cep}</td>
-            <td style="text-align: right;">
-                <button class="btn-icon" onclick="editar(${c.id})" title="Editar"><i data-lucide="edit-3" style="width:18px"></i></button>
-                <button class="btn-icon" onclick="deletar(${c.id})" title="Excluir" style="color: #dc2626; margin-left: 10px;"><i data-lucide="trash-2" style="width:18px"></i></button>
-            </td>
-        </tr>
-    `).join('');
-    lucide.createIcons();
-}
-
-function filtrarClientes() {
-    const buscaNome = document.getElementById("filtro-busca-rapida").value.toLowerCase();
-    const buscaDoc = document.getElementById("filtro-documento").value.toLowerCase();
-    const tipo = document.getElementById("filtro-tipo").value;
-
-    document.querySelectorAll("#tabela-clientes tr").forEach(linha => {
-        const texto = linha.innerText.toLowerCase();
-        const bateNome = texto.includes(buscaNome);
-        const bateDoc = texto.includes(buscaDoc);
-        const bateTipo = tipo === "" || texto.includes(tipo.toLowerCase());
-
-        linha.style.display = (bateNome && bateDoc && bateTipo) ? "" : "none";
-    });
-}
-
-function limparFiltros() {
-    document.getElementById("filtro-busca-rapida").value = "";
-    document.getElementById("filtro-documento").value = "";
-    document.getElementById("filtro-tipo").value = "";
-    filtrarClientes();
-}
-
-function abrirModal() {
-    clienteEditando = null;
-    document.getElementById("tituloModal").innerText = "Novo Cliente";
-    document.getElementById("modalCliente").style.display = "flex";
-    limparCampos();
-}
-
-function fecharModal() {
-    document.getElementById("modalCliente").style.display = "none";
-}
-
-function salvarCliente() {
-    const dados = {
-        nome: document.getElementById("nome").value,
-        tipoPessoa: document.getElementById("tipoPessoa").value,
-        documento: document.getElementById("documento").value,
-        telefone: document.getElementById("telefone").value,
-        email: document.getElementById("email").value,
-        cep: document.getElementById("cep").value,
-        rua: document.getElementById("rua").value,
-        bairro: document.getElementById("bairro").value
+  <script>
+    // Inicialização
+    window.onload = () => {
+      if(typeof renderClientes === 'function') renderClientes();
     };
 
-    if (!dados.nome || !dados.documento) return alert("Nome e Documento são obrigatórios.");
-
-    if (clienteEditando) updateCliente(clienteEditando, dados);
-    else createCliente(dados);
-
-    fecharModal();
-    renderClientes();
-}
-
-function editar(id) {
-    const c = getClienteById(id);
-    clienteEditando = id;
-    document.getElementById("tituloModal").innerText = "Editar Cliente";
-    document.getElementById("nome").value = c.nome;
-    document.getElementById("tipoPessoa").value = c.tipoPessoa;
-    document.getElementById("documento").value = c.documento;
-    document.getElementById("telefone").value = c.telefone;
-    document.getElementById("email").value = c.email;
-    document.getElementById("cep").value = c.cep;
-    document.getElementById("rua").value = c.rua;
-    document.getElementById("bairro").value = c.bairro;
-    document.getElementById("modalCliente").style.display = "flex";
-}
-
-function deletar(id) {
-    if (confirm("Tem certeza que deseja excluir este cliente?")) {
-        deleteCliente(id);
-        renderClientes();
+    function abrirModal() {
+      limparCampos();
+      document.getElementById("tituloModal").innerText = "Novo Cliente";
+      document.getElementById("modalCliente").style.display = "flex";
     }
-}
 
-function limparCampos() {
-    const campos = ["nome", "documento", "telefone", "email", "cep", "rua", "bairro"];
-    campos.forEach(id => document.getElementById(id).value = "");
-    document.getElementById("tipoPessoa").value = "Física";
-}
-
-// Função bônus para buscar endereço via CEP
-async function buscarEndereco() {
-    const cep = document.getElementById("cep").value.replace(/\D/g, '');
-    if (cep.length === 8) {
-        try {
-            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await response.json();
-            if (!data.erro) {
-                document.getElementById("rua").value = data.logradouro;
-                document.getElementById("bairro").value = data.bairro;
-            }
-        } catch (e) { console.error("Erro ao buscar CEP"); }
+    function fecharModal() {
+      document.getElementById("modalCliente").style.display = "none";
     }
-}
-</script>
-
+  </script>
 </body>
 </html>

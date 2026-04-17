@@ -2,17 +2,21 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard | Serginho Leva Atras</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="logistica.css">
-  <link rel="stylesheet" href="pedidos.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Dashboard | Distribuidora Serginho</title>
+  
+  <link rel="stylesheet" href="./styles/style.css">
+  <link rel="stylesheet" href="./styles/logistica.css">
+  <link rel="stylesheet" href="./styles/pedidos.css">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <script src="auth.js"></script>
   <script src="api.js"></script>
   <script>requireAuth();</script>
@@ -25,82 +29,91 @@
         <img src="./assets/Logo.png" alt="Logo">
     </div>
     <ul>
-      <li class="active"><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-      <li><a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
-      <li><a href="clientes.html"><i data-lucide="users"></i> Clientes</a></li>
-      <li><a href="produtos.html"><i data-lucide="package"></i> Produtos</a></li>
-      <li><a href="financeiro.html"><i data-lucide="dollar-sign"></i> Financeiro</a></li>
-      <li><a href="logistica.html"><i data-lucide="truck"></i> Logística</a></li>
+      <li class="active"><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
+      <li><a href="pedidos.html"><span class="material-icons-round">inventory_2</span> <span>Pedidos</span></a></li>
+      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
+      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
+      <li><a href="estoques.html"><span class="material-icons-round">warehouse</span> <span>Estoque</span></a></li>
+      <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH / Funcionários</span></a></li>
+      <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
+      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
     </ul>
   </aside>
 
   <main class="main">
-    <div class="content">
-      <div class="topbar">
-        <div class="search-box">
-            <input type="text" id="busca-dashboard" placeholder="Buscar pedidos..." onkeyup="filtrarDashboard()">
-        </div>
-        
-        <div class="user-menu-container">
-          <div class="user-menu">
-              <img src="https://i.pravatar.cc/100" id="userAvatar" onclick="expandirFoto(event)" style="cursor: zoom-in; object-fit: cover;">
-              <div class="user-info" onclick="toggleMenu(event)" style="cursor: pointer;">
-                  <span class="user-name" id="userName">Carregando...</span>
-              </div>
-              <i data-lucide="chevron-down" onclick="toggleMenu(event)" style="cursor: pointer;"></i>
+    <header class="header">
+      <div class="search-box">
+        <span class="material-icons-round">search</span>
+        <input type="text" placeholder="Buscar pedido ou cliente...">
+      </div>
+
+      <div class="header-right">
+        <div class="user-menu" id="dropdownToggle">
+          <div class="profile-img-container zoom-content">
+            <img id="avatar-preview" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)">
           </div>
-          <div id="dropdown-user" class="dropdown-content">
-              <a href="javascript:void(0)" onclick="abrirModalPerfil(event)"><i data-lucide="user"></i> Perfil</a>
-              <a href="#" onclick="logout()"><i data-lucide="log-out"></i> Sair</a>
+          <div class="user-info">
+            <span id="user-name-display" class="user-name">Carregando...</span>
+            <span class="user-role">Administrador</span>
+          </div>
+          <span class="material-icons-round">expand_more</span>
+
+          <div class="dropdown-content" id="profileDropdown">
+            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
+            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
           </div>
         </div>
       </div>
+    </header>
 
-      <div class="cards">
-        <div class="card">
-          <div class="card-icon blue"><i data-lucide="shopping-bag"></i></div>
-          <div class="card-info">
-            <p>Pedidos Totais</p>
-            <h2 id="card-total">0</h2>
+    <div class="content">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" >
+            <span class="material-icons-round" id="dinheiro">payments</span>
+          </div>
+          <div>
+            <h3>Vendas Hoje</h3>
+            <p id="total-vendas">R$ 0,00</p>
           </div>
         </div>
-        <div class="card">
-          <div class="card-icon green"><i data-lucide="trending-up"></i></div>
-          <div class="card-info">
-            <p>Faturamento</p>
-            <h2 id="card-faturamento">R$ 0,00</h2>
+        <div class="stat-card">
+          <div class="stat-icon" >
+            <span class="material-icons-round" id="pendente">pending_actions</span>
+          </div>
+          <div>
+            <h3>Pedidos Pendentes</h3>
+            <p id="pedidos-count">0</p>
           </div>
         </div>
-        <div class="card">
-          <div class="card-icon orange"><i data-lucide="clock"></i></div>
-          <div class="card-info">
-            <p>Pendentes</p>
-            <h2 id="card-pendentes">0</h2>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <span class="material-icons-round" id="transito">local_shipping</span>
+          </div>
+          <div>
+            <h3>Em Trânsito</h3>
+            <p id="transito-count">0</p>
           </div>
         </div>
       </div>
 
       <div class="charts-container">
         <div class="chart-card">
-            <h3>Vendas por Período</h3>
-            <canvas id="chartVendas"></canvas>
-        </div>
-        <div class="chart-card">
-            <h3>Status dos Pedidos</h3>
-            <canvas id="chartStatus"></canvas>
+          <h3>Status das Entregas</h3>
+          <canvas id="chartLogistica"></canvas>
         </div>
       </div>
 
-      <div class="section-container">
-        <h3>Últimas Movimentações</h3>
-        <table>
+      <div class="stat-card">
+        <h3>Últimos Pedidos</h3>
+        <table class="table-dashboard">
           <thead>
             <tr>
               <th>ID</th>
               <th>Cliente</th>
-              <th>Status</th>
               <th>Data</th>
               <th>Total</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody id="tabela-dashboard"></tbody>
@@ -110,196 +123,67 @@
   </main>
 </div>
 
-<div id="modal-zoom" class="modal" onclick="this.style.display='none'">
-    <div class="modal-content zoom-content">
-        <img id="img-zoom" src="" alt="Zoom de Perfil" style="image-rendering: auto;">
+<div id="modalAvatar" class="modal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Ajustar Foto de Perfil</h2>
     </div>
+    <div class="cropper-wrapper" style="max-height: 400px; overflow: hidden; margin: 20px 0;">
+      <img id="image-to-crop" src="" style="max-width: 100%;">
+    </div>
+    <div class="modal-footer">
+      <input type="file" id="inputImage" accept="image/*" style="display:none">
+      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">
+        <span class="material-icons-round">image</span> Selecionar
+      </button>
+      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
+    </div>
+  </div>
 </div>
 
-<div id="modal-perfil" class="modal">
-    <div class="modal-content" style="max-width: 500px;">
-        <div class="modal-header">
-            <h2>Ajustar Foto de Perfil</h2>
-            <span class="close" onclick="fecharModalPerfil()">&times;</span>
-        </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label>Nome de Exibição</label>
-                <input type="text" id="edit-nome-user">
-            </div>
-            
-            <label>Sua Foto</label>
-            <div class="cropper-wrapper" style="height: 300px; background: #eee; overflow: hidden; border-radius: 8px;">
-                <img id="image-to-crop" style="max-width: 100%;">
-            </div>
-
-            <div id="drop-area" style="margin-top: 10px;">
-                <button type="button" class="btn-secundary" onclick="document.getElementById('fileElem').click()">Mudar Foto</button>
-                <input type="file" id="fileElem" accept="image/*" style="display:none" onchange="handleFiles(this.files)">
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn-secundary" onclick="fecharModalPerfil()">Cancelar</button>
-            <button class="btn-primary" onclick="finalizarCorte()">Salvar Alterações</button>
-        </div>
-    </div>
+<div id="modalZoom" class="modal" onclick="fecharZoom()" style="display:none; background: rgba(0,0,0,0.9);">
+    <img id="imgZoom" src="" style="max-width: 90%; max-height: 90%; border-radius: 10px; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
 </div>
 
 <script>
-let imagemBase64 = "";
-let chartVendasInstance = null;
-let chartStatusInstance = null;
+// Declaração das let globais
 let cropper;
+let chartVendasInstance;
+let chartLogisticaInstance;
 
-document.addEventListener("DOMContentLoaded", () => {
-    carregarDadosUsuario();
-    initDashboard();
-    lucide.createIcons(); // Carrega ícones apenas uma vez
+// Lógica do Dropdown
+const toggle = document.getElementById('dropdownToggle');
+const dropdown = document.getElementById('profileDropdown');
+
+toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    dropdown.classList.toggle('show');
 });
 
-function initDashboard() {
-    const dados = getMetricas();
-    document.getElementById("card-total").textContent = dados.total;
-    document.getElementById("card-faturamento").textContent = formatarMoeda(dados.faturamento);
-    document.getElementById("card-pendentes").textContent = dados.pendentes;
+window.onclick = () => dropdown.classList.remove('show');
 
-    renderDashboard(getPedidos().slice(-10)); // Limitado para melhorar performance
-    renderCharts(dados);
+// Funções de Zoom
+function abrirZoom(src) {
+    const modal = document.getElementById('modalZoom');
+    const img = document.getElementById('imgZoom');
+    img.src = src;
+    modal.style.display = 'flex';
 }
 
-/* --- CONTROLES DE INTERFACE --- */
-function toggleMenu(event) {
-    if(event) event.stopPropagation();
-    document.getElementById("dropdown-user").classList.toggle("show");
+function fecharZoom() {
+    document.getElementById('modalZoom').style.display = 'none';
 }
 
-window.onclick = function(event) {
-    if (!event.target.closest('.user-menu-container')) {
-        document.getElementById("dropdown-user").classList.remove("show");
-    }
-}
-
-/* --- ZOOM DE ALTA RESOLUÇÃO --- */
-function expandirFoto(event) {
-    event.stopPropagation();
-    const modal = document.getElementById("modal-zoom");
-    const imgZoom = document.getElementById("img-zoom");
-    const avatarOriginal = document.getElementById("userAvatar");
-    
-    // Se for Base64 (upload local), usa a resolução total salva
-    imgZoom.src = avatarOriginal.src;
-    modal.style.display = "flex";
-}
-
-/* --- PERFIL E UPLOAD --- */
-function abrirModalPerfil(event) {
-    if(event) event.stopPropagation();
-    document.getElementById("dropdown-user").classList.remove("show");
-    const usuario = getUser();
-    document.getElementById("edit-nome-user").value = usuario.nome;
-    document.getElementById("modal-perfil").style.display = "flex";
-}
-
-function fecharModalPerfil() {
-    if (cropper) cropper.destroy(); // Limpa a memória
-    document.getElementById("modal-perfil").style.display = "none";
-}
-
-function handleDrop(e) {
-    e.preventDefault();
-    handleFiles(e.dataTransfer.files);
-}
-
-function handleFiles(files) {
-    const file = files[0];
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const image = document.getElementById('image-to-crop');
-            image.src = e.target.result;
-
-            // Destrói instância anterior se existir para evitar lentidão
-            if (cropper) cropper.destroy();
-
-            // Inicializa o editor de corte
-            cropper = new Cropper(image, {
-                aspectRatio: 1, // Força corte quadrado
-                viewMode: 1,
-                dragMode: 'move',
-                autoCropArea: 1,
-                restore: false,
-                guides: true,
-                center: true,
-                highlight: false,
-                cropBoxMovable: true,
-                cropBoxResizable: true,
-                toggleDragModeOnDblclick: false,
-            });
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function salvarPerfil() {
-    const novoNome = document.getElementById("edit-nome-user").value;
-    if (!novoNome) return;
-
-    let usuario = getUser();
-    usuario.nome = novoNome;
-    if (imagemBase64) usuario.foto = imagemBase64;
-
-    sessionStorage.setItem("user", JSON.stringify(usuario));
-    document.getElementById("userName").textContent = usuario.nome;
-    document.getElementById("userAvatar").src = usuario.foto || "https://i.pravatar.cc/100";
-
-    fecharModalPerfil();
-}
-function finalizarCorte() {
-    const novoNome = document.getElementById("edit-nome-user").value;
-    if (!novoNome) return alert("O nome é obrigatório!");
-
-    let usuario = getUser();
-    usuario.nome = novoNome;
-
-    // Se o editor estiver ativo, pega a imagem cortada em alta resolução
-    if (cropper) {
-        const canvas = cropper.getCroppedCanvas({
-            width: 400, // Define o tamanho final da foto para performance
-            height: 400,
-        });
-        usuario.foto = canvas.toDataURL('image/jpeg', 0.9); // Salva em Base64 otimizado
-    }
-
-    sessionStorage.setItem("user", JSON.stringify(usuario));
-    
-    // Atualiza a interface
-    document.getElementById("userName").textContent = usuario.nome;
-    document.getElementById("userAvatar").src = usuario.foto || "https://i.pravatar.cc/100";
-
-    fecharModalPerfil();
-}
-
-function carregarDadosUsuario() {
-    const usuario = getUser();
-    if (usuario) {
-        document.getElementById("userName").textContent = usuario.nome;
-        if (usuario.foto) document.getElementById("userAvatar").src = usuario.foto;
-    }
-}
-
-/* --- RENDERIZAÇÃO OTIMIZADA --- */
-function renderCharts(dados) {
-    // Destrói instâncias antigas para evitar vazamento de memória
-    if(chartStatusInstance) chartStatusInstance.destroy();
-    if(chartVendasInstance) chartVendasInstance.destroy();
-
-    const ctxStatus = document.getElementById('chartStatus').getContext('2d');
-    chartStatusInstance = new Chart(ctxStatus, {
+// Lógica de Gráficos (Chart.js)
+function initCharts() {
+    const ctxLog = document.getElementById('chartLogistica').getContext('2d');
+    chartLogisticaInstance = new Chart(ctxLog, {
         type: 'doughnut',
         data: {
-            labels: ['Pendente', 'Enviado', 'Entregue'],
+            labels: ['Pendente', 'Trânsito', 'Entregue'],
             datasets: [{
-                data: [dados.pendentes, dados.enviados, dados.entregues],
+                data: [5, 12, 8],
                 backgroundColor: ['#f59e0b', '#3b82f6', '#10b981']
             }]
         },
@@ -324,22 +208,67 @@ function renderCharts(dados) {
     });
 }
 
-function renderDashboard(lista) {
+// Inicialização
+window.onload = () => {
+    const user = getUser();
+    if(user) document.getElementById('user-name-display').innerText = user.nome;
+    
+    const savedAvatar = localStorage.getItem('userAvatar');
+    if(savedAvatar) document.getElementById('avatar-preview').src = savedAvatar;
+
+    // Atualiza cards de métricas
+    const pedidos = getPedidos();
+    document.getElementById('pedidos-count').innerText = pedidos.filter(p => p.status === 'Pendente').length;
+    document.getElementById('total-vendas').innerText = formatarMoeda(pedidos.reduce((acc, p) => acc + p.total, 0));
+
+    initCharts();
+    renderUltimosPedidos();
+};
+
+function renderUltimosPedidos() {
+    const pedidos = getPedidos().slice(-5).reverse();
     const tabela = document.getElementById("tabela-dashboard");
-    // Uso de Template Strings de forma eficiente
-    tabela.innerHTML = lista.map(p => {
-        const cliente = getClienteById(p.clienteId);
-        return `
-            <tr>
-                <td>#${String(p.id).padStart(3, '0')}</td>
-                <td>${cliente ? cliente.nome : 'N/A'}</td>
-                <td><span class="status ${p.status.toLowerCase()}">${p.status}</span></td>
-                <td>${formatarData(p.data)}</td>
-                <td>${formatarMoeda(p.total)}</td>
-            </tr>
-        `;
-    }).join('');
+    tabela.innerHTML = pedidos.map(p => `
+        <tr>
+            <td>#${p.id}</td>
+            <td>${p.clienteNome || 'Cliente'}</td>
+            <td>${formatarData(p.dataPedido)}</td>
+            <td>${formatarMoeda(p.total)}</td>
+            <td><span class="status ${p.status.toLowerCase()}">${p.status}</span></td>
+        </tr>
+    `).join('');
+}
+
+// Lógica Cropper.js
+function abrirModalAvatar() {
+    document.getElementById('modalAvatar').style.display = 'flex';
+}
+
+function fecharModalAvatar() {
+    document.getElementById('modalAvatar').style.display = 'none';
+    if(cropper) cropper.destroy();
+}
+
+document.getElementById('inputImage').onchange = function(e) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const img = document.getElementById('image-to-crop');
+        img.src = event.target.result;
+        if(cropper) cropper.destroy();
+        cropper = new Cropper(img, { aspectRatio: 1, viewMode: 1 });
+    };
+    reader.readAsDataURL(e.target.files[0]);
+};
+
+function salvarAvatar() {
+    if(!cropper) return alert("Selecione uma imagem primeiro.");
+    const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 }); // Alta resolução
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    document.getElementById('avatar-preview').src = dataUrl;
+    localStorage.setItem('userAvatar', dataUrl);
+    fecharModalAvatar();
 }
 </script>
+
 </body>
 </html>
