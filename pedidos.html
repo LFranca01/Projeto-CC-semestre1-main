@@ -2,169 +2,212 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pedidos | Distribuidora Serginho</title>
   
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-
   <link rel="stylesheet" href="./styles/style.css">
-  <link rel="stylesheet" href="./styles/logistica.css">
   <link rel="stylesheet" href="./styles/pedidos.css">
   
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
   <script src="auth.js"></script>
   <script src="api.js"></script>
+  <script src="ui-helper.js"></script>
   <script>requireAuth();</script>
 </head>
 <body>
 
 <div class="container">
   <aside class="sidebar">
-    <div class="sidebar-header">
-        <img src="./assets/Logo.png" alt="Logo">
-    </div>
-    <nav>
-      <ul>
-        <li>
-          <a href="inicio.html">
-            <span class="material-icons-round">dashboard</span> Dashboard
-          </a>
-        </li>
-        <li class="active">
-          <a href="pedidos.html">
-            <span class="material-icons-round">inventory_2</span> Pedidos
-          </a>
-        </li>
-        <li>
-          <a href="clientes.html">
-            <span class="material-icons-round">groups</span> Clientes
-          </a>
-        </li>
-        <li>
-          <a href="produtos.html">
-            <span class="material-icons-round">category</span> Catálogo
-          </a>
-        </li>
-        <li>
-          <a href="estoques.html">
-            <span class="material-icons-round">warehouse</span> Armazém
-          </a>
-        </li>
-        <li>
-          <a href="logistica.html">
-            <span class="material-icons-round">local_shipping</span> Logística
-          </a>
-        </li>
-        <li>
-          <a href="rh.html">
-            <span class="material-icons-round">badge</span> RH
-          </a>
-        </li>
-        <li>
-          <a href="financeiro.html">
-            <span class="material-icons-round">payments</span> Financeiro
-          </a>
-        </li>
-      </ul>
-    </nav>
-    <div class="sidebar-footer">
-        <button onclick="logout()" class="btn-logout">
-          <span class="material-icons-round">logout</span> Sair
-        </button>
-    </div>
+    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
+    <ul>
+      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
+      <li class="active"><a href="pedidos.html"><span class="material-icons-round">inventory_2</span> <span>Pedidos</span></a></li>
+      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
+      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
+      <li><a href="estoques.html"><span class="material-icons-round">warehouse</span> <span>Estoque</span></a></li>
+      <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
+      <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
+      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
+    </ul>
   </aside>
 
   <main class="main">
-    <header class="page-header-pedidos">
-      <h1>Gestão de Pedidos</h1>
-      <button class="btn-primary" onclick="abrirModalPedido()">
-        <span class="material-icons-round">add</span> Novo Pedido
-      </button>
-    </header>
+    <header class="header">
+      <div class="search-box">
+        <span class="material-icons-round">search</span>
+        <input type="text" id="input-busca" placeholder="Buscar ID ou Cliente..." onkeyup="aplicarFiltros('tabela-pedidos')">
+      </div>
 
-    <section class="filter-box">
-      <div class="filter-grid">
-        <div class="input-group">
-          <label>Buscar Pedido/Cliente</label>
-          <input type="text" id="busca-pedido" placeholder="Ex: #001 ou Nome do Cliente">
-        </div>
-        <div class="input-group">
-          <label>Status</label>
-          <select id="filtro-status">
-            <option value="">Todos</option>
-            <option value="Pendente">Aguardando Bipagem</option>
-            <option value="Enviado">Em Rota</option>
-            <option value="Entregue">Concluído</option>
-          </select>
-        </div>
-        <div class="filter-buttons">
-          <button class="btn-secondary" onclick="renderPedidos()">
-            <span class="material-icons-round">filter_alt</span> Filtrar
-          </button>
+      <div class="header-right">
+        <button class="btn-primary" onclick="abrirModal('modalPedido')" style="width: auto; padding: 10px 20px; border-style: solid;">
+            <span class="material-icons-round">add</span> Novo Pedido
+        </button>
+        
+        <div class="user-menu" id="dropdownToggle">
+          <div class="profile-img-container">
+            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor: zoom-in;">
+          </div>
+          <div class="user-info">
+            <span id="user-name-display" class="user-name">Carregando...</span>
+            <span class="user-role">Administrador</span>
+          </div>
+          <span class="material-icons-round">expand_more</span>
+
+          <div class="dropdown-content" id="profileDropdown">
+            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
+            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+          </div>
         </div>
       </div>
-    </section>
+    </header>
 
-    <section class="table-container">
-      <table class="table-custom">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Data Entrada</th>
-            <th>Vendedor (Cliente)</th>
-            <th>Total Itens</th>
-            <th>Valor Frete</th>
-            <th>Status</th>
-            <th class="text-right">Ações</th>
-          </tr>
-        </thead>
-        <tbody id="tabela-pedidos">
-          </tbody>
-      </table>
-    </section>
+    <div class="content">
+        <div class="page-header-pedidos"><h2>Gestão de Pedidos</h2></div>
+
+        <div class="filter-box">
+            <div class="filter-group">
+                <label>Filtrar por Status</label>
+                <select id="select-filtro" class="form-control" onchange="aplicarFiltros('tabela-pedidos')">
+                    <option value="">Todos os Status</option>
+                    <option value="Pendente">Pendente</option>
+                    <option value="Enviado">Enviado</option>
+                    <option value="Entregue">Entregue</option>
+                </select>
+            </div>
+        </div>
+
+        <table class="table-dashboard">
+          <thead>
+            <tr><th>ID</th><th>Cliente</th><th>Data</th><th>Total</th><th>Status</th><th>Ações</th></tr>
+          </thead>
+          <tbody id="tabela-pedidos"></tbody>
+        </table>
+    </div>
   </main>
 </div>
 
 <div id="modalPedido" class="modal">
-  <div class="modal-content pedido-modal-size">
-    <div class="modal-header">
-      <h2>Cadastrar Pedido de Transbordo</h2>
-    </div>
-    <form id="form-pedido" onsubmit="salvarPedido(); return false;">
-      <div class="modal-body">
-        <div class="input-group">
-          <label>Selecione o Cliente (Origem)</label>
-          <select id="clienteSelect" required>
-            <option value="">Carregando clientes...</option>
-          </select>
+    <div class="modal-content pedido-modal-size">
+        <div class="modal-header"><h2>Registrar Novo Pedido</h2></div>
+        <div class="modal-body" style="padding: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div class="filter-group"><label>Cliente</label><select id="select-cliente" class="form-control"></select></div>
+                <div class="filter-group"><label>Data</label><input type="date" id="data-pedido" class="form-control"></div>
+            </div>
+            <div class="itens-pedido">
+                <label>Produtos</label>
+                <div id="lista-itens-selecionados" class="lista-itens-container"></div>
+                <button class="btn-add-item" onclick="adicionarLinhaItem()"><span class="material-icons-round">add_circle</span> Adicionar Produto</button>
+            </div>
         </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="fecharModal('modalPedido')">Cancelar</button>
+            <button class="btn-primary" onclick="salvarNovoPedido()">Finalizar Pedido</button>
+        </div>
+    </div>
+</div>
 
-        <hr>
-        <h3>Itens do Pacote</h3>
-        <div id="lista-itens-pedido">
-          </div>
-        
-        <button type="button" class="btn-text" onclick="addItem()">
-          <span class="material-icons-round">add_circle_outline</span> Adicionar Item
-        </button>
-      </div>
-      
-      <div class="modal-footer">
-        <button type="button" class="btn-secondary" onclick="fecharModalPedido()">Cancelar</button>
-        <button type="submit" class="btn-primary">Salvar Pedido</button>
-      </div>
-    </form>
+<div id="modalAvatar" class="modal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header"><h2>Ajustar Foto</h2></div>
+    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
+    <div class="modal-footer">
+      <input type="file" id="inputImage" accept="image/*" style="display:none">
+      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
+      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
+    </div>
   </div>
 </div>
 
-<script>
-  // Inicialização da página
-  window.onload = () => {
-    if(typeof renderPedidos === 'function') renderPedidos();
-    if(typeof carregarClientesSelect === 'function') carregarClientesSelect();
-  };
-</script>
+<div id="modalZoom" class="modal" onclick="fecharZoom()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center; cursor:zoom-out;">
+    <img id="imgZoom" src="" style="max-width:90%; max-height:90%; border:5px solid white; border-radius:10px; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+</div>
 
+<script>
+window.onload = () => {
+    carregarTabelaPedidos();
+    popularSelectClientes();
+};
+
+function carregarTabelaPedidos() {
+    const pedidos = getPedidos();
+    const tabela = document.getElementById("tabela-pedidos");
+    tabela.innerHTML = pedidos.map(p => `
+        <tr>
+            <td>#${p.id}</td>
+            <td onclick="abrirZoom('https://i.pravatar.cc/150?u=${p.id}')" style="cursor:zoom-in">${p.clienteNome || 'N/D'}</td>
+            <td>${formatarData(p.dataPedido)}</td>
+            <td>${formatarMoeda(p.total)}</td>
+            <td><span class="status ${p.status.toLowerCase()}">${p.status}</span></td>
+            <td>
+              <button class="btn-icon" onclick="alert('Pedido #${p.id}')">
+                <span class="material-icons-round">visibility</span>
+              </button>
+              <button class="btn-icon" style="color:var(--danger)" onclick="removerPedido(${p.id})">
+                <span class="material-icons-round">delete</span>
+              </button>
+            </td>
+        </tr>`).join('');
+}
+
+function popularSelectClientes() {
+    const clientes = getClientes();
+    const select = document.getElementById("select-cliente");
+    select.innerHTML = '<option value="">Selecione...</option>' + clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
+}
+
+function adicionarLinhaItem() {
+    const container = document.getElementById("lista-itens-selecionados");
+    const div = document.createElement("div");
+    div.className = "row-item-pedido";
+    div.innerHTML = `
+        <input type="text" placeholder="Produto" class="form-control input-produto">
+        <input type="number" placeholder="Qtd" class="form-control input-qtd">
+        <input type="number" placeholder="Preço" class="form-control input-preco">
+        <button class="btn-icon" onclick="this.parentElement.remove()" style="color:var(--danger)"><span class="material-icons-round">delete</span></button>
+    `;
+    container.appendChild(div);
+}
+
+function salvarNovoPedido() {
+    const clienteId = document.getElementById("select-cliente").value;
+    const data = document.getElementById("data-pedido").value;
+    const linhas = document.querySelectorAll(".row-item-pedido");
+
+    if (!clienteId || !data || linhas.length === 0) return alert("Preencha todos os campos.");
+
+    let total = 0;
+    linhas.forEach(linha => {
+        const qtd = parseFloat(linha.querySelector(".input-qtd").value);
+        const preco = parseFloat(linha.querySelector(".input-preco").value);
+        if (qtd && preco) total += (qtd * preco);
+    });
+
+    createPedido({
+        clienteId: clienteId,
+        clienteNome: document.getElementById("select-cliente").options[document.getElementById("select-cliente").selectedIndex].text,
+        total: total,
+        dataPedido: data
+    });
+
+    fecharModal('modalPedido');
+    carregarTabelaPedidos();
+  }
+
+    function removerPedido(id) {
+    if(confirm("Tem certeza que deseja excluir este pedido?")) {
+        deletePedido(id);
+        carregarTabelaPedidos();
+    }
+}
+
+</script>
 </body>
 </html>

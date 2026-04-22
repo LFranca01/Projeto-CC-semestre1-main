@@ -397,6 +397,16 @@ body {
 .btn-primary {
     background: var(--primary);
     color: white;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+    border: none;
+    font-size: 14px;
 }
 
 .btn-primary:hover {
@@ -406,6 +416,16 @@ body {
 .btn-secondary {
     background: #e5e7eb;
     color: var(--text);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s;
+    border: none;
+    font-size: 14px;
 }
 
 .btn-secondary:hover {

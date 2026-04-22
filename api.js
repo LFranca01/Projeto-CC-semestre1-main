@@ -28,12 +28,12 @@ function createCliente(dados) {
     id: Date.now(),
     nome: dados.nome,
     documento: dados.documento,
-    tipoPessoa: dados.tipoPessoa || "Física",
     telefone: dados.telefone || "",
-    email: dados.email || "",
     cep: dados.cep || "",
+    numero: dados.numero || "",
     rua: dados.rua || "",
-    bairro: dados.bairro || ""
+    bairro: dados.bairro || "",
+    cidade: dados.cidade || ""
   };
   db.clientes.push(novo);
   saveDB(db);
@@ -74,6 +74,7 @@ function createPedido(dados) {
     id: db.pedidos.length + 1,
     dataPedido: new Date().toISOString(),
     clienteId: dados.clienteId,
+    clienteNome: dados.clienteNome,
     itens: dados.itens, 
     total: dados.total,
     status: "Pendente"
@@ -81,6 +82,12 @@ function createPedido(dados) {
   db.pedidos.push(novo);
   saveDB(db);
   return novo;
+}
+
+function deletePedido(id) {
+  const db = getDB();
+  db.pedidos = db.pedidos.filter(p => p.id != id);
+  saveDB(db);
 }
 
 // ================= UTILITÁRIOS =================
