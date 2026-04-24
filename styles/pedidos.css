@@ -85,6 +85,12 @@ cursor: pointer;
     gap: 10px;
     margin-bottom: 10px;
     align-items: center;
+    /* Remove as setas no Chrome, Safari, Edge, Opera */
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
 }
 
 /* Inputs de Item */

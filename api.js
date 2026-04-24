@@ -40,6 +40,15 @@ function createCliente(dados) {
   return novo;
 }
 
+function updateCliente(id, dados) {
+  const db = getDB();
+  const index = db.clientes.findIndex(c => c.id == id);
+  if (index !== -1) {
+    db.clientes[index] = { ...db.clientes[index], ...dados };
+    saveDB(db);
+  }
+}
+
 function deleteCliente(id) {
   const db = getDB();
   db.clientes = db.clientes.filter(c => c.id != id);
@@ -82,6 +91,17 @@ function createPedido(dados) {
   db.pedidos.push(novo);
   saveDB(db);
   return novo;
+}
+
+function updatePedido(id, dados) {
+  const db = getDB();
+  // Encontra o índice do pedido pelo ID
+  const index = db.pedidos.findIndex(p => p.id == id);
+  if (index !== -1) {
+    // Mantém o ID original e a data, mas atualiza o restante
+    db.pedidos[index] = { ...db.pedidos[index], ...dados };
+    saveDB(db);
+  }
 }
 
 function deletePedido(id) {

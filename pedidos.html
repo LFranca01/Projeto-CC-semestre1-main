@@ -107,7 +107,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button class="btn-secondary" onclick="fecharModal('modalPedido')">Cancelar</button>
+            <button class="btn-secondary" onclick="cancelarModalPedido()">Cancelar</button>
             <button class="btn-primary" onclick="salvarNovoPedido()">Finalizar Pedido</button>
         </div>
     </div>
@@ -142,13 +142,13 @@ function carregarTabelaPedidos() {
     tabela.innerHTML = pedidos.map(p => `
         <tr>
             <td>#${p.id}</td>
-            <td onclick="abrirZoom('https://i.pravatar.cc/150?u=${p.id}')" style="cursor:zoom-in">${p.clienteNome || 'N/D'}</td>
+            <td>${p.clienteNome || 'N/D'}</td>
             <td>${formatarData(p.dataPedido)}</td>
             <td>${formatarMoeda(p.total)}</td>
             <td><span class="status ${p.status.toLowerCase()}">${p.status}</span></td>
             <td>
-              <button class="btn-icon" onclick="alert('Pedido #${p.id}')">
-                <span class="material-icons-round">visibility</span>
+              <button class="btn-icon" onclick="editarPedido(${p.id})">
+                <span class="material-icons-round">edit</span>
               </button>
               <button class="btn-icon" style="color:var(--danger)" onclick="removerPedido(${p.id})">
                 <span class="material-icons-round">delete</span>
@@ -163,49 +163,115 @@ function popularSelectClientes() {
     select.innerHTML = '<option value="">Selecione...</option>' + clientes.map(c => `<option value="${c.id}">${c.nome}</option>`).join('');
 }
 
-function adicionarLinhaItem() {
+// Adicione os parâmetros dentro dos parênteses com valores padrão vazios
+function adicionarLinhaItem(produto = '', qtd = '', preco = '') {
     const container = document.getElementById("lista-itens-selecionados");
     const div = document.createElement("div");
     div.className = "row-item-pedido";
     div.innerHTML = `
-        <input type="text" placeholder="Produto" class="form-control input-produto">
-        <input type="number" placeholder="Qtd" class="form-control input-qtd">
-        <input type="number" placeholder="Preço" class="form-control input-preco">
-        <button class="btn-icon" onclick="this.parentElement.remove()" style="color:var(--danger)"><span class="material-icons-round">delete</span></button>
+        <input type="text" placeholder="Produto" class="form-control input-produto" value="${produto}">
+        <input type="number" placeholder="Qtd" class="form-control input-qtd" value="${qtd}">
+        <input type="number" placeholder="Preço" class="form-control input-preco" value="${preco}">
+        <button class="btn-icon" onclick="this.parentElement.remove()" style="color:var(--danger)">
+            <span class="material-icons-round">delete</span>
+        </button>
     `;
     container.appendChild(div);
 }
 
 function salvarNovoPedido() {
+    const modal = document.getElementById("modalPedido");
+    const editId = modal.dataset.editId; // Verifica se estamos editando
+    
     const clienteId = document.getElementById("select-cliente").value;
     const data = document.getElementById("data-pedido").value;
     const linhas = document.querySelectorAll(".row-item-pedido");
 
     if (!clienteId || !data || linhas.length === 0) return alert("Preencha todos os campos.");
 
+    let itens = [];
     let total = 0;
     linhas.forEach(linha => {
+        const prod = linha.querySelector(".input-produto").value;
         const qtd = parseFloat(linha.querySelector(".input-qtd").value);
         const preco = parseFloat(linha.querySelector(".input-preco").value);
-        if (qtd && preco) total += (qtd * preco);
+        if (prod && qtd && preco) {
+            itens.push({ produto: prod, qtd: qtd, preco: preco });
+            total += (qtd * preco);
+        }
     });
 
-    createPedido({
+    const dadosPedido = {
         clienteId: clienteId,
         clienteNome: document.getElementById("select-cliente").options[document.getElementById("select-cliente").selectedIndex].text,
         total: total,
-        dataPedido: data
-    });
+        dataPedido: data,
+        itens: itens
+    };
 
+    if (editId) {
+        updatePedido(editId, dadosPedido);
+    } else {
+        createPedido(dadosPedido);
+    }
+    
+    // Limpeza fundamental após salvar
+    delete modal.dataset.editId;
+    document.getElementById("lista-itens-selecionados").innerHTML = "";
+    document.querySelector("#modalPedido h2").innerText = "Novo Pedido";
+    limparFormulario('modalPedido');
     fecharModal('modalPedido');
     carregarTabelaPedidos();
-  }
+}
 
     function removerPedido(id) {
     if(confirm("Tem certeza que deseja excluir este pedido?")) {
         deletePedido(id);
         carregarTabelaPedidos();
     }
+}
+
+function editarPedido(id) {
+    const pedidos = getPedidos();
+    const pedido = pedidos.find(p => p.id == id);
+    if (!pedido) return;
+
+    const modal = document.getElementById("modalPedido");
+    modal.dataset.editId = id; 
+    document.querySelector("#modalPedido h2").innerText = "Editar Pedido";
+
+    document.getElementById("select-cliente").value = pedido.clienteId;
+    
+    // Verificação de segurança para a data (evita erro se a data estiver vazia)
+    if (pedido.dataPedido) {
+        document.getElementById("data-pedido").value = pedido.dataPedido.split('T')[0];
+    }
+    
+    const container = document.getElementById("lista-itens-selecionados");
+    container.innerHTML = ""; // Limpa itens antigos
+    
+    // ERRO CORRIGIDO: Agora chama o nome certo da função
+    if (pedido.itens && pedido.itens.length > 0) {
+        pedido.itens.forEach(item => {
+            adicionarLinhaItem(item.produto, item.qtd, item.preco); 
+        });
+    }
+
+    abrirModal("modalPedido");
+}
+
+function cancelarModalPedido() {
+    const modal = document.getElementById("modalPedido");
+    
+    // Limpa a memória de edição
+    delete modal.dataset.editId; 
+    document.querySelector("#modalPedido h2").innerText = "Registrar Novo Pedido";
+    
+    // Limpa os campos visuais
+    limparFormulario('modalPedido');
+    document.getElementById("lista-itens-selecionados").innerHTML = "";
+    
+    fecharModal('modalPedido');
 }
 
 </script>

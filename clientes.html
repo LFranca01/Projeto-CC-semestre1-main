@@ -159,8 +159,8 @@ tabela.innerHTML = clientes.map(c => `
             <small style="color:var(--text-light)">${c.bairro || ''} - ${c.cidade || ''}</small>
         </td>
         <td>
-            <button class="btn-icon" onclick="abrirZoom('https://ui-avatars.com/api/?name=${c.nome}&background=153856&color=fff')">
-                <span class="material-icons-round">visibility</span>
+            <button class="btn-icon" onclick="editarCliente(${c.id})">
+                <span class="material-icons-round">edit</span>
             </button>
             <button class="btn-icon" style="color:var(--danger)" onclick="removerCliente(${c.id})">
                 <span class="material-icons-round">delete</span>
@@ -170,24 +170,28 @@ tabela.innerHTML = clientes.map(c => `
 }
 
 function salvarNovoCliente() {
+    const modal = document.getElementById("modalCliente");
+    const editId = modal.dataset.editId;
+    
     const dados = {
         nome: document.getElementById("cli-nome").value,
-        documento: document.getElementById("cli-doc").value.replace(/\D/g, ""), // Salva apenas números
+        documento: document.getElementById("cli-doc").value.replace(/\D/g, ""),
         telefone: document.getElementById("cli-tel").value,
         cep: document.getElementById("cli-cep").value,
         numero: document.getElementById("cli-numero").value,
-        // Dados vindos da API (campos hidden)
         rua: document.getElementById("cli-rua").value,
         bairro: document.getElementById("cli-bairro").value,
         cidade: document.getElementById("cli-cidade").value
     };
 
-    if (!dados.nome || !dados.documento || !dados.cep) {
-        return alert("Nome, Documento e CEP são obrigatórios.");
+    if (editId) {
+        updateCliente(editId, dados);
+    } else {
+        createCliente(dados);
     }
-
-    createCliente(dados);
     
+    delete modal.dataset.editId; // Limpa o estado de edição
+    document.querySelector("#modalCliente h2").innerText = "Cadastrar Cliente";
     limparFormulario('modalCliente');
     fecharModal('modalCliente');
     carregarTabelaClientes();
@@ -198,6 +202,27 @@ function removerCliente(id) {
         deleteCliente(id);
         carregarTabelaClientes();
     }
+}
+
+function editarCliente(id) {
+    const cliente = getClienteById(id);
+    if (!cliente) return;
+
+    // Preenche os campos do modal
+    document.getElementById("cli-nome").value = cliente.nome;
+    document.getElementById("cli-doc").value = mascaraDocumento(cliente.documento);
+    document.getElementById("cli-tel").value = cliente.telefone;
+    document.getElementById("cli-cep").value = cliente.cep;
+    document.getElementById("cli-numero").value = cliente.numero || "";
+    document.getElementById("cli-rua").value = cliente.rua || "";
+    document.getElementById("cli-bairro").value = cliente.bairro || "";
+    document.getElementById("cli-cidade").value = cliente.cidade || "";
+
+    // Armazena o ID no modal para saber que é uma edição
+    document.getElementById("modalCliente").dataset.editId = id;
+    
+    document.querySelector("#modalCliente h2").innerText = "Editar Cliente";
+    abrirModal('modalCliente');
 }
 </script>
 </body>

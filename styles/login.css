@@ -16,30 +16,34 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 
-.login-container { 
+.login-container {
+  background-color:var(--white); 
   display: flex; 
-  max-height: 80dvh; 
-  max-width: 80dvw;
-  height: 100%;
-  width: 100%;
+  min-height: 480px; 
+  max-width: 100%;
+  width: 768px;
   justify-content: center;
   align-self: center;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.15); /* Sombra para dar profundidade ao box */
-  border-radius: 20px;
+  box-shadow: 0 0 20px 10px rgba(0,0,0,0.15); /* Sombra para dar profundidade ao box */
+  border-radius: 30px;
   overflow: hidden; /* Garante que o gradiente da esquerda respeite o arredondamento */
 }
 
 /* LADO ESQUERDO: Texto e Branding */
 .login-left {
-  flex: 1.2; /* Um pouco mais largo que o lado direito */
+
+  flex: 1.3; /* Um pouco mais largo que o lado direito */
   background: linear-gradient(to right, #265527, #153856, #0b2840);
   color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 60px;
+  border-top-right-radius: 30%;
+  border-bottom-right-radius: 30%;
 }
 
 .login-left img { 
@@ -58,8 +62,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--white);
   padding: 60px;
+  background: var(--white);
 }
 
 .login-box {
