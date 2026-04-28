@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Dashboard | Distribuidora Serginho</title>
   
-  <link rel="stylesheet" href="./styles/style.css">
-  <link rel="stylesheet" href="./styles/pedidos.css">
+<link rel="stylesheet" href="./styles/style.css">
+  <link rel="stylesheet" href="./styles/inicio.css">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -18,6 +18,7 @@
 
   <script src="auth.js"></script>
   <script src="api.js"></script>
+  <script src="theme.js"></script>
   <script src="ui-helper.js"></script>
   <script>requireAuth();</script>
 </head>
@@ -28,13 +29,14 @@
     <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
     <ul>
       <li class="active"><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
-      <li><a href="pedidos.html"><span class="material-icons-round">inventory_2</span> <span>Pedidos</span></a></li>
+      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
       <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
       <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
-      <li><a href="estoques.html"><span class="material-icons-round">warehouse</span> <span>Estoque</span></a></li>
+      <li><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
       <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
       <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
       <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
+      <li><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
     </ul>
   </aside>
 
@@ -42,10 +44,13 @@
     <header class="header">
       <div class="search-box">
         <span class="material-icons-round">search</span>
-        <input type="text" id="input-busca" placeholder="Buscar pedidos..." onkeyup="aplicarFiltros('tabela-dashboard')">
+        <input type="text" id="input-busca" placeholder="Buscar pedidos..." onkeyup="aplicarFiltrosTabela('tabela-dashboard')">
       </div>
 
       <div class="header-right">
+        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
+          <span class="material-icons-round">dark_mode</span>
+        </button>
         <div class="user-menu" id="dropdownToggle">
           <div class="profile-img-container">
             <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor: zoom-in;">
@@ -65,10 +70,14 @@
     </header>
 
     <div class="content">
+      <div class="page-header-simple">
+        <h2>Dashboard</h2>
+      </div>
+
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-icon" >
-            <span class="material-icons-round" id="dinheiro">payments</span>
+          <div class="stat-icon accent">
+            <span class="material-icons-round">payments</span>
           </div>
           <div>
             <h3>Vendas Hoje</h3>
@@ -76,8 +85,8 @@
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon" >
-            <span class="material-icons-round" id="pendente">pending_actions</span>
+          <div class="stat-icon warning">
+            <span class="material-icons-round">pending_actions</span>
           </div>
           <div>
             <h3>Pedidos Pendentes</h3>
@@ -85,12 +94,21 @@
           </div>
         </div>
         <div class="stat-card">
-          <div class="stat-icon">
-            <span class="material-icons-round" id="transito">local_shipping</span>
+          <div class="stat-icon info">
+            <span class="material-icons-round">local_shipping</span>
           </div>
           <div>
             <h3>Em Trânsito</h3>
             <p id="transito-count">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon accent">
+            <span class="material-icons-round">people</span>
+          </div>
+          <div>
+            <h3>Clientes Ativos</h3>
+            <p id="clientes-count">0</p>
           </div>
         </div>
       </div>
@@ -100,13 +118,17 @@
           <h3>Status das Entregas</h3>
           <canvas id="chartLogistica"></canvas>
         </div>
+        <div class="chart-card">
+          <h3>Vendas Semanais</h3>
+          <canvas id="chartVendas"></canvas>
+        </div>
       </div>
 
-      <div class="stat-card" style="margin-top: 25px;">
-        <h3>Últimos Pedidos</h3>
-        <table class="table-dashboard">
+      <div class="table-container" style="margin-top: 25px;">
+        <h3 style="padding: 20px 25px 0; margin: 0;">Últimos Pedidos</h3>
+        <table>
           <thead>
-            <tr><th>ID</th><th>Cliente</th><th>Data</th><th>Total</th><th>Status</th></tr>
+            <tr><th>EAN</th><th>Cliente</th><th>Data</th><th>Total</th><th>Status</th></tr>
           </thead>
           <tbody id="tabela-dashboard"></tbody>
         </table>
@@ -117,7 +139,7 @@
 
 <div id="modalAvatar" class="modal" style="display:none">
   <div class="modal-content">
-    <div class="modal-header"><h2>Ajustar Foto</h2></div>
+    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">&times;</button></div>
     <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
     <div class="modal-footer">
       <input type="file" id="inputImage" accept="image/*" style="display:none">
@@ -128,16 +150,25 @@
   </div>
 </div>
 
-<div id="modalZoom" class="modal" onclick="fecharZoom()" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center; cursor:zoom-out;">
-    <img id="imgZoom" src="" style="max-width:90%; max-height:90%; border:5px solid white; border-radius:10px; box-shadow: 0 0 20px rgba(0,0,0,0.5);">
+<div id="modalZoom" class="modal" onclick="fecharZoom()">
+  <div class="zoom-content">
+    <img id="imgZoom" src="">
+  </div>
 </div>
 
 <script>
 window.onload = () => {
-    // ui-helper.js já inicializa o avatar e nome automaticamente
     const pedidos = getPedidos();
+    const clientes = getClientes();
+    
     document.getElementById('pedidos-count').innerText = pedidos.filter(p => p.status === 'Pendente').length;
-    document.getElementById('total-vendas').innerText = formatarMoeda(pedidos.reduce((acc, p) => acc + p.total, 0));
+    document.getElementById('transito-count').innerText = pedidos.filter(p => p.status === 'Em Trânsito').length;
+    document.getElementById('clientes-count').innerText = clientes.length;
+    
+    const vendasHoje = pedidos
+        .filter(p => p.dataPedido && p.dataPedido.startsWith(new Date().toISOString().split('T')[0]))
+        .reduce((acc, p) => acc + p.total, 0);
+    document.getElementById('total-vendas').innerText = formatarMoeda(vendasHoje);
 
     renderUltimosPedidos();
     initCharts();
@@ -148,24 +179,32 @@ function renderUltimosPedidos() {
     const tabela = document.getElementById("tabela-dashboard");
     tabela.innerHTML = pedidos.map(p => `
     <tr>
-        <td>#${p.id}</td>
-        <td onclick="abrirZoom('https://i.pravatar.cc/150?u=${p.id}')" style="cursor:zoom-in">
-            ${p.clienteNome && p.clienteNome !== "Selecione..." ? p.clienteNome : '<span style="color:red">Nome não registrado</span>'}
+        <td><code>${p.ean ? p.ean.slice(-8) : '#' + p.id}</code></td>
+        <td onclick="abrirZoom('https://i.pravatar.cc/150?u=' + ${p.id})" style="cursor:zoom-in">
+            ${p.clienteNome && p.clienteNome !== "Selecione..." ? p.clienteNome : '<span style="color:var(--danger)">Nome não registrado</span>'}
         </td>
         <td>${formatarData(p.dataPedido)}</td>
         <td>${formatarMoeda(p.total)}</td>
-        <td><span class="status ${p.status.toLowerCase()}">${p.status}</span></td>
+        <td><span class="status ${p.status.toLowerCase().replace(' ', '')}">${p.status}</span></td>
     </tr>
-`).join('');
+    `).join('');
 }
 
 function initCharts() {
     const ctxLog = document.getElementById('chartLogistica').getContext('2d');
+    const pedidos = getPedidos();
     new Chart(ctxLog, {
         type: 'doughnut',
         data: {
-            labels: ['Pendente', 'Trânsito', 'Entregue'],
-            datasets: [{ data: [5, 12, 8], backgroundColor: ['#f59e0b', '#3b82f6', '#10b981'] }]
+            labels: ['Pendente', 'Em Trânsito', 'Entregue'],
+            datasets: [{
+                data: [
+                    pedidos.filter(p => p.status === 'Pendente').length || 1,
+                    pedidos.filter(p => p.status === 'Em Trânsito').length || 1,
+                    pedidos.filter(p => p.status === 'Entregue').length || 1
+                ],
+                backgroundColor: ['#f59e0b', '#3b82f6', '#10b981']
+            }]
         },
         options: { responsive: true, maintainAspectRatio: false }
     });
@@ -174,10 +213,10 @@ function initCharts() {
     new Chart(ctxVendas, {
         type: 'line',
         data: {
-            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
+            labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
             datasets: [{
                 label: 'Vendas (R$)',
-                data: [1200, 1900, 1500, 2500, 2200, 3000],
+                data: [1200, 1900, 1500, 2500, 2200, 3000, 1800],
                 borderColor: '#153856',
                 tension: 0.4,
                 fill: true,
@@ -185,6 +224,14 @@ function initCharts() {
             }]
         },
         options: { responsive: true, maintainAspectRatio: false }
+    });
+}
+
+function aplicarFiltrosTabela(tabelaId) {
+    const busca = document.getElementById('input-busca').value.toLowerCase();
+    const linhas = document.querySelectorAll('#' + tabelaId + ' tr');
+    linhas.forEach(linha => {
+        linha.style.display = linha.innerText.toLowerCase().includes(busca) ? '' : 'none';
     });
 }
 </script>

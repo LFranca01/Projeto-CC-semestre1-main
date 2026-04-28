@@ -2,128 +2,104 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Financeiro | Serginho Leva Atras</title>
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financeiro | Distribuidora Serginho</title>
   <link rel="stylesheet" href="./styles/style.css">
-  <link rel="stylesheet" href="./styles/logistica.css">
+  <link rel="stylesheet" href="./styles/financeiro.css">
   <link rel="stylesheet" href="./styles/pedidos.css">
-  
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
   <script src="auth.js"></script>
   <script src="api.js"></script>
+  <script src="theme.js"></script>
+  <script src="ui-helper.js"></script>
   <script>requireAuth();</script>
 </head>
 <body>
-
 <div class="container">
   <aside class="sidebar">
-    <div class="sidebar-header">
-        <img src="./assets/Logo.png" alt="Logo">
-    </div>
+    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
     <ul>
-      <li><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-      <li><a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
-      <li><a href="clientes.html"><i data-lucide="users"></i> Clientes</a></li>
-      <li><a href="produtos.html"><i data-lucide="package"></i> Produtos</a></li>
-      <li class="active"><a href="financeiro.html"><i data-lucide="dollar-sign"></i> Financeiro</a></li>
-      <li><a href="logistica.html"><i data-lucide="truck"></i> Logística</a></li>
+      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
+      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
+      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
+      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
+      <li><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
+      <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
+      <li class="active"><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
+      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logistica</span></a></li>
+      <li><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
     </ul>
   </aside>
-
   <main class="main">
-    <div class="content">
-      <div class="topbar">
-        <div class="search-box" style="visibility: hidden;">
-            <input type="text">
-        </div>
-        
-        <div class="user-menu-container">
-          <div class="user-menu" onclick="toggleMenu(event)">
-              <img src="https://i.pravatar.cc/100" id="userAvatar">
-              <div class="user-info">
-                  <span class="user-name" id="userName">Carregando...</span>
-              </div>
-              <i data-lucide="chevron-down"></i>
-          </div>
-          <div id="dropdown-user" class="dropdown-content">
-              <a href="javascript:void(0)" onclick="abrirModalPerfil(event)"><i data-lucide="user"></i> Perfil</a>
-              <a href="#" onclick="logout()"><i data-lucide="log-out"></i> Sair</a>
-          </div>
-        </div>
+    <header class="header">
+      <div class="search-box">
+        <span class="material-icons-round">search</span>
+        <input type="text" id="input-busca" placeholder="Buscar..." onkeyup="aplicarFiltrosTabela('tabela-financeiro')">
       </div>
-
-      <div class="page-title-section" style="margin-bottom: 20px;">
-        <h1>Fluxo de Caixa e Pagamentos</h1>
-      </div>
-
-      <div class="metrics-section" style="flex-direction: row; margin-bottom: 30px; gap: 40px;">
-        <div class="card">
-          <div class="card-icon green"><i data-lucide="trending-up"></i></div>
-          <div class="card-info">
-            <p>Saldo Total Recibido</p>
-            <h2 id="saldo-total">R$ 0,00</h2>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-icon blue"><i data-lucide="credit-card"></i></div>
-          <div class="card-info">
-            <p>Pagamentos Hoje</p>
-            <h2 id="pagamentos-hoje">0</h2>
-          </div>
-        </div>
-      </div>
-
-      <div class="action-bar" style="display: flex; align-items: center; gap: 20px; margin-bottom: 30px;">
-        
-        <div class="filter-box" style="margin: 0; flex: 1; max-width: 850px;">
-            <div class="filter-grid" style="grid-template-columns: 1.5fr 1fr 1fr auto; gap: 15px; align-items: flex-end;">
-              <div class="form-group">
-                <label>Período</label>
-                <input type="date" id="filtro-data" onchange="filtrarFinanceiro()">
-              </div>
-              <div class="form-group">
-                <label>Método</label>
-                <select id="filtro-metodo" onchange="filtrarFinanceiro()">
-                  <option value="">Todos</option>
-                  <option value="Pix">Pix</option>
-                  <option value="Cartão">Cartão</option>
-                  <option value="Dinheiro">Dinheiro</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label>Status</label>
-                <select id="filtro-status" onchange="filtrarFinanceiro()">
-                  <option value="">Todos</option>
-                  <option value="Pago">Pago</option>
-                  <option value="Pendente">Pendente</option>
-                </select>
-              </div>
-              <div class="filter-buttons">
-                <button class="btn-secundary" onclick="limparFiltros()" style="height: 40px;">Limpar</button>
-              </div>
-            </div>
-        </div>
-
-        <button class="btn-primary" onclick="window.print()" style="height: 40px; display: flex; align-items: center; gap: 8px; white-space: nowrap; margin-bottom: 1px;">
-            <i data-lucide="download" style="width: 18px;"></i> Exportar Relatório
+      <div class="header-right">
+        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
+          <span class="material-icons-round">dark_mode</span>
         </button>
+        <button class="btn-primary" onclick="imprimirRelatorio()">
+          <span class="material-icons-round">print</span> Imprimir
+        </button>
+        <div class="user-menu" id="dropdownToggle">
+          <div class="profile-img-container">
+            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor:zoom-in">
+          </div>
+          <div class="user-info">
+            <span id="user-name-display" class="user-name">Carregando...</span>
+            <span class="user-role">Administrador</span>
+          </div>
+          <span class="material-icons-round">expand_more</span>
+          <div class="dropdown-content" id="profileDropdown">
+            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
+            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+          </div>
+        </div>
       </div>
-
-      <div class="section-container">
+    </header>
+    <div class="content">
+      <div class="page-header-simple">
+        <h2>Fluxo de Caixa</h2>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon accent"><span class="material-icons-round">account_balance</span></div>
+          <div><h3>Saldo Total</h3><p id="saldo-total">R$ 0,00</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon info"><span class="material-icons-round">receipt_long</span></div>
+          <div><h3>Notas Fiscais</h3><p id="total-notas">0</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon warning"><span class="material-icons-round">today</span></div>
+          <div><h3>Hoje</h3><p id="pagamentos-hoje">R$ 0,00</p></div>
+        </div>
+      </div>
+      <div class="filter-box">
+        <div class="filter-group">
+          <label>Periodo</label>
+          <input type="date" id="filtro-data" onchange="aplicarFiltrosTabela('tabela-financeiro')">
+        </div>
+        <div class="filter-group">
+          <label>Metodo</label>
+          <select id="filtro-metodo" onchange="aplicarFiltrosTabela('tabela-financeiro')">
+            <option value="">Todos</option>
+            <option value="Pix">Pix</option>
+            <option value="Cartao">Cartao</option>
+            <option value="Dinheiro">Dinheiro</option>
+          </select>
+        </div>
+      </div>
+      <div class="table-container">
         <table>
           <thead>
-            <tr>
-              <th>ID Pedido</th>
-              <th>Data Pagamento</th>
-              <th>Método</th>
-              <th>Valor</th>
-              <th>Status</th>
-              <th style="text-align: right;">Ações</th>
-            </tr>
+            <tr><th>NF</th><th>ID</th><th>Data</th><th>Metodo</th><th>Valor</th><th>Status</th><th>Acoes</th></tr>
           </thead>
           <tbody id="tabela-financeiro"></tbody>
         </table>
@@ -131,82 +107,139 @@
     </div>
   </main>
 </div>
-
+<div id="modalNF" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h2>Nota Fiscal</h2></div>
+    <div class="modal-body" id="nota-fiscal-content"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModal('modalNF')">Fechar</button>
+      <button class="btn-primary" onclick="imprimirNF()">Imprimir</button>
+    </div>
+  </div>
+</div>
+<div id="modalAvatar" class="modal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">x</button></div>
+    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
+    <div class="modal-footer">
+      <input type="file" id="inputImage" accept="image/*" style="display:none">
+      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
+      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+<div id="modalZoom" class="modal" onclick="fecharZoom()">
+  <div class="zoom-content"><img id="imgZoom" src=""></div>
+</div>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    carregarDadosUsuario();
-    renderFinanceiro();
-    lucide.createIcons();
-});
-
-function carregarDadosUsuario() {
-    const usuario = getUser();
-    if (usuario) {
-        document.getElementById("userName").textContent = usuario.nome;
-        if (usuario.foto) document.getElementById("userAvatar").src = usuario.foto;
-    }
-}
-
-function toggleMenu(event) {
-    event.stopPropagation();
-    document.getElementById("dropdown-user").classList.toggle("show");
-}
-
-window.onclick = () => document.getElementById("dropdown-user").classList.remove("show");
-
+var notaFiscalAtual = null;
+window.onload = function() { renderFinanceiro(); };
 function renderFinanceiro() {
-    const pagamentos = getPagamentos(); // Puxa do api.js
-    const tabela = document.getElementById("tabela-financeiro");
-    
-    // Atualiza Métricas
+    var pagamentos = getPagamentos() || [];
+    var tabela = document.getElementById("tabela-financeiro");
     document.getElementById("saldo-total").innerText = formatarMoeda(getSaldoTotal());
-    document.getElementById("pagamentos-hoje").innerText = pagamentos.filter(p => {
-        const hoje = new Date().toISOString().split('T')[0];
-        return p.dataPagamento === hoje;
-    }).length;
-
+    document.getElementById("total-notas").innerText = pagamentos.length;
+    var hoje = new Date().toISOString().split("T")[0];
+    var valorHoje = 0;
+    for (var i = 0; i < pagamentos.length; i++) {
+        if (pagamentos[i] && pagamentos[i].dataPagamento === hoje) {
+            valorHoje += pagamentos[i].valor || 0;
+        }
+    }
+    document.getElementById("pagamentos-hoje").innerText = formatarMoeda(valorHoje);
     if (pagamentos.length === 0) {
-        tabela.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 30px; color: var(--text-light)">Nenhum registro encontrado.</td></tr>';
+        tabela.innerHTML = "<tr><td colspan=\"7\" style=\"text-align:center;padding:30px;color:var(--text-light)\">Nenhum registro.</td></tr>";
         return;
     }
-
-    tabela.innerHTML = pagamentos.map(p => `
-        <tr>
-            <td class="bold">#${p.pedidoId}</td>
-            <td>${formatarData(p.dataPagamento)}</td>
-            <td>${p.metodo}</td>
-            <td><strong style="color: var(--accent)">${formatarMoeda(p.valor)}</strong></td>
-            <td><span class="status entregue">${p.status}</span></td>
-            <td style="text-align: right;">
-                <button class="btn-icon" title="Ver Detalhes"><i data-lucide="eye" style="width:18px"></i></button>
-            </td>
-        </tr>
-    `).join('');
-    lucide.createIcons();
+    var html = "";
+    for (var i = 0; i < pagamentos.length; i++) {
+        var p = pagamentos[i];
+        html = html + "<tr>";
+        html = html + "<td><code>" + (p.notaFiscal || "-") + "</code></td>";
+        html = html + "<td>#" + p.pedidoId + "</td>";
+        html = html + "<td>" + formatarData(p.dataPagamento) + "</td>";
+        html = html + "<td>" + (p.metodo || "-") + "</td>";
+        html = html + "<td><strong style=\"color:var(--accent)\">" + formatarMoeda(p.valor) + "</strong></td>";
+        html = html + "<td><span class=\"status entregue\">" + p.status + "</span></td>";
+        html = html + "<td><button class=\"btn-icon\" onclick=\"verNotaFiscal(" + p.id + ")\"><span class=\"material-icons-round\">receipt</span></button></td>";
+        html = html + "</tr>";
+    }
+    tabela.innerHTML = html;
 }
-
-function filtrarFinanceiro() {
-    const data = document.getElementById("filtro-data").value;
-    const metodo = document.getElementById("filtro-metodo").value.toLowerCase();
-    const status = document.getElementById("filtro-status").value.toLowerCase();
-
-    document.querySelectorAll("#tabela-financeiro tr").forEach(linha => {
-        const texto = linha.innerText.toLowerCase();
-        const bateData = data === "" || texto.includes(formatarData(data));
-        const bateMetodo = metodo === "" || texto.includes(metodo);
-        const bateStatus = status === "" || texto.includes(status);
-
-        linha.style.display = (bateData && bateMetodo && bateStatus) ? "" : "none";
-    });
+function verNotaFiscal(id) {
+    var pagamentos = getPagamentos() || [];
+    var p = null;
+    for (var i = 0; i < pagamentos.length; i++) {
+        if (pagamentos[i] && pagamentos[i].id == id) { p = pagamentos[i]; break; }
+    }
+    if (!p) return;
+    var pedidos = getPedidos() || [];
+    var pedido = null;
+    for (var i = 0; i < pedidos.length; i++) {
+        if (pedidos[i] && pedidos[i].id == p.pedidoId) { pedido = pedidos[i]; break; }
+    }
+    NotaFiscalAtual = p;
+    var html = "<div style=\"padding:20px;font-family:monospace;\">";
+    html = html + "<h3 style=\"text-align:center;\">NOTA FISCAL</h3>";
+    html = html + "<p><strong>NF:</strong> " + (p.notaFiscal || "-") + "</p>";
+    html = html + "<p><strong>Data:</strong> " + formatarData(p.dataPagamento) + "</p>";
+    html = html + "<p><strong>Pedido:</strong> #" + p.pedidoId + "</p>";
+    html = html + "<p><strong>Cliente:</strong> " + (pedido ? pedido.clienteNome : "N/D") + "</p>";
+    html = html + "<hr><p><strong>Metodo:</strong> " + (p.metodo || "-") + "</p>";
+    html = html + "<p><strong>Valor:</strong> " + formatarMoeda(p.valor) + "</p>";
+    html = html + "<hr><p style=\"text-align:center;\">Distribuidora Serginho</p>";
+    html = html + "<p style=\"text-align:center;\">CNPJ: 00.000.000/0001-00</p>";
+    html = html + "</div>";
+    document.getElementById("nota-fiscal-content").innerHTML = html;
+    abrirModal("modalNF");
 }
-
-function limparFiltros() {
-    document.getElementById("filtro-data").value = "";
-    document.getElementById("filtro-metodo").value = "";
-    document.getElementById("filtro-status").value = "";
-    filtrarFinanceiro();
+function imprimirNF() {
+    var conteudo = document.getElementById("nota-fiscal-content").innerHTML;
+    var janela = window.open("", "", "width=600,height=800");
+    janela.document.write("<html><head><title>Nota Fiscal</title>");
+    janela.document.write("<style>body{font-family:monospace;padding:20px;}</style></head><body>");
+    janela.document.write(conteudo);
+    janela.document.write("</body></html>");
+    janela.print();
+}
+function imprimirRelatorio() {
+    var pagamentos = getPagamentos() || [];
+    var html = "<html><head><title>Relatorio</title>";
+    html = html + "<style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f3f4f6;}</style></head><body>";
+    html = html + "<h2>Relatorio Financeiro</h2>";
+    html = html + "<p>Data: " + new Date().toLocaleDateString("pt-BR") + "</p>";
+    html = html + "<p>Total: " + formatarMoeda(getSaldoTotal()) + "</p>";
+    html = html + "<table><thead><tr><th>NF</th><th>Pedido</th><th>Data</th><th>Metodo</th><th>Valor</th></tr></thead><tbody>";
+    for (var i = 0; i < pagamentos.length; i++) {
+        var p = pagamentos[i];
+        html = html + "<tr>";
+        html = html + "<td>" + (p.notaFiscal || "-") + "</td>";
+        html = html + "<td>#" + p.pedidoId + "</td>";
+        html = html + "<td>" + formatarData(p.dataPagamento) + "</td>";
+        html = html + "<td>" + (p.metodo || "-") + "</td>";
+        html = html + "<td>" + formatarMoeda(p.valor) + "</td>";
+        html = html + "</tr>";
+    }
+    html = html + "</tbody></table></body></html>";
+    var janela = window.open("", "", "width=800,height=600");
+    janela.document.write(html);
+    janela.print();
+}
+function aplicarFiltrosTabela(tabelaId) {
+    var busca = document.getElementById("input-busca").value.toLowerCase();
+    var dataFiltro = document.getElementById("filtro-data").value;
+    var metodoFiltro = document.getElementById("filtro-metodo").value.toLowerCase();
+    var linhas = document.querySelectorAll("#" + tabelaId + " tr");
+    for (var i = 0; i < linhas.length; i++) {
+        var linha = linhas[i];
+        var texto = linha.innerText.toLowerCase();
+        var bateBusca = busca === "" || texto.indexOf(busca) > -1;
+        var bateData = dataFiltro === "" || texto.indexOf(dataFiltro) > -1;
+        var bateMetodo = metodoFiltro === "" || texto.indexOf(metodoFiltro) > -1;
+        linha.style.display = (bateBusca && bateData && bateMetodo) ? "" : "none";
+    }
 }
 </script>
-
 </body>
 </html>

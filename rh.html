@@ -2,45 +2,111 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>RH | Sistema Empresarial</title>
-  <link rel="stylesheet" href="./styles/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>RH | Distribuidora Serginho</title>
+  
+<link rel="stylesheet" href="./styles/style.css">
+  <link rel="stylesheet" href="./styles/rh.css">
   <link rel="stylesheet" href="./styles/pedidos.css">
-  <link rel="stylesheet" href="./styles/logistica.css">
-  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
   <script src="auth.js"></script>
   <script src="api.js"></script>
+  <script src="theme.js"></script>
+  <script src="ui-helper.js"></script>
   <script>requireAuth();</script>
 </head>
 <body>
+
 <div class="container">
   <aside class="sidebar">
     <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
     <ul>
-      <li><a href="inicio.html"><i data-lucide="layout-dashboard"></i> Dashboard</a></li>
-      <li><a href="pedidos.html"><i data-lucide="shopping-cart"></i> Pedidos</a></li>
-      <li><a href="clientes.html"><i data-lucide="users"></i> Clientes</a></li>
-      <li><a href="produtos.html"><i data-lucide="package"></i> Produtos</a></li>
-      <li><a href="estoque.html"><i data-lucide="archive"></i> Estoque</a></li>
-      <li class="active"><a href="rh.html"><i data-lucide="briefcase"></i> Funcionários</a></li>
-      <li><a href="logistica.html"><i data-lucide="truck"></i> Logística</a></li>
+      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
+      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
+      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
+      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
+      <li><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
+      <li class="active"><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
+      <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
+      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
+      <li><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
     </ul>
   </aside>
 
   <main class="main">
-    <div class="content">
-      <div class="page-header">
-        <h1>Recursos Humanos</h1>
-        <button class="btn-primary" onclick="abrirModal()">+ Novo Funcionário</button>
+    <header class="header">
+      <div class="search-box">
+        <span class="material-icons-round">search</span>
+        <input type="text" id="input-busca" placeholder="Buscar por nome ou cargo..." onkeyup="aplicarFiltrosTabela('tabela-rh')">
       </div>
 
-      <div class="section-container">
+      <div class="header-right">
+        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
+          <span class="material-icons-round">dark_mode</span>
+        </button>
+        <button class="btn-primary" onclick="abrirModal('modalRH')">
+          <span class="material-icons-round">person_add</span> Novo Funcionário
+        </button>
+        
+        <div class="user-menu" id="dropdownToggle">
+          <div class="profile-img-container">
+            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor: zoom-in;">
+          </div>
+          <div class="user-info">
+            <span id="user-name-display" class="user-name">Carregando...</span>
+            <span class="user-role">Administrador</span>
+          </div>
+          <span class="material-icons-round">expand_more</span>
+
+          <div class="dropdown-content" id="profileDropdown">
+            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
+            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="page-header-simple">
+        <h2>Recursos Humanos</h2>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon accent">
+            <span class="material-icons-round">people</span>
+          </div>
+          <div>
+            <h3>Total de Funcionários</h3>
+            <p id="total-funcionarios">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon info">
+            <span class="material-icons-round">work</span>
+          </div>
+          <div>
+            <h3>Admitidos Este Mês</h3>
+            <p id="admitidos-mes">0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
         <table>
           <thead>
             <tr>
               <th>Nome</th>
               <th>CPF</th>
               <th>Cargo</th>
-              <th>Unidade/Filial</th>
+              <th>Unidade</th>
               <th>Admissão</th>
               <th>Ações</th>
             </tr>
@@ -55,57 +121,76 @@
 <div id="modalRH" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <h2 id="tituloModal">Novo Colaborador</h2>
-      <span class="close" onclick="fecharModal()">&times;</span>
+      <h2 id="titulo-modal-rh">Novo Colaborador</h2>
     </div>
-    <form onsubmit="event.preventDefault(); salvarFuncionario();">
-      <div class="modal-body">
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nome Completo</label>
+        <input type="text" id="func-nome" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>CPF</label>
+        <input type="text" id="func-cpf" class="form-control" data-mask="documento" placeholder="000.000.000-00">
+      </div>
+      <div class="form-group">
+        <label>Cargo</label>
+        <input type="text" id="func-cargo" class="form-control">
+      </div>
+      <div class="form-row">
         <div class="form-group">
-            <label>Nome Completo</label>
-            <input type="text" id="nome" required>
+          <label>Unidade/Filial</label>
+          <select id="func-filial"></select>
         </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>CPF</label>
-                <input type="text" id="cpf" placeholder="000.000.000-00">
-            </div>
-            <div class="form-group">
-                <label>Cargo</label>
-                <input type="text" id="cargo" required>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Filial de Trabalho</label>
-                <select id="idFilial" required></select>
-            </div>
-            <div class="form-group">
-                <label>Data de Admissão</label>
-                <input type="date" id="dataAdmissao" required>
-            </div>
+        <div class="form-group">
+          <label>Data de Admissão</label>
+          <input type="date" id="func-admissao" class="form-control">
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn-secundary" onclick="fecharModal()">Cancelar</button>
-        <button type="submit" class="btn-primary">Salvar</button>
-      </div>
-    </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModal('modalRH'); limparFormulario('modalRH')">Cancelar</button>
+      <button class="btn-primary" onclick="salvarFuncionario()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalAvatar" class="modal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">&times;</button></div>
+    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
+    <div class="modal-footer">
+      <input type="file" id="inputImage" accept="image/*" style="display:none">
+      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
+      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalZoom" class="modal" onclick="fecharZoom()">
+  <div class="zoom-content">
+    <img id="imgZoom" src="">
   </div>
 </div>
 
 <script>
-let idEditando = null;
+let editId = null;
 
-document.addEventListener("DOMContentLoaded", () => {
+window.onload = () => {
     renderRH();
     carregarFiliais();
-    lucide.createIcons();
-});
+};
 
 function renderRH() {
     const lista = getFuncionarios();
     const filiais = getFiliais();
     const tabela = document.getElementById("tabela-rh");
+
+    document.getElementById("total-funcionarios").innerText = lista.length;
+    
+    const mesAtual = new Date().toISOString().slice(0, 7);
+    const admitidos = lista.filter(f => f.dataAdmissao && f.dataAdmissao.startsWith(mesAtual)).length;
+    document.getElementById("admitidos-mes").innerText = admitidos;
 
     tabela.innerHTML = lista.map(f => {
         const filial = filiais.find(fl => fl.id == f.idFilial);
@@ -117,64 +202,76 @@ function renderRH() {
                 <td>${filial ? filial.nome : 'Não alocado'}</td>
                 <td>${formatarData(f.dataAdmissao)}</td>
                 <td>
-                    <button onclick="editar(${f.id})" class="btn-icon"><i data-lucide="edit"></i></button>
-                    <button onclick="remover(${f.id})" class="btn-icon btn-delete"><i data-lucide="trash"></i></button>
+                    <button class="btn-icon" onclick="editarFuncionario(${f.id})">
+                        <span class="material-icons-round">edit</span>
+                    </button>
+                    <button class="btn-icon" onclick="removerFuncionario(${f.id})">
+                        <span class="material-icons-round">delete</span>
+                    </button>
                 </td>
             </tr>
         `;
     }).join('');
-    lucide.createIcons();
 }
 
 function carregarFiliais() {
     const filiais = getFiliais();
-    document.getElementById("idFilial").innerHTML = filiais.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
-}
-
-function abrirModal() {
-    idEditando = null;
-    document.querySelector("form").reset();
-    document.getElementById("tituloModal").innerText = "Novo Colaborador";
-    document.getElementById("modalRH").style.display = "flex";
-}
-
-function fecharModal() {
-    document.getElementById("modalRH").style.display = "none";
-}
-
-function editar(id) {
-    const f = getFuncionarios().find(item => item.id == id);
-    idEditando = id;
-    document.getElementById("tituloModal").innerText = "Editar Colaborador";
-    document.getElementById("nome").value = f.nome;
-    document.getElementById("cpf").value = f.cpf;
-    document.getElementById("cargo").value = f.cargo;
-    document.getElementById("idFilial").value = f.idFilial;
-    document.getElementById("dataAdmissao").value = f.dataAdmissao.split('T')[0];
-    document.getElementById("modalRH").style.display = "flex";
+    document.getElementById("func-filial").innerHTML = filiais.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
 }
 
 function salvarFuncionario() {
+    const modal = document.getElementById("modalRH");
+    const editId = modal.dataset.editId;
+    
     const dados = {
-        nome: document.getElementById("nome").value,
-        cpf: document.getElementById("cpf").value,
-        cargo: document.getElementById("cargo").value,
-        idFilial: document.getElementById("idFilial").value,
-        dataAdmissao: document.getElementById("dataAdmissao").value
+        nome: document.getElementById("func-nome").value,
+        cpf: document.getElementById("func-cpf").value,
+        cargo: document.getElementById("func-cargo").value,
+        idFilial: document.getElementById("func-filial").value,
+        dataAdmissao: document.getElementById("func-admissao").value
     };
 
-    if (idEditando) updateFuncionario(idEditando, dados);
-    else createFuncionario(dados);
-
-    fecharModal();
+    if (editId) {
+        updateFuncionario(editId, dados);
+    } else {
+        createFuncionario(dados);
+    }
+    
+    delete modal.dataset.editId;
+    document.querySelector("#modalRH h2").innerText = "Novo Colaborador";
+    limparFormulario('modalRH');
+    fecharModal('modalRH');
     renderRH();
 }
 
-function remover(id) {
-    if(confirm("Deseja demitir/remover este colaborador?")) {
+function editarFuncionario(id) {
+    const f = getFuncionarios().find(item => item.id == id);
+    if (!f) return;
+
+    document.getElementById("func-nome").value = f.nome;
+    document.getElementById("func-cpf").value = f.cpf;
+    document.getElementById("func-cargo").value = f.cargo;
+    document.getElementById("func-filial").value = f.idFilial;
+    document.getElementById("func-admissao").value = f.dataAdmissao ? f.dataAdmissao.split('T')[0] : '';
+
+    document.getElementById("modalRH").dataset.editId = id;
+    document.querySelector("#modalRH h2").innerText = "Editar Colaborador";
+    abrirModal('modalRH');
+}
+
+function removerFuncionario(id) {
+    if(confirm("Deseja remover este colaborador?")) {
         deleteFuncionario(id);
         renderRH();
     }
+}
+
+function aplicarFiltrosTabela(tabelaId) {
+    const busca = document.getElementById('input-busca').value.toLowerCase();
+    const linhas = document.querySelectorAll('#' + tabelaId + ' tr');
+    linhas.forEach(linha => {
+        linha.style.display = linha.innerText.toLowerCase().includes(busca) ? '' : 'none';
+    });
 }
 </script>
 </body>

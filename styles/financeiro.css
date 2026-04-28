@@ -1,0 +1,229 @@
+/* ================================================
+   FINANCEIRO.CSS - Fluxo de Caixa
+   ================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap');
+
+html, body {
+    font-family: 'Josefin Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.content {
+    padding: 30px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    flex: 1;
+}
+
+.page-header-simple {
+    margin-bottom: 25px;
+}
+
+.page-header-simple h2 {
+    font-family: 'Josefin Sans', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 25px;
+    width: 100%;
+}
+
+@media (max-width: 1000px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr; }
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon.accent { background: rgba(76, 175, 80, 0.12); }
+.stat-icon.accent span { color: var(--accent); }
+.stat-icon.info { background: rgba(59, 130, 246, 0.12); }
+.stat-icon.info span { color: var(--info); }
+.stat-icon.warning { background: rgba(245, 158, 11, 0.12); }
+.stat-icon.warning span { color: var(--warning); }
+
+.stat-card h3 {
+    font-size: 13px;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.stat-card p {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.filter-box {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-light);
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 14px;
+    background: var(--white);
+    color: var(--text);
+    transition: all 0.3s ease;
+    min-width: 150px;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(21, 56, 86, 0.15);
+}
+
+code {
+    background: var(--bg);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--primary);
+}
+
+#nota-fiscal-content {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+#nota-fiscal-content h3 {
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+#nota-fiscal-content p {
+    font-size: 14px;
+    margin: 8px 0;
+    color: var(--text);
+}
+
+#nota-fiscal-content hr {
+    border: none;
+    border-top: 1px dashed var(--border);
+    margin: 15px 0;
+}
+
+#nota-fiscal-content p:last-child {
+    font-size: 12px;
+    color: var(--text-light);
+    text-align: center;
+}
+
+.table-container {
+    background: var(--white);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    width: 100%;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table thead {
+    background: var(--bg);
+}
+
+table th {
+    text-align: left;
+    padding: 15px;
+    color: var(--text-light);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+}
+
+table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--text);
+}
+
+table tbody tr:hover {
+    background: var(--bg);
+}

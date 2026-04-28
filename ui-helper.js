@@ -5,7 +5,46 @@ let cropper;
 
 document.addEventListener("DOMContentLoaded", () => {
     inicializarUI();
+    inicializarTemaEscuro();
 });
+
+// ========== MODO ESCURO ==========
+function inicializarTemaEscuro() {
+    const temaSalvo = localStorage.getItem('theme') || 'light';
+    aplicarTema(temaSalvo);
+    
+    const botaoTema = document.getElementById('theme-toggle-btn');
+    if (botaoTema) {
+        botaoTema.addEventListener('click', alternarTema);
+    }
+}
+
+function aplicarTema(tema) {
+    if (tema === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        atualizarIconeTema(true);
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        atualizarIconeTema(false);
+    }
+}
+
+function alternarTema() {
+    const temaAtual = localStorage.getItem('theme') || 'light';
+    const novoTema = temaAtual === 'light' ? 'dark' : 'light';
+    aplicarTema(novoTema);
+}
+
+function atualizarIconeTema(isDark) {
+    const botaoTema = document.getElementById('theme-toggle-btn');
+    if (botaoTema) {
+        botaoTema.innerHTML = isDark ? 
+            '<span class="material-icons-round">light_mode</span>' : 
+            '<span class="material-icons-round">dark_mode</span>';
+    }
+}
 
 function inicializarUI() {
     const user = getUser();

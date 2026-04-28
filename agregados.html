@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Agregados | Distribuidora Serginho</title>
+  
+  <link rel="stylesheet" href="./styles/style.css">
+  <link rel="stylesheet" href="./styles/agregados.css">
+  <link rel="stylesheet" href="./styles/pedidos.css">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+  <script src="auth.js"></script>
+  <script src="api.js"></script>
+  <script src="theme.js"></script>
+  <script src="ui-helper.js"></script>
+  <script>requireAuth();</script>
+</head>
+<body>
+
+<div class="container">
+  <aside class="sidebar">
+    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
+    <ul>
+      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
+      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
+      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
+      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
+      <li><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
+      <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
+      <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
+      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
+      <li class="active"><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
+    </ul>
+  </aside>
+
+  <main class="main">
+    <header class="header">
+      <div class="search-box">
+        <span class="material-icons-round">search</span>
+        <input type="text" id="input-busca" placeholder="Buscar por nome ou veículo..." onkeyup="aplicarFiltrosTabela('tabela-agregados')">
+      </div>
+
+      <div class="header-right">
+        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
+          <span class="material-icons-round">dark_mode</span>
+        </button>
+        <button class="btn-primary" onclick="abrirModal('modalAgregado')">
+          <span class="material-icons-round">person_add</span> Novo Motorista
+        </button>
+        
+        <div class="user-menu" id="dropdownToggle">
+          <div class="profile-img-container">
+            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor: zoom-in;">
+          </div>
+          <div class="user-info">
+            <span id="user-name-display" class="user-name">Carregando...</span>
+            <span class="user-role">Administrador</span>
+          </div>
+          <span class="material-icons-round">expand_more</span>
+
+          <div class="dropdown-content" id="profileDropdown">
+            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
+            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="page-header-simple">
+        <h2>Agregados (Motoristas Parceiros)</h2>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon accent">
+            <span class="material-icons-round">directions_car</span>
+          </div>
+          <div>
+            <h3>Motoristas Ativos</h3>
+            <p id="total-agregados">0</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon info">
+            <span class="material-icons-round">local_shipping</span>
+          </div>
+          <div>
+            <h3>Entregas Hoje</h3>
+            <p id="entregas-hoje">0</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-box">
+        <div class="filter-group">
+          <label>Filtrar por Status</label>
+          <select id="select-status" onchange="aplicarFiltrosTabela('tabela-agregados')">
+            <option value="">Todos</option>
+            <option value="Ativo">Ativo</option>
+            <option value="Inativo">Inativo</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>CPF</th>
+              <th>Telefone</th>
+              <th>Veículo</th>
+              <th>Placa</th>
+              <th>CNH</th>
+              <th>Status</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tabela-agregados"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="modalAgregado" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="titulo-modal-agregado">Novo Motorista</h2>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Nome Completo</label>
+        <input type="text" id="agg-nome" class="form-control">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>CPF</label>
+          <input type="text" id="agg-cpf" class="form-control" data-mask="documento" placeholder="000.000.000-00">
+        </div>
+        <div class="form-group">
+          <label>Telefone</label>
+          <input type="text" id="agg-telefone" class="form-control" data-mask="telefone" placeholder="(00) 00000-0000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Veículo</label>
+          <select id="agg-veiculo" class="form-control">
+            <option value="Carro">Carro</option>
+            <option value="Moto">Moto</option>
+            <option value="Van">Van</option>
+            <option value="Caminhão">Caminhão</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Placa</label>
+          <input type="text" id="agg-placa" class="form-control" placeholder="AAA-0000" style="text-transform: uppercase;">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>CNH</label>
+        <input type="text" id="agg-cnh" class="form-control" placeholder="Número da CNH">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fecharModal('modalAgregado'); limparFormulario('modalAgregado')">Cancelar</button>
+      <button class="btn-primary" onclick="salvarAgregado()">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalAvatar" class="modal" style="display:none">
+  <div class="modal-content">
+    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">&times;</button></div>
+    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
+    <div class="modal-footer">
+      <input type="file" id="inputImage" accept="image/*" style="display:none">
+      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
+      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<div id="modalZoom" class="modal" onclick="fecharZoom()">
+  <div class="zoom-content">
+    <img id="imgZoom" src="">
+  </div>
+</div>
+
+<script>
+let editId = null;
+
+window.onload = () => {
+    renderAgregados();
+};
+
+function renderAgregados() {
+    const lista = getAgregados();
+    const entregas = getEntregas();
+    const tabela = document.getElementById("tabela-agregados");
+
+    document.getElementById("total-agregados").innerText = lista.filter(a => a.status === "Ativo").length;
+    
+    const hoje = new Date().toISOString().split('T')[0];
+    const entregasHoje = entregas.filter(e => e.dataSaida === hoje && e.agregadoId);
+    document.getElementById("entregas-hoje").innerText = entregasHoje.length;
+
+    if (lista.length === 0) {
+        tabela.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 30px; color: var(--text-light)">Nenhum motorista parceiro cadastrado.</td></tr>';
+        return;
+    }
+
+    tabela.innerHTML = lista.map(a => {
+        const statusClass = a.status === "Ativo" ? "entregue" : "pendente";
+        return `
+            <tr>
+                <td style="font-weight:600;">${a.nome}</td>
+                <td>${formatarDocumento(a.cpf)}</td>
+                <td>${mascaraTelefone(a.telefone)}</td>
+                <td>${a.veiculo}</td>
+                <td><code>${a.placa}</code></td>
+                <td>${a.cnh}</td>
+                <td><span class="status ${statusClass}">${a.status}</span></td>
+                <td>
+                    <button class="btn-icon" onclick="editarAgregado(${a.id})">
+                        <span class="material-icons-round">edit</span>
+                    </button>
+                    <button class="btn-icon" onclick="removerAgregado(${a.id})">
+                        <span class="material-icons-round">delete</span>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function salvarAgregado() {
+    const modal = document.getElementById("modalAgregado");
+    const editId = modal.dataset.editId;
+    
+    const dados = {
+        nome: document.getElementById("agg-nome").value,
+        cpf: document.getElementById("agg-cpf").value.replace(/\D/g, ""),
+        telefone: document.getElementById("agg-telefone").value,
+        veiculo: document.getElementById("agg-veiculo").value,
+        placa: document.getElementById("agg-placa").value.toUpperCase(),
+        cnh: document.getElementById("agg-cnh").value
+    };
+
+    if (!dados.nome || !dados.cpf) {
+        alert("Preencha o nome e CPF.");
+        return;
+    }
+
+    if (editId) {
+        updateAgregado(editId, dados);
+    } else {
+        createAgregado(dados);
+    }
+    
+    delete modal.dataset.editId;
+    document.querySelector("#modalAgregado h2").innerText = "Novo Motorista";
+    limparFormulario('modalAgregado');
+    fecharModal('modalAgregado');
+    renderAgregados();
+}
+
+function editarAgregado(id) {
+    const a = getAgregadoById(id);
+    if (!a) return;
+
+    document.getElementById("agg-nome").value = a.nome;
+    document.getElementById("agg-cpf").value = mascaraDocumento(a.cpf);
+    document.getElementById("agg-telefone").value = a.telefone;
+    document.getElementById("agg-veiculo").value = a.veiculo;
+    document.getElementById("agg-placa").value = a.placa;
+    document.getElementById("agg-cnh").value = a.cnh;
+
+    document.getElementById("modalAgregado").dataset.editId = id;
+    document.querySelector("#modalAgregado h2").innerText = "Editar Motorista";
+    abrirModal('modalAgregado');
+}
+
+function removerAgregado(id) {
+    if(confirm("Tem certeza que deseja remover este motorista?")) {
+        deleteAgregado(id);
+        renderAgregados();
+    }
+}
+
+function aplicarFiltrosTabela(tabelaId) {
+    const busca = document.getElementById('input-busca').value.toLowerCase();
+    const statusFiltro = document.getElementById('select-status').value.toLowerCase();
+    const linhas = document.querySelectorAll('#' + tabelaId + ' tr');
+    linhas.forEach(linha => {
+        const texto = linha.innerText.toLowerCase();
+        const bateBusca = busca === '' || texto.includes(busca);
+        const bateStatus = statusFiltro === '' || texto.includes(statusFiltro);
+        linha.style.display = (bateBusca && bateStatus) ? '' : 'none';
+    });
+}
+</script>
+</body>
+</html>
