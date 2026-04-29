@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    UI-HELPER.JS — Dark mode, Avatar Cropper, Zoom, Filtros
    ============================================================ */
 let cropper;
@@ -19,7 +19,7 @@ function inicializarUI() {
   if (img && avatar) img.src = avatar;
 
   // Dark mode persistido
-  const tema = localStorage.getItem("tema");
+  const tema = localStorage.getItem("tema") || localStorage.getItem("theme");
   if (tema === "dark")
     document.documentElement.setAttribute("data-theme", "dark");
 
@@ -35,7 +35,7 @@ function inicializarUI() {
   }
 }
 
-// ── DARK MODE ──
+// â”€â”€ DARK MODE â”€â”€
 function toggleDarkMode() {
   const isDark = document.documentElement.getAttribute("data-theme") === "dark";
   if (isDark) {
@@ -47,7 +47,7 @@ function toggleDarkMode() {
   }
 }
 
-// ── CROPPER / AVATAR ──
+// â”€â”€ CROPPER / AVATAR â”€â”€
 function abrirModalAvatar() {
   const modal = document.getElementById("modalAvatar");
   if (modal) modal.style.display = "flex";
@@ -103,7 +103,7 @@ document.addEventListener("change", (e) => {
   reader.readAsDataURL(file);
 });
 
-// ── ZOOM ──
+// â”€â”€ ZOOM â”€â”€
 function abrirZoom(src) {
   const modal = document.getElementById("modalZoom");
   const img = document.getElementById("imgZoom");
@@ -117,7 +117,7 @@ function fecharZoom() {
   if (modal) modal.style.display = "none";
 }
 
-// ── MODAIS ──
+// â”€â”€ MODAIS â”€â”€
 function abrirModal(id) {
   const m = document.getElementById(id);
   if (m) m.style.display = "flex";
@@ -127,7 +127,7 @@ function fecharModal(id) {
   if (m) m.style.display = "none";
 }
 
-// ── FILTRO DE TABELA ──
+// â”€â”€ FILTRO DE TABELA â”€â”€
 function aplicarFiltros(tabelaId) {
   const busca = (
     document.getElementById("input-busca")?.value || ""
@@ -143,7 +143,7 @@ function aplicarFiltros(tabelaId) {
   });
 }
 
-// ── MÁSCARAS ──
+// â”€â”€ MÁSCARAS â”€â”€
 function mascaraTelefone(v) {
   v = v.replace(/\D/g, "");
   v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
@@ -183,6 +183,8 @@ async function buscarEnderecoPorCEP(cep) {
       document.getElementById("cli-bairro").value = d.bairro;
     if (document.getElementById("cli-cidade"))
       document.getElementById("cli-cidade").value = d.localidade;
+    if (document.getElementById("cli-estado"))
+      document.getElementById("cli-estado").value = d.uf;
   } catch (e) {
     console.error("Erro CEP:", e);
   }
@@ -198,10 +200,11 @@ document.addEventListener("input", (e) => {
   }
 });
 
-// ── UTILITÁRIOS ──
+// â”€â”€ UTILITÁRIOS â”€â”€
 function limparFormulario(id) {
   const f = document.getElementById(id);
   if (f) {
     f.querySelectorAll("input,select,textarea").forEach((i) => (i.value = ""));
   }
 }
+

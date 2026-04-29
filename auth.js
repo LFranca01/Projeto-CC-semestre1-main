@@ -1,4 +1,4 @@
-// ================= AUTH CORE =================
+﻿// ================= AUTH CORE =================
 
 // pega usuário logado
 function getUser() {
@@ -47,3 +47,4 @@ function logout() {
   sessionStorage.removeItem("user");
   window.location.replace("index.html");
 }
+

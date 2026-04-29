@@ -77,7 +77,7 @@
 
 /* Modal tamanho pedido */
 .pedido-modal-size {
-  max-width: 560px;
+  max-width: 760px;
 }
 
 /* Grid do formulário do modal */
@@ -86,6 +86,34 @@
   grid-template-columns: 1fr 1fr;
   gap: 14px;
   margin-bottom: 16px;
+}
+
+.frete-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.frete-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.frete-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
 }
 
 /* Ocultar spinner nos inputs number */

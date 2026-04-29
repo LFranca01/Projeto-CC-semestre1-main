@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
@@ -25,6 +25,7 @@
     <script src="auth.js"></script>
     <script src="api.js"></script>
     <script src="ui-helper.js"></script>
+    <script src="inicio.js"></script>
     <script>
       requireAuth();
     </script>
@@ -58,6 +59,12 @@
             <a href="produtos.html"
               ><span class="material-icons-round">category</span
               ><span>Produtos</span></a
+            >
+          </li>
+          <li>
+            <a href="filiais.html"
+              ><span class="material-icons-round">hub</span
+              ><span>Filiais</span></a
             >
           </li>
           <li>
@@ -138,7 +145,7 @@
                 <span class="material-icons-round">payments</span>
               </div>
               <div>
-                <h3>Vendas Totais</h3>
+                <h3>Receita de Frete</h3>
                 <p id="total-vendas">R$ 0,00</p>
               </div>
             </div>
@@ -147,7 +154,7 @@
                 <span class="material-icons-round">pending_actions</span>
               </div>
               <div>
-                <h3>Pedidos Pendentes</h3>
+                <h3>Pedidos Operacionais</h3>
                 <p id="pedidos-count">0</p>
               </div>
             </div>
@@ -165,7 +172,7 @@
                 <span class="material-icons-round">groups</span>
               </div>
               <div>
-                <h3>Clientes</h3>
+                <h3>Transferências</h3>
                 <p id="clientes-count">0</p>
               </div>
             </div>
@@ -173,11 +180,11 @@
 
           <div class="charts-container">
             <div class="chart-card">
-              <h3>Status das Entregas</h3>
+              <h3>Distribuição Operacional</h3>
               <canvas id="chartLogistica"></canvas>
             </div>
             <div class="chart-card">
-              <h3>Pedidos por Status</h3>
+              <h3>Pedidos por Filial</h3>
               <canvas id="chartPedidos"></canvas>
             </div>
           </div>
@@ -191,8 +198,8 @@
                 <tr>
                   <th>ID</th>
                   <th>Cliente</th>
-                  <th>Data</th>
-                  <th>Total</th>
+                  <th>Filial</th>
+                  <th>Frete</th>
                   <th>Status</th>
                 </tr>
               </thead>
@@ -236,92 +243,13 @@
 
     <script>
       window.onload = () => {
-        const pedidos = getPedidos();
-        const entregas = getEntregas();
-        document.getElementById("pedidos-count").innerText = pedidos.filter(
-          (p) => p.status === "Pendente",
-        ).length;
-        document.getElementById("transito-count").innerText = entregas.filter(
-          (e) => e.situacao === "Em Trânsito",
-        ).length;
-        document.getElementById("total-vendas").innerText = formatarMoeda(
-          pedidos.reduce((a, p) => a + p.total, 0),
-        );
-        document.getElementById("clientes-count").innerText =
-          getClientes().length;
+        carregarStatsInicio();
         renderUltimosPedidos();
         initCharts();
       };
-
-      function renderUltimosPedidos() {
-        const pedidos = getPedidos().slice(-5).reverse();
-        document.getElementById("tabela-dashboard").innerHTML = pedidos.length
-          ? pedidos
-              .map(
-                (p) => `
-          <tr>
-            <td class="td-bold">#${p.id}</td>
-            <td>${p.clienteNome || '<span class="sem-nome">Sem nome</span>'}</td>
-            <td>${formatarData(p.dataPedido)}</td>
-            <td>${formatarMoeda(p.total)}</td>
-            <td><span class="status ${p.status.toLowerCase()}">${p.status}</span></td>
-          </tr>`,
-              )
-              .join("")
-          : '<tr><td colspan="5" class="tabela-vazia"><span class="material-icons-round">inventory_2</span><p>Nenhum pedido ainda.</p></td></tr>';
-      }
-
-      function initCharts() {
-        const pedidos = getPedidos();
-        const entregas = getEntregas();
-        const pendentes = pedidos.filter((p) => p.status === "Pendente").length;
-        const enviados = pedidos.filter((p) => p.status === "Enviado").length;
-        const entregues = pedidos.filter((p) => p.status === "Entregue").length;
-        const emTransito = entregas.filter(
-          (e) => e.situacao === "Em Trânsito",
-        ).length;
-        const entreguesE = entregas.filter(
-          (e) => e.situacao === "Entregue",
-        ).length;
-
-        new Chart(document.getElementById("chartLogistica").getContext("2d"), {
-          type: "doughnut",
-          data: {
-            labels: ["Pendente", "Em Trânsito", "Entregue"],
-            datasets: [
-              {
-                data: [pendentes, emTransito, entreguesE],
-                backgroundColor: ["#f59e0b", "#3b82f6", "#10b981"],
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { position: "bottom" } },
-          },
-        });
-
-        new Chart(document.getElementById("chartPedidos").getContext("2d"), {
-          type: "bar",
-          data: {
-            labels: ["Pendente", "Enviado", "Entregue"],
-            datasets: [
-              {
-                label: "Pedidos",
-                data: [pendentes, enviados, entregues],
-                backgroundColor: ["#fbbf24", "#60a5fa", "#34d399"],
-                borderRadius: 6,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-          },
-        });
-      }
     </script>
   </body>
 </html>
+
+
+

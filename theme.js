@@ -1,4 +1,4 @@
-/* ========== GERENCIAMENTO DE TEMA ESCURO ========== */
+﻿/* ========== GERENCIAMENTO DE TEMA ESCURO ========== */
 
 // Inicializar tema ao carregar a página
 document.addEventListener("DOMContentLoaded", function () {
@@ -41,3 +41,4 @@ function atualizarIconeTema(isDark) {
     }
   }
 }
+
