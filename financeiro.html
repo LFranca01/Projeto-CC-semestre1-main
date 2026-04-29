@@ -1,245 +1,687 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Financeiro | Distribuidora Serginho</title>
-  <link rel="stylesheet" href="./styles/style.css">
-  <link rel="stylesheet" href="./styles/financeiro.css">
-  <link rel="stylesheet" href="./styles/pedidos.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-  <script src="auth.js"></script>
-  <script src="api.js"></script>
-  <script src="theme.js"></script>
-  <script src="ui-helper.js"></script>
-  <script>requireAuth();</script>
-</head>
-<body>
-<div class="container">
-  <aside class="sidebar">
-    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
-    <ul>
-      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
-      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
-      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
-      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
-      <li><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
-      <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
-      <li class="active"><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
-      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logistica</span></a></li>
-      <li><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
-    </ul>
-  </aside>
-  <main class="main">
-    <header class="header">
-      <div class="search-box">
-        <span class="material-icons-round">search</span>
-        <input type="text" id="input-busca" placeholder="Buscar..." onkeyup="aplicarFiltrosTabela('tabela-financeiro')">
-      </div>
-      <div class="header-right">
-        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
-          <span class="material-icons-round">dark_mode</span>
-        </button>
-        <button class="btn-primary" onclick="imprimirRelatorio()">
-          <span class="material-icons-round">print</span> Imprimir
-        </button>
-        <div class="user-menu" id="dropdownToggle">
-          <div class="profile-img-container">
-            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor:zoom-in">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Financeiro | Distribuidora Serginho</title>
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="stylesheet" href="./styles/pedidos.css" />
+    <link rel="stylesheet" href="./styles/financeiro.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="ui-helper.js"></script>
+    <script>
+      requireAuth();
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img src="./assets/Logo.png" alt="Logo" />
+        </div>
+        <ul>
+          <li>
+            <a href="inicio.html"
+              ><span class="material-icons-round">dashboard</span
+              ><span>Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a href="pedidos.html"
+              ><span class="material-icons-round">inventory_2</span
+              ><span>Pedidos</span></a
+            >
+          </li>
+          <li>
+            <a href="clientes.html"
+              ><span class="material-icons-round">groups</span
+              ><span>Clientes</span></a
+            >
+          </li>
+          <li>
+            <a href="produtos.html"
+              ><span class="material-icons-round">category</span
+              ><span>Produtos</span></a
+            >
+          </li>
+          <li>
+            <a href="agregados.html"
+              ><span class="material-icons-round">warehouse</span
+              ><span>Agregados</span></a
+            >
+          </li>
+          <li>
+            <a href="rh.html"
+              ><span class="material-icons-round">badge</span><span>RH</span></a
+            >
+          </li>
+          <li class="active">
+            <a href="financeiro.html"
+              ><span class="material-icons-round">payments</span
+              ><span>Financeiro</span></a
+            >
+          </li>
+          <li>
+            <a href="logistica.html"
+              ><span class="material-icons-round">local_shipping</span
+              ><span>Logística</span></a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main">
+        <header class="header">
+          <div class="search-box">
+            <span class="material-icons-round">search</span>
+            <input
+              type="text"
+              id="input-busca"
+              placeholder="Buscar pagamento..."
+              onkeyup="aplicarFiltros('tabela-financeiro')"
+            />
           </div>
-          <div class="user-info">
-            <span id="user-name-display" class="user-name">Carregando...</span>
-            <span class="user-role">Administrador</span>
+          <div class="header-right">
+            <div class="theme-toggle-wrap">
+              <span class="material-icons-round">dark_mode</span>
+              <button class="theme-toggle" onclick="toggleDarkMode()"></button>
+            </div>
+            <button class="btn-primary" onclick="abrirModal('modalPagamento')">
+              <span class="material-icons-round">add</span> Registrar Pagamento
+            </button>
+            <div class="user-menu" id="dropdownToggle">
+              <div class="profile-img-container">
+                <img
+                  id="avatar-nav"
+                  src="https://i.pravatar.cc/100"
+                  alt="Perfil"
+                  onclick="abrirZoom(this.src)"
+                />
+              </div>
+              <div class="user-info">
+                <span id="user-name-display" class="user-name">...</span>
+                <span class="user-role">Administrador</span>
+              </div>
+              <span class="material-icons-round">expand_more</span>
+              <div class="dropdown-content" id="profileDropdown">
+                <a href="#" onclick="abrirModalAvatar()"
+                  ><span class="material-icons-round">photo_camera</span>
+                  Alterar Foto</a
+                >
+                <a href="#" onclick="logout()" class="logout-link"
+                  ><span class="material-icons-round">logout</span> Sair</a
+                >
+              </div>
+            </div>
           </div>
-          <span class="material-icons-round">expand_more</span>
-          <div class="dropdown-content" id="profileDropdown">
-            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
-            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+        </header>
+
+        <div class="content">
+          <div class="page-header-pedidos">
+            <h2>Financeiro</h2>
+            <button class="btn-secondary" onclick="imprimirRelatorio()">
+              <span class="material-icons-round">print</span> Imprimir Relatório
+            </button>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <span class="material-icons-round">trending_up</span>
+              </div>
+              <div>
+                <h3>Saldo Total Recebido</h3>
+                <p id="stat-saldo">R$ 0,00</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <span class="material-icons-round">today</span>
+              </div>
+              <div>
+                <h3>Recebido Hoje</h3>
+                <p id="stat-hoje">R$ 0,00</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orange">
+                <span class="material-icons-round">pending_actions</span>
+              </div>
+              <div>
+                <h3>Pagamentos Pendentes</h3>
+                <p id="stat-pendentes">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple">
+                <span class="material-icons-round">receipt_long</span>
+              </div>
+              <div>
+                <h3>Notas Fiscais Emitidas</h3>
+                <p id="stat-nf">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABS -->
+          <div class="fin-tabs">
+            <button class="fin-tab ativo" onclick="setTab('pagamentos', this)">
+              <span class="material-icons-round">payments</span> Pagamentos
+            </button>
+            <button class="fin-tab" onclick="setTab('notas', this)">
+              <span class="material-icons-round">receipt_long</span> Notas
+              Fiscais
+            </button>
+          </div>
+
+          <!-- PAGAMENTOS -->
+          <div id="tab-pagamentos">
+            <div class="filter-box">
+              <div class="filter-group">
+                <label>Filtrar por Status</label>
+                <select
+                  id="select-filtro"
+                  class="form-control"
+                  onchange="aplicarFiltros('tabela-financeiro')"
+                >
+                  <option value="">Todos</option>
+                  <option value="Pago">Pago</option>
+                  <option value="Pendente">Pendente</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label>Método de Pagamento</label>
+                <select
+                  id="filtro-metodo"
+                  class="form-control"
+                  onchange="aplicarFiltros('tabela-financeiro')"
+                >
+                  <option value="">Todos</option>
+                  <option>Pix</option>
+                  <option>Cartão</option>
+                  <option>Dinheiro</option>
+                  <option>Boleto</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label>Data</label>
+                <input
+                  type="date"
+                  id="filtro-data"
+                  class="form-control"
+                  oninput="aplicarFiltros('tabela-financeiro')"
+                />
+              </div>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="table-dashboard">
+                <thead>
+                  <tr>
+                    <th>ID Pedido</th>
+                    <th>Data</th>
+                    <th>Método</th>
+                    <th>Valor</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tabela-financeiro"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- NOTAS FISCAIS -->
+          <div id="tab-notas" class="tab-hidden">
+            <div class="filter-box">
+              <div class="filter-group">
+                <label>Buscar por Nº ou Pedido</label>
+                <input
+                  type="text"
+                  id="busca-nf"
+                  class="form-control"
+                  placeholder="NF-00001 ou #12"
+                  oninput="renderNotas()"
+                />
+              </div>
+            </div>
+            <div class="table-wrapper">
+              <table class="table-dashboard">
+                <thead>
+                  <tr>
+                    <th>Número</th>
+                    <th>ID Pedido</th>
+                    <th>Emissão</th>
+                    <th>Valor</th>
+                    <th>Cidade/Estado</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tabela-notas"></tbody>
+              </table>
+            </div>
+            <div class="nf-actions">
+              <button class="btn-primary" onclick="abrirModal('modalNF')">
+                <span class="material-icons-round">add</span> Emitir Nota Fiscal
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </header>
-    <div class="content">
-      <div class="page-header-simple">
-        <h2>Fluxo de Caixa</h2>
-      </div>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon accent"><span class="material-icons-round">account_balance</span></div>
-          <div><h3>Saldo Total</h3><p id="saldo-total">R$ 0,00</p></div>
+      </main>
+    </div>
+
+    <!-- MODAL PAGAMENTO -->
+    <div id="modalPagamento" class="modal">
+      <div class="modal-content">
+        <div class="modal-header"><h2>Registrar Pagamento</h2></div>
+        <div class="modal-body">
+          <div class="filter-group filter-group-mb">
+            <label>Pedido</label>
+            <select id="pag-pedido" class="form-control"></select>
+          </div>
+          <div class="fin-form-grid">
+            <div class="filter-group">
+              <label>Valor (R$)</label>
+              <input
+                type="number"
+                id="pag-valor"
+                class="form-control"
+                placeholder="0,00"
+                step="0.01"
+                min="0"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Data do Pagamento</label>
+              <input type="date" id="pag-data" class="form-control" />
+            </div>
+            <div class="filter-group">
+              <label>Método</label>
+              <select id="pag-metodo" class="form-control">
+                <option>Pix</option>
+                <option>Cartão</option>
+                <option>Dinheiro</option>
+                <option>Boleto</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Status</label>
+              <select id="pag-situacao" class="form-control">
+                <option value="Pago">Pago</option>
+                <option value="Pendente">Pendente</option>
+              </select>
+            </div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon info"><span class="material-icons-round">receipt_long</span></div>
-          <div><h3>Notas Fiscais</h3><p id="total-notas">0</p></div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="fecharModal('modalPagamento')">
+            Cancelar
+          </button>
+          <button class="btn-primary" onclick="salvarPagamento()">
+            <span class="material-icons-round">save</span> Salvar
+          </button>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon warning"><span class="material-icons-round">today</span></div>
-          <div><h3>Hoje</h3><p id="pagamentos-hoje">R$ 0,00</p></div>
-        </div>
-      </div>
-      <div class="filter-box">
-        <div class="filter-group">
-          <label>Periodo</label>
-          <input type="date" id="filtro-data" onchange="aplicarFiltrosTabela('tabela-financeiro')">
-        </div>
-        <div class="filter-group">
-          <label>Metodo</label>
-          <select id="filtro-metodo" onchange="aplicarFiltrosTabela('tabela-financeiro')">
-            <option value="">Todos</option>
-            <option value="Pix">Pix</option>
-            <option value="Cartao">Cartao</option>
-            <option value="Dinheiro">Dinheiro</option>
-          </select>
-        </div>
-      </div>
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr><th>NF</th><th>ID</th><th>Data</th><th>Metodo</th><th>Valor</th><th>Status</th><th>Acoes</th></tr>
-          </thead>
-          <tbody id="tabela-financeiro"></tbody>
-        </table>
       </div>
     </div>
-  </main>
-</div>
-<div id="modalNF" class="modal">
-  <div class="modal-content">
-    <div class="modal-header"><h2>Nota Fiscal</h2></div>
-    <div class="modal-body" id="nota-fiscal-content"></div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="fecharModal('modalNF')">Fechar</button>
-      <button class="btn-primary" onclick="imprimirNF()">Imprimir</button>
+
+    <!-- MODAL NOTA FISCAL -->
+    <div id="modalNF" class="modal">
+      <div class="modal-content nf-modal-size">
+        <div class="modal-header"><h2>Emitir Nota Fiscal</h2></div>
+        <div class="modal-body">
+          <div class="filter-group filter-group-mb">
+            <label>Pedido de Referência</label>
+            <select id="nf-pedido" class="form-control"></select>
+          </div>
+          <div class="fin-form-grid">
+            <div class="filter-group">
+              <label>Valor (R$)</label>
+              <input
+                type="number"
+                id="nf-valor"
+                class="form-control"
+                step="0.01"
+                min="0"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Série</label>
+              <input
+                type="text"
+                id="nf-serie"
+                class="form-control"
+                value="A1"
+                maxlength="2"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Email do Destinatário</label>
+              <input
+                type="email"
+                id="nf-email"
+                class="form-control"
+                placeholder="email@cliente.com"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Prazo de Entrega (dias)</label>
+              <input
+                type="number"
+                id="nf-prazo"
+                class="form-control"
+                value="3"
+                min="1"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Cidade</label>
+              <input type="text" id="nf-cidade" class="form-control" />
+            </div>
+            <div class="filter-group">
+              <label>Estado</label>
+              <input
+                type="text"
+                id="nf-estado"
+                class="form-control"
+                maxlength="2"
+                placeholder="SP"
+              />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="fecharModal('modalNF')">
+            Cancelar
+          </button>
+          <button class="btn-primary" onclick="emitirNF()">
+            <span class="material-icons-round">receipt_long</span> Emitir
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<div id="modalAvatar" class="modal" style="display:none">
-  <div class="modal-content">
-    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">x</button></div>
-    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
-    <div class="modal-footer">
-      <input type="file" id="inputImage" accept="image/*" style="display:none">
-      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
-      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
-      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
+
+    <!-- MODAL NF VISUALIZAÇÃO / IMPRESSÃO -->
+    <div id="modalNFView" class="modal">
+      <div class="modal-content nf-view-size">
+        <div class="modal-header"><h2>Nota Fiscal</h2></div>
+        <div class="modal-body" id="nf-print-area"></div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="fecharModal('modalNFView')">
+            Fechar
+          </button>
+          <button class="btn-primary" onclick="window.print()">
+            <span class="material-icons-round">print</span> Imprimir
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-<div id="modalZoom" class="modal" onclick="fecharZoom()">
-  <div class="zoom-content"><img id="imgZoom" src=""></div>
-</div>
-<script>
-var notaFiscalAtual = null;
-window.onload = function() { renderFinanceiro(); };
-function renderFinanceiro() {
-    var pagamentos = getPagamentos() || [];
-    var tabela = document.getElementById("tabela-financeiro");
-    document.getElementById("saldo-total").innerText = formatarMoeda(getSaldoTotal());
-    document.getElementById("total-notas").innerText = pagamentos.length;
-    var hoje = new Date().toISOString().split("T")[0];
-    var valorHoje = 0;
-    for (var i = 0; i < pagamentos.length; i++) {
-        if (pagamentos[i] && pagamentos[i].dataPagamento === hoje) {
-            valorHoje += pagamentos[i].valor || 0;
+
+    <!-- MODAIS PADRÃO -->
+    <div id="modalAvatar" class="modal modal-avatar-hidden">
+      <div class="modal-content">
+        <div class="modal-header"><h2>Ajustar Foto</h2></div>
+        <div class="cropper-wrapper"><img id="image-to-crop" src="" /></div>
+        <div class="modal-footer">
+          <input
+            type="file"
+            id="inputImage"
+            accept="image/*"
+            class="input-file-hidden"
+          />
+          <button
+            class="btn-secondary"
+            onclick="document.getElementById('inputImage').click()"
+          >
+            Selecionar
+          </button>
+          <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+          <button class="btn-secondary" onclick="fecharModalAvatar()">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="modalZoom" onclick="fecharZoom()">
+      <img id="imgZoom" src="" alt="zoom" />
+    </div>
+
+    <script>
+      let tabAtiva = "pagamentos";
+
+      window.onload = () => {
+        carregarStats();
+        renderPagamentos();
+        popularSelectPedidos();
+      };
+
+      function setTab(tab, el) {
+        tabAtiva = tab;
+        document
+          .querySelectorAll(".fin-tab")
+          .forEach((b) => b.classList.remove("ativo"));
+        el.classList.add("ativo");
+        document.getElementById("tab-pagamentos").style.display =
+          tab === "pagamentos" ? "" : "none";
+        document.getElementById("tab-notas").style.display =
+          tab === "notas" ? "" : "none";
+        if (tab === "notas") renderNotas();
+      }
+
+      function carregarStats() {
+        const pags = getPagamentos();
+        const hoje = new Date().toISOString().split("T")[0];
+        const nfs = getNotasFiscais();
+        document.getElementById("stat-saldo").innerText =
+          formatarMoeda(getSaldoTotal());
+        document.getElementById("stat-hoje").innerText = formatarMoeda(
+          pags
+            .filter((p) => p.dataPagamento === hoje && p.situacao === "Pago")
+            .reduce((s, p) => s + p.valor, 0),
+        );
+        document.getElementById("stat-pendentes").innerText = pags.filter(
+          (p) => p.situacao === "Pendente",
+        ).length;
+        document.getElementById("stat-nf").innerText = nfs.length;
+      }
+
+      function popularSelectPedidos() {
+        const pedidos = getPedidos();
+        const opts = pedidos
+          .map(
+            (p) =>
+              `<option value="${p.id}">#${p.id} — ${p.clienteNome || "?"} — ${formatarMoeda(p.total)}</option>`,
+          )
+          .join("");
+        document.getElementById("pag-pedido").innerHTML =
+          opts || '<option value="">Nenhum pedido</option>';
+        document.getElementById("nf-pedido").innerHTML =
+          opts || '<option value="">Nenhum pedido</option>';
+        // Preselect hoje
+        const today = new Date().toISOString().split("T")[0];
+        document.getElementById("pag-data").value = today;
+      }
+
+      function renderPagamentos() {
+        const lista = getPagamentos();
+        const tabela = document.getElementById("tabela-financeiro");
+        if (!lista.length) {
+          tabela.innerHTML = `<tr><td colspan="6" class="tabela-vazia">
+        <span class="material-icons-round">payments</span>
+        <p>Nenhum pagamento registrado.</p></td></tr>`;
+          return;
         }
-    }
-    document.getElementById("pagamentos-hoje").innerText = formatarMoeda(valorHoje);
-    if (pagamentos.length === 0) {
-        tabela.innerHTML = "<tr><td colspan=\"7\" style=\"text-align:center;padding:30px;color:var(--text-light)\">Nenhum registro.</td></tr>";
-        return;
-    }
-    var html = "";
-    for (var i = 0; i < pagamentos.length; i++) {
-        var p = pagamentos[i];
-        html = html + "<tr>";
-        html = html + "<td><code>" + (p.notaFiscal || "-") + "</code></td>";
-        html = html + "<td>#" + p.pedidoId + "</td>";
-        html = html + "<td>" + formatarData(p.dataPagamento) + "</td>";
-        html = html + "<td>" + (p.metodo || "-") + "</td>";
-        html = html + "<td><strong style=\"color:var(--accent)\">" + formatarMoeda(p.valor) + "</strong></td>";
-        html = html + "<td><span class=\"status entregue\">" + p.status + "</span></td>";
-        html = html + "<td><button class=\"btn-icon\" onclick=\"verNotaFiscal(" + p.id + ")\"><span class=\"material-icons-round\">receipt</span></button></td>";
-        html = html + "</tr>";
-    }
-    tabela.innerHTML = html;
-}
-function verNotaFiscal(id) {
-    var pagamentos = getPagamentos() || [];
-    var p = null;
-    for (var i = 0; i < pagamentos.length; i++) {
-        if (pagamentos[i] && pagamentos[i].id == id) { p = pagamentos[i]; break; }
-    }
-    if (!p) return;
-    var pedidos = getPedidos() || [];
-    var pedido = null;
-    for (var i = 0; i < pedidos.length; i++) {
-        if (pedidos[i] && pedidos[i].id == p.pedidoId) { pedido = pedidos[i]; break; }
-    }
-    NotaFiscalAtual = p;
-    var html = "<div style=\"padding:20px;font-family:monospace;\">";
-    html = html + "<h3 style=\"text-align:center;\">NOTA FISCAL</h3>";
-    html = html + "<p><strong>NF:</strong> " + (p.notaFiscal || "-") + "</p>";
-    html = html + "<p><strong>Data:</strong> " + formatarData(p.dataPagamento) + "</p>";
-    html = html + "<p><strong>Pedido:</strong> #" + p.pedidoId + "</p>";
-    html = html + "<p><strong>Cliente:</strong> " + (pedido ? pedido.clienteNome : "N/D") + "</p>";
-    html = html + "<hr><p><strong>Metodo:</strong> " + (p.metodo || "-") + "</p>";
-    html = html + "<p><strong>Valor:</strong> " + formatarMoeda(p.valor) + "</p>";
-    html = html + "<hr><p style=\"text-align:center;\">Distribuidora Serginho</p>";
-    html = html + "<p style=\"text-align:center;\">CNPJ: 00.000.000/0001-00</p>";
-    html = html + "</div>";
-    document.getElementById("nota-fiscal-content").innerHTML = html;
-    abrirModal("modalNF");
-}
-function imprimirNF() {
-    var conteudo = document.getElementById("nota-fiscal-content").innerHTML;
-    var janela = window.open("", "", "width=600,height=800");
-    janela.document.write("<html><head><title>Nota Fiscal</title>");
-    janela.document.write("<style>body{font-family:monospace;padding:20px;}</style></head><body>");
-    janela.document.write(conteudo);
-    janela.document.write("</body></html>");
-    janela.print();
-}
-function imprimirRelatorio() {
-    var pagamentos = getPagamentos() || [];
-    var html = "<html><head><title>Relatorio</title>";
-    html = html + "<style>body{font-family:sans-serif;padding:20px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background:#f3f4f6;}</style></head><body>";
-    html = html + "<h2>Relatorio Financeiro</h2>";
-    html = html + "<p>Data: " + new Date().toLocaleDateString("pt-BR") + "</p>";
-    html = html + "<p>Total: " + formatarMoeda(getSaldoTotal()) + "</p>";
-    html = html + "<table><thead><tr><th>NF</th><th>Pedido</th><th>Data</th><th>Metodo</th><th>Valor</th></tr></thead><tbody>";
-    for (var i = 0; i < pagamentos.length; i++) {
-        var p = pagamentos[i];
-        html = html + "<tr>";
-        html = html + "<td>" + (p.notaFiscal || "-") + "</td>";
-        html = html + "<td>#" + p.pedidoId + "</td>";
-        html = html + "<td>" + formatarData(p.dataPagamento) + "</td>";
-        html = html + "<td>" + (p.metodo || "-") + "</td>";
-        html = html + "<td>" + formatarMoeda(p.valor) + "</td>";
-        html = html + "</tr>";
-    }
-    html = html + "</tbody></table></body></html>";
-    var janela = window.open("", "", "width=800,height=600");
-    janela.document.write(html);
-    janela.print();
-}
-function aplicarFiltrosTabela(tabelaId) {
-    var busca = document.getElementById("input-busca").value.toLowerCase();
-    var dataFiltro = document.getElementById("filtro-data").value;
-    var metodoFiltro = document.getElementById("filtro-metodo").value.toLowerCase();
-    var linhas = document.querySelectorAll("#" + tabelaId + " tr");
-    for (var i = 0; i < linhas.length; i++) {
-        var linha = linhas[i];
-        var texto = linha.innerText.toLowerCase();
-        var bateBusca = busca === "" || texto.indexOf(busca) > -1;
-        var bateData = dataFiltro === "" || texto.indexOf(dataFiltro) > -1;
-        var bateMetodo = metodoFiltro === "" || texto.indexOf(metodoFiltro) > -1;
-        linha.style.display = (bateBusca && bateData && bateMetodo) ? "" : "none";
-    }
-}
-</script>
-</body>
+        tabela.innerHTML = lista
+          .map(
+            (p) => `
+      <tr>
+        <td class="td-bold">#${p.idPedido}</td>
+        <td>${formatarData(p.dataPagamento)}</td>
+        <td><span class="badge-metodo ${p.metodo?.toLowerCase()}">${p.metodo}</span></td>
+        <td class="td-valor">${formatarMoeda(p.valor)}</td>
+        <td><span class="status ${p.situacao === "Pago" ? "pago" : "pendente"}">${p.situacao}</span></td>
+        <td>
+          <button class="btn-icon danger" onclick="removerPagamento(${p.id})"><span class="material-icons-round">delete</span></button>
+        </td>
+      </tr>`,
+          )
+          .join("");
+      }
+
+      function salvarPagamento() {
+        const idPedido = document.getElementById("pag-pedido").value;
+        const valor = parseFloat(document.getElementById("pag-valor").value);
+        if (!idPedido || !valor)
+          return alert("Pedido e valor são obrigatórios.");
+        createPagamento({
+          idPedido,
+          valor,
+          dataPagamento: document.getElementById("pag-data").value,
+          metodo: document.getElementById("pag-metodo").value,
+          situacao: document.getElementById("pag-situacao").value,
+        });
+        fecharModal("modalPagamento");
+        carregarStats();
+        renderPagamentos();
+      }
+
+      function removerPagamento(id) {
+        if (confirm("Remover este pagamento?")) {
+          deletePagamento(id);
+          carregarStats();
+          renderPagamentos();
+        }
+      }
+
+      function renderNotas() {
+        const busca = (
+          document.getElementById("busca-nf")?.value || ""
+        ).toLowerCase();
+        const lista = getNotasFiscais().filter(
+          (n) =>
+            !busca ||
+            n.numero.toLowerCase().includes(busca) ||
+            String(n.idPedido).includes(busca),
+        );
+        const tabela = document.getElementById("tabela-notas");
+        if (!lista.length) {
+          tabela.innerHTML = `<tr><td colspan="7" class="tabela-vazia">
+        <span class="material-icons-round">receipt_long</span>
+        <p>Nenhuma nota fiscal emitida.</p></td></tr>`;
+          return;
+        }
+        tabela.innerHTML = lista
+          .map(
+            (n) => `
+      <tr>
+        <td class="td-bold">${n.numero}</td>
+        <td>#${n.idPedido}</td>
+        <td>${formatarData(n.dataEmissao)}</td>
+        <td class="td-valor">${formatarMoeda(n.valor)}</td>
+        <td>${n.cidade || "—"}/${n.estado || "—"}</td>
+        <td><span class="status ativo">${n.situacao}</span></td>
+        <td>
+          <button class="btn-icon" onclick="visualizarNF(${n.id})"><span class="material-icons-round">visibility</span></button>
+          <button class="btn-icon" onclick="imprimirNF(${n.id})"><span class="material-icons-round">print</span></button>
+        </td>
+      </tr>`,
+          )
+          .join("");
+      }
+
+      function emitirNF() {
+        const idPedido = document.getElementById("nf-pedido").value;
+        const valor = parseFloat(document.getElementById("nf-valor").value);
+        if (!idPedido || !valor)
+          return alert("Pedido e valor são obrigatórios.");
+        createNotaFiscal({
+          idPedido,
+          valor,
+          serie: document.getElementById("nf-serie").value,
+          email: document.getElementById("nf-email").value,
+          cidade: document.getElementById("nf-cidade").value,
+          estado: document.getElementById("nf-estado").value,
+          prazoEntrega: document.getElementById("nf-prazo").value,
+        });
+        fecharModal("modalNF");
+        carregarStats();
+        renderNotas();
+      }
+
+      function visualizarNF(id) {
+        const nf = getNotasFiscais().find((n) => n.id == id);
+        if (!nf) return;
+        document.getElementById("nf-print-area").innerHTML = gerarHTMLNF(nf);
+        abrirModal("modalNFView");
+      }
+
+      function imprimirNF(id) {
+        visualizarNF(id);
+        setTimeout(() => window.print(), 400);
+      }
+
+      function gerarHTMLNF(nf) {
+        return `
+      <div class="nf-documento">
+        <div class="nf-header">
+          <h2>NOTA FISCAL ELETRÔNICA</h2>
+          <div class="nf-numero">${nf.numero} — Série ${nf.serie}</div>
+        </div>
+        <div class="nf-info-grid">
+          <div class="nf-campo"><span>Data de Emissão</span><strong>${formatarData(nf.dataEmissao)}</strong></div>
+          <div class="nf-campo"><span>Pedido</span><strong>#${nf.idPedido}</strong></div>
+          <div class="nf-campo"><span>Valor Total</span><strong>${formatarMoeda(nf.valor)}</strong></div>
+          <div class="nf-campo"><span>Prazo de Entrega</span><strong>${nf.prazoEntrega} dias úteis</strong></div>
+          <div class="nf-campo"><span>Cidade/Estado</span><strong>${nf.cidade || "—"}/${nf.estado || "—"}</strong></div>
+          <div class="nf-campo"><span>Email</span><strong>${nf.email || "—"}</strong></div>
+        </div>
+        <div class="nf-chave">
+          <span>Chave de Acesso:</span>
+          <code>${nf.chaveAcesso}</code>
+        </div>
+        <div class="nf-rodape">Documento gerado pelo sistema da Distribuidora Serginho</div>
+      </div>`;
+      }
+
+      function imprimirRelatorio() {
+        const pags = getPagamentos();
+        const nfs = getNotasFiscais();
+        const total = formatarMoeda(getSaldoTotal());
+        const html = `
+      <div class="relatorio-print">
+        <h2>Relatório Financeiro</h2>
+        <p>Gerado em ${new Date().toLocaleDateString("pt-BR")}</p>
+        <h3>Pagamentos (${pags.length} registros)</h3>
+        <table border="1" cellpadding="6" cellspacing="0" width="100%">
+          <thead><tr><th>Pedido</th><th>Data</th><th>Método</th><th>Valor</th><th>Status</th></tr></thead>
+          <tbody>${pags.map((p) => `<tr><td>#${p.idPedido}</td><td>${formatarData(p.dataPagamento)}</td><td>${p.metodo}</td><td>${formatarMoeda(p.valor)}</td><td>${p.situacao}</td></tr>`).join("")}</tbody>
+        </table>
+        <p><strong>Saldo Total Recebido: ${total}</strong></p>
+      </div>`;
+        const w = window.open("", "_blank");
+        w.document.write(
+          `<html><head><title>Relatório Financeiro</title><style>body{font-family:sans-serif;padding:30px}table{border-collapse:collapse}th,td{text-align:left;padding:8px}h2{color:#153856}</style></head><body>${html}</body></html>`,
+        );
+        w.document.close();
+        w.print();
+      }
+    </script>
+  </body>
 </html>

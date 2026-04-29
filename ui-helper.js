@@ -1,149 +1,207 @@
 /* ============================================================
-   UI-HELPER.JS - Versão Final Consolidada
+   UI-HELPER.JS — Dark mode, Avatar Cropper, Zoom, Filtros
    ============================================================ */
-let cropper; 
+let cropper;
 
 document.addEventListener("DOMContentLoaded", () => {
-    inicializarUI();
-    inicializarTemaEscuro();
+  inicializarUI();
 });
 
-// ========== MODO ESCURO ==========
-function inicializarTemaEscuro() {
-    const temaSalvo = localStorage.getItem('theme') || 'light';
-    aplicarTema(temaSalvo);
-    
-    const botaoTema = document.getElementById('theme-toggle-btn');
-    if (botaoTema) {
-        botaoTema.addEventListener('click', alternarTema);
-    }
-}
-
-function aplicarTema(tema) {
-    if (tema === 'dark') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-        atualizarIconeTema(true);
-    } else {
-        document.documentElement.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-        atualizarIconeTema(false);
-    }
-}
-
-function alternarTema() {
-    const temaAtual = localStorage.getItem('theme') || 'light';
-    const novoTema = temaAtual === 'light' ? 'dark' : 'light';
-    aplicarTema(novoTema);
-}
-
-function atualizarIconeTema(isDark) {
-    const botaoTema = document.getElementById('theme-toggle-btn');
-    if (botaoTema) {
-        botaoTema.innerHTML = isDark ? 
-            '<span class="material-icons-round">light_mode</span>' : 
-            '<span class="material-icons-round">dark_mode</span>';
-    }
-}
-
 function inicializarUI() {
-    const user = getUser();
-    if (user && document.getElementById('user-name-display')) {
-        document.getElementById('user-name-display').innerText = user.nome;
-    }
-    const savedAvatar = localStorage.getItem('userAvatar');
-    const avatarImg = document.getElementById('avatar-nav');
-    if (avatarImg && savedAvatar) avatarImg.src = savedAvatar;
+  // Nome e avatar
+  const user = getUser();
+  if (user) {
+    const el = document.getElementById("user-name-display");
+    if (el) el.innerText = user.nome;
+  }
+  const avatar = localStorage.getItem("userAvatar");
+  const img = document.getElementById("avatar-nav");
+  if (img && avatar) img.src = avatar;
 
-    const toggle = document.getElementById('dropdownToggle');
-    const dropdown = document.getElementById('profileDropdown');
-    if (toggle && dropdown) {
-        toggle.onclick = (e) => { e.stopPropagation(); dropdown.classList.toggle('show'); };
-        window.onclick = () => dropdown.classList.remove('show');
-    }
+  // Dark mode persistido
+  const tema = localStorage.getItem("tema");
+  if (tema === "dark")
+    document.documentElement.setAttribute("data-theme", "dark");
+
+  // Dropdown perfil
+  const toggle = document.getElementById("dropdownToggle");
+  const dropdown = document.getElementById("profileDropdown");
+  if (toggle && dropdown) {
+    toggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle("show");
+    });
+    document.addEventListener("click", () => dropdown.classList.remove("show"));
+  }
 }
 
-// --- LÓGICA DO AVATAR (CROPPER) ---
+// ── DARK MODE ──
+function toggleDarkMode() {
+  const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+  if (isDark) {
+    document.documentElement.removeAttribute("data-theme");
+    localStorage.setItem("tema", "light");
+  } else {
+    document.documentElement.setAttribute("data-theme", "dark");
+    localStorage.setItem("tema", "dark");
+  }
+}
 
+// ── CROPPER / AVATAR ──
 function abrirModalAvatar() {
-    const modal = document.getElementById('modalAvatar');
-    if (modal) modal.style.display = 'flex';
+  const modal = document.getElementById("modalAvatar");
+  if (modal) modal.style.display = "flex";
+  const input = document.getElementById("inputImage");
+  if (input) input.value = "";
+  const img = document.getElementById("image-to-crop");
+  if (img) {
+    img.src = "";
+    img.style.display = "none";
+  }
 }
 
 function fecharModalAvatar() {
-    const modal = document.getElementById('modalAvatar');
-    if (modal) modal.style.display = 'none';
-    if (cropper) {
-        cropper.destroy();
-        cropper = null;
-    }
+  const modal = document.getElementById("modalAvatar");
+  if (modal) modal.style.display = "none";
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
 }
 
-// --- ZOOM ---
+function salvarAvatar() {
+  if (!cropper) return alert("Selecione e ajuste uma imagem primeiro.");
+  const canvas = cropper.getCroppedCanvas({
+    width: 150,
+    height: 150,
+    fillColor: "#fff",
+  });
+  const base64 = canvas.toDataURL("image/jpeg", 0.85);
+  localStorage.setItem("userAvatar", base64);
+  const img = document.getElementById("avatar-nav");
+  if (img) img.src = base64;
+  fecharModalAvatar();
+}
+
+document.addEventListener("change", (e) => {
+  if (e.target.id !== "inputImage") return;
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const img = document.getElementById("image-to-crop");
+    img.src = ev.target.result;
+    img.style.display = "block";
+    img.style.maxWidth = "100%";
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(img, {
+      aspectRatio: 1,
+      viewMode: 1,
+      background: false,
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+// ── ZOOM ──
 function abrirZoom(src) {
-    const modal = document.getElementById('modalZoom');
-    const img = document.getElementById('imgZoom');
-    if (modal && img) {
-        img.src = src;
-        modal.style.display = 'flex';
-    }
+  const modal = document.getElementById("modalZoom");
+  const img = document.getElementById("imgZoom");
+  if (modal && img) {
+    img.src = src;
+    modal.style.display = "flex";
+  }
 }
-function fecharZoom() { 
-    const modal = document.getElementById('modalZoom');
-    if(modal) modal.style.display = 'none'; 
+function fecharZoom() {
+  const modal = document.getElementById("modalZoom");
+  if (modal) modal.style.display = "none";
 }
 
-// --- MÁSCARAS E CEP ---
+// ── MODAIS ──
+function abrirModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.style.display = "flex";
+}
+function fecharModal(id) {
+  const m = document.getElementById(id);
+  if (m) m.style.display = "none";
+}
+
+// ── FILTRO DE TABELA ──
+function aplicarFiltros(tabelaId) {
+  const busca = (
+    document.getElementById("input-busca")?.value || ""
+  ).toLowerCase();
+  const status = (
+    document.getElementById("select-filtro")?.value || ""
+  ).toLowerCase();
+  document.querySelectorAll("#" + tabelaId + " tr").forEach((tr) => {
+    const txt = tr.innerText.toLowerCase();
+    const okB = !busca || txt.includes(busca);
+    const okS = !status || txt.includes(status);
+    tr.style.display = okB && okS ? "" : "none";
+  });
+}
+
+// ── MÁSCARAS ──
 function mascaraTelefone(v) {
-    v = v.replace(/\D/g, "");
-    v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
-    v = v.replace(/(\d)(\d{4})$/, "$1-$2");
-    return v;
+  v = v.replace(/\D/g, "");
+  v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
+  v = v.replace(/(\d)(\d{4})$/, "$1-$2");
+  return v;
 }
-
 function mascaraDocumento(v) {
-    v = v.replace(/\D/g, "");
-    if (v.length <= 11) {
-        v = v.replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-    } else {
-        v = v.replace(/^(\d{2})(\d)/, "$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d)/, ".$1/$2").replace(/(\d{4})(\d)/, "$1-$2");
-    }
-    return v;
+  v = v.replace(/\D/g, "");
+  if (v.length <= 11) {
+    v = v
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  } else {
+    v = v
+      .replace(/^(\d{2})(\d)/, "$1.$2")
+      .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
+      .replace(/\.(\d{3})(\d)/, ".$1/$2")
+      .replace(/(\d{4})(\d)/, "$1-$2");
+  }
+  return v;
 }
-
 function mascaraCEP(v) {
-    return v.replace(/\D/g, "").replace(/^(\d{5})(\d)/, "$1-$2");
+  return v.replace(/\D/g, "").replace(/^(\d{5})(\d)/, "$1-$2");
 }
 
 async function buscarEnderecoPorCEP(cep) {
-    const cleanCEP = cep.replace(/\D/g, "");
-    if (cleanCEP.length !== 8) return;
-    try {
-        const response = await fetch(`https://viacep.com.br/ws/${cleanCEP}/json/`);
-        const data = await response.json();
-        if (data.erro) return alert("CEP não encontrado.");
-        
-        // Preenche os campos ocultos no modal
-        if(document.getElementById('cli-rua')) document.getElementById('cli-rua').value = data.logradouro;
-        if(document.getElementById('cli-bairro')) document.getElementById('cli-bairro').value = data.bairro;
-        if(document.getElementById('cli-cidade')) document.getElementById('cli-cidade').value = data.localidade;
-    } catch (e) { console.error("Erro CEP:", e); }
+  const c = cep.replace(/\D/g, "");
+  if (c.length !== 8) return;
+  try {
+    const r = await fetch(`https://viacep.com.br/ws/${c}/json/`);
+    const d = await r.json();
+    if (d.erro) return alert("CEP não encontrado.");
+    if (document.getElementById("cli-rua"))
+      document.getElementById("cli-rua").value = d.logradouro;
+    if (document.getElementById("cli-bairro"))
+      document.getElementById("cli-bairro").value = d.bairro;
+    if (document.getElementById("cli-cidade"))
+      document.getElementById("cli-cidade").value = d.localidade;
+  } catch (e) {
+    console.error("Erro CEP:", e);
+  }
 }
 
-document.addEventListener('input', (e) => {
-    const target = e.target;
-    if (target.dataset.mask === 'telefone') target.value = mascaraTelefone(target.value);
-    if (target.dataset.mask === 'documento') target.value = mascaraDocumento(target.value);
-    if (target.dataset.mask === 'cep') {
-        target.value = mascaraCEP(target.value);
-        if (target.value.length === 9) buscarEnderecoPorCEP(target.value);
-    }
+document.addEventListener("input", (e) => {
+  const t = e.target;
+  if (t.dataset.mask === "telefone") t.value = mascaraTelefone(t.value);
+  if (t.dataset.mask === "documento") t.value = mascaraDocumento(t.value);
+  if (t.dataset.mask === "cep") {
+    t.value = mascaraCEP(t.value);
+    if (t.value.length === 9) buscarEnderecoPorCEP(t.value);
+  }
 });
 
-// --- UTILITÁRIOS ---
+// ── UTILITÁRIOS ──
 function limparFormulario(id) {
-    const f = document.getElementById(id);
-    if (f) f.querySelectorAll('input').forEach(i => i.value = '');
+  const f = document.getElementById(id);
+  if (f) {
+    f.querySelectorAll("input,select,textarea").forEach((i) => (i.value = ""));
+  }
 }
-function abrirModal(id) { document.getElementById(id).style.display = 'flex'; }
-function fecharModal(id) { document.getElementById(id).style.display = 'none'; }

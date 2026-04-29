@@ -1,187 +1,240 @@
 /* ============================================================
-   PEDIDOS.CSS - CUSTOMIZAÇÕES ESPECÍFICAS
+   PEDIDOS.CSS
    ============================================================ */
 
-/* 1. Header e Alinhamento */
 .page-header-pedidos {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
-/* 2. Caixa de Filtros - Estilo Moderno e Clean */
-.filter-box {
-    background: var(--white);
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    margin: 0 auto 25px 0; 
-    max-width: 400px; 
-    width: 100%;
-    
+/* Caixa de filtros compacta */
+.filter-box-sm {
+  max-width: 320px;
 }
 
-/* 3. Grid de Filtros: Alinhamento de Botões e Campos */
-.filter-grid {
-    display: grid;
-    grid-template-columns: 2fr 1.2fr auto; 
-    gap: 20px;
-
-}
-
-.filter-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-
-}
-
-.filter-group label {
-    font-size: 13px;
-    color: var(--text-light);
-    font-weight: 500;
-    
-}
-
-.filter-group input, .filter-group select {
-cursor: pointer;
-}
-
-.filter-buttons {
-    display: flex;
-    justify-content: center;
-    align-self: flex-end;
-}
-
-/* 4. Customização do Modal de Novo Pedido */
-.pedido-modal-size {
-    max-width: 550px !important;
-}
-
-/* REMOÇÃO DO BOTÃO 'X' NO MODAL DE PEDIDOS */
-#modalPedido .modal-header .close,
-#modal-perfil .modal-header .close {
-    display: none !important;
-}
-
-/* Centraliza o título devido à ausência do botão fechar */
-.modal-header h2 {
-    width: 100%;
-    text-align: center;
-}
-
-/* 5. Itens do Pedido (Inputs em linha) */
+/* Itens do pedido no modal */
 .lista-itens-container {
-    margin-top: 15px;
-    max-height: 250px;
-    overflow-y: auto;
-    padding-right: 5px;
+  margin-top: 12px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .row-item-pedido {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    align-items: center;
-    /* Remove as setas no Chrome, Safari, Edge, Opera */
-input[type=number]::-webkit-inner-spin-button, 
-input[type=number]::-webkit-outer-spin-button { 
-  -webkit-appearance: none; 
-  margin: 0; 
-}
+  display: grid;
+  grid-template-columns: 2fr 0.6fr 1fr auto;
+  gap: 8px;
+  align-items: center;
 }
 
-/* Inputs de Item */
-.input-produto { flex: 2; height: 35px; }
-.input-qtd { flex: 0.5; height: 35px; text-align: center; }
-.input-preco { flex: 0.8; height: 35px; }
+.input-produto {
+  height: 36px;
+}
+.input-qtd {
+  height: 36px;
+  text-align: center;
+}
+.input-preco {
+  height: 36px;
+}
 
-/* Botão de adicionar item estilizado como solicitado */
+/* Botão adicionar item */
 .btn-add-item {
-    width: 100%;
-    padding: 8px;
-    background: #f9fafb;
-    border: 1px dashed var(--border);
-    border-radius: 8px;
-    color: var(--text-light);
-    cursor: pointer;
-    margin-bottom: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    transition: 0.2s;
-}
-
-.btn-icon {
-    border: none;
-    background: none;
-    cursor: pointer;
-}
-.btn-icon:hover {
-    transform: translateY(-1.5px);
-    box-shadow: rgba(0,0,0,0.05) 0 2px 4px;
+  width: 100%;
+  padding: 9px;
+  background: var(--bg);
+  border: 1.5px dashed var(--border);
+  border-radius: 8px;
+  color: var(--text-light);
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  font-family: "Josefin Sans", sans-serif;
+  transition:
+    border-color var(--transition),
+    color var(--transition),
+    background var(--transition);
 }
 
 .btn-add-item:hover {
-    background: var(--bg);
-    border-color: var(--primary-light);
-    color: var(--primary);
+  border-color: var(--primary-light);
+  color: var(--primary);
+  background: var(--white);
 }
 
-/* 6. Cores de Status (Sobrescrevendo com novas cores solicitadas) */
-.status {
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    display: inline-block;
+.btn-add-item .material-icons-round {
+  font-size: 18px;
 }
 
-#status-filter {
-    padding: 4px 10px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: 500;
-    display: inline-block;
-    cursor: pointer;
-    transition: 0.2s;
-    
+/* Modal tamanho pedido */
+.pedido-modal-size {
+  max-width: 560px;
 }
 
-#status-filter:hover {
-    background: var(--bg);
-    
+/* Grid do formulário do modal */
+.pedido-form-top {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
-.status.pendente { background: #fef3c7; color: #d97706; }
-.status.enviado { background: #dbeafe; color: #2563eb; }
-.status.entregue { background: #d1fae5; color: #059669; }
-
-/* 7. Ajustes Gerais de Inputs no Modal */
-.form-control {
-    width: 100%;
-    padding: 8px 12px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 14px;
-    outline: none;
+/* Ocultar spinner nos inputs number */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+ appearance: textfield; -moz-appearance: textfield;
 }
 
-.form-control:focus {
-    border-color: var(--primary);
+/* Status na tabela */
+.status.pendente {
+  background: #fef3c7;
+  color: #d97706;
+}
+.status.enviado {
+  background: #dbeafe;
+  color: #2563eb;
+}
+.status.entregue {
+  background: #d1fae5;
+  color: #059669;
 }
 
-/* Responsividade para a Grid de Filtros */
+/* SKU badge na tabela de produtos */
+.sku-tag {
+  background: var(--bg);
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.5px;
+  display: inline-block;
+  border: 1px solid var(--border);
+}
+
+/* Pedido origem badge */
+.pedido-origem {
+  background: #ede9fe;
+  color: #7c3aed;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+/* Unidade badge */
+.prod-unidade {
+  background: #e1e7f0;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+/* Produtos summary pills */
+.produtos-summary {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.summary-pill {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text);
+  transition:
+    background var(--transition),
+    border-color var(--transition);
+}
+
+.summary-pill .material-icons-round {
+  font-size: 17px;
+  color: var(--text-light);
+}
+.summary-pill strong {
+  font-size: 17px;
+  color: var(--primary);
+  font-weight: 700;
+}
+.summary-pill-ok .material-icons-round,
+.summary-pill-ok strong {
+  color: #059669;
+}
+.summary-pill-warn .material-icons-round,
+.summary-pill-warn strong {
+  color: #d97706;
+}
+
+/* Status produtos */
+.status.completo {
+  background: #d1fae5;
+  color: #059669;
+}
+
+/* Readonly input */
+.input-readonly {
+  background: var(--bg);
+  color: var(--text-light);
+  cursor: not-allowed;
+}
+
+/* Produto form grid no modal */
+.produto-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.produto-descricao-grupo {
+  grid-column: span 2;
+}
+.produto-nome-grupo {
+  margin-bottom: 14px;
+}
+
+.label-hint {
+  font-size: 11px;
+  color: var(--text-light);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 4px;
+}
+
 @media (max-width: 768px) {
-    .filter-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .filter-box {
-        max-width: 100%;
-    }
+  .pedido-form-top {
+    grid-template-columns: 1fr;
+  }
+  .row-item-pedido {
+    grid-template-columns: 1fr 0.5fr 0.8fr auto;
+  }
+  .produto-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .produto-descricao-grupo {
+    grid-column: span 1;
+  }
 }

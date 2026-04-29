@@ -29,11 +29,10 @@ function login(email, senha) {
   const usuarioPadrao = {
     email: "admin@sla.com",
     senha: "admin",
-    nome: "França"
+    nome: "França",
   };
 
   if (email === usuarioPadrao.email && senha === usuarioPadrao.senha) {
-
     // salva sessão
     sessionStorage.setItem("user", JSON.stringify(usuarioPadrao));
 

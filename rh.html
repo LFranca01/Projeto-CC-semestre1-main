@@ -1,278 +1,452 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>RH | Distribuidora Serginho</title>
-  
-<link rel="stylesheet" href="./styles/style.css">
-  <link rel="stylesheet" href="./styles/rh.css">
-  <link rel="stylesheet" href="./styles/pedidos.css">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>RH | Distribuidora Serginho</title>
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="stylesheet" href="./styles/pedidos.css" />
+    <link rel="stylesheet" href="./styles/rh.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="ui-helper.js"></script>
+    <script>
+      requireAuth();
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img src="./assets/Logo.png" alt="Logo" />
+        </div>
+        <ul>
+          <li>
+            <a href="inicio.html"
+              ><span class="material-icons-round">dashboard</span
+              ><span>Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a href="pedidos.html"
+              ><span class="material-icons-round">inventory_2</span
+              ><span>Pedidos</span></a
+            >
+          </li>
+          <li>
+            <a href="clientes.html"
+              ><span class="material-icons-round">groups</span
+              ><span>Clientes</span></a
+            >
+          </li>
+          <li>
+            <a href="produtos.html"
+              ><span class="material-icons-round">category</span
+              ><span>Produtos</span></a
+            >
+          </li>
+          <li>
+            <a href="agregados.html"
+              ><span class="material-icons-round">warehouse</span
+              ><span>Agregados</span></a
+            >
+          </li>
+          <li class="active">
+            <a href="rh.html"
+              ><span class="material-icons-round">badge</span><span>RH</span></a
+            >
+          </li>
+          <li>
+            <a href="financeiro.html"
+              ><span class="material-icons-round">payments</span
+              ><span>Financeiro</span></a
+            >
+          </li>
+          <li>
+            <a href="logistica.html"
+              ><span class="material-icons-round">local_shipping</span
+              ><span>Logística</span></a
+            >
+          </li>
+        </ul>
+      </aside>
 
-  <script src="auth.js"></script>
-  <script src="api.js"></script>
-  <script src="theme.js"></script>
-  <script src="ui-helper.js"></script>
-  <script>requireAuth();</script>
-</head>
-<body>
-
-<div class="container">
-  <aside class="sidebar">
-    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
-    <ul>
-      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
-      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
-      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
-      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
-      <li><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
-      <li class="active"><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
-      <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
-      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
-      <li><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
-    </ul>
-  </aside>
-
-  <main class="main">
-    <header class="header">
-      <div class="search-box">
-        <span class="material-icons-round">search</span>
-        <input type="text" id="input-busca" placeholder="Buscar por nome ou cargo..." onkeyup="aplicarFiltrosTabela('tabela-rh')">
-      </div>
-
-      <div class="header-right">
-        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
-          <span class="material-icons-round">dark_mode</span>
-        </button>
-        <button class="btn-primary" onclick="abrirModal('modalRH')">
-          <span class="material-icons-round">person_add</span> Novo Funcionário
-        </button>
-        
-        <div class="user-menu" id="dropdownToggle">
-          <div class="profile-img-container">
-            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor: zoom-in;">
+      <main class="main">
+        <header class="header">
+          <div class="search-box">
+            <span class="material-icons-round">search</span>
+            <input
+              type="text"
+              id="input-busca"
+              placeholder="Buscar funcionário..."
+              onkeyup="aplicarFiltros('tabela-rh')"
+            />
           </div>
-          <div class="user-info">
-            <span id="user-name-display" class="user-name">Carregando...</span>
-            <span class="user-role">Administrador</span>
+          <div class="header-right">
+            <div class="theme-toggle-wrap">
+              <span class="material-icons-round">dark_mode</span>
+              <button class="theme-toggle" onclick="toggleDarkMode()"></button>
+            </div>
+            <button class="btn-primary" onclick="abrirModalNovo()">
+              <span class="material-icons-round">person_add</span> Novo
+              Funcionário
+            </button>
+            <div class="user-menu" id="dropdownToggle">
+              <div class="profile-img-container">
+                <img
+                  id="avatar-nav"
+                  src="https://i.pravatar.cc/100"
+                  alt="Perfil"
+                  onclick="abrirZoom(this.src)"
+                />
+              </div>
+              <div class="user-info">
+                <span id="user-name-display" class="user-name">...</span>
+                <span class="user-role">Administrador</span>
+              </div>
+              <span class="material-icons-round">expand_more</span>
+              <div class="dropdown-content" id="profileDropdown">
+                <a href="#" onclick="abrirModalAvatar()"
+                  ><span class="material-icons-round">photo_camera</span>
+                  Alterar Foto</a
+                >
+                <a href="#" onclick="logout()" class="logout-link"
+                  ><span class="material-icons-round">logout</span> Sair</a
+                >
+              </div>
+            </div>
           </div>
-          <span class="material-icons-round">expand_more</span>
+        </header>
 
-          <div class="dropdown-content" id="profileDropdown">
-            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
-            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+        <div class="content">
+          <div class="page-header-pedidos"><h2>Recursos Humanos</h2></div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <span class="material-icons-round">badge</span>
+              </div>
+              <div>
+                <h3>Total de Funcionários</h3>
+                <p id="stat-total">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <span class="material-icons-round">check_circle</span>
+              </div>
+              <div>
+                <h3>Ativos</h3>
+                <p id="stat-ativos">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orange">
+                <span class="material-icons-round">payments</span>
+              </div>
+              <div>
+                <h3>Folha Mensal</h3>
+                <p id="stat-folha">R$ 0,00</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-box">
+            <div class="filter-group">
+              <label>Filtrar por Status</label>
+              <select
+                id="select-filtro"
+                class="form-control"
+                onchange="aplicarFiltros('tabela-rh')"
+              >
+                <option value="">Todos</option>
+                <option value="Ativo">Ativo</option>
+                <option value="Inativo">Inativo</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Cargo</label>
+              <select
+                id="filtro-cargo"
+                class="form-control"
+                onchange="aplicarFiltros('tabela-rh')"
+              >
+                <option value="">Todos os Cargos</option>
+                <option>Gerente</option>
+                <option>Operador</option>
+                <option>Assistente</option>
+                <option>Motorista</option>
+                <option>Financeiro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="table-dashboard">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>CPF</th>
+                  <th>Email</th>
+                  <th>Telefone</th>
+                  <th>Cargo</th>
+                  <th>Contratação</th>
+                  <th>Salário</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-rh"></tbody>
+            </table>
           </div>
         </div>
-      </div>
-    </header>
+      </main>
+    </div>
 
-    <div class="content">
-      <div class="page-header-simple">
-        <h2>Recursos Humanos</h2>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon accent">
-            <span class="material-icons-round">people</span>
-          </div>
-          <div>
-            <h3>Total de Funcionários</h3>
-            <p id="total-funcionarios">0</p>
+    <!-- MODAL FUNCIONÁRIO -->
+    <div id="modalFuncionario" class="modal">
+      <div class="modal-content rh-modal-size">
+        <div class="modal-header">
+          <h2 id="modal-titulo">Novo Funcionário</h2>
+        </div>
+        <div class="modal-body">
+          <div class="rh-form-grid">
+            <div class="filter-group span-2">
+              <label>Nome Completo</label>
+              <input
+                type="text"
+                id="func-nome"
+                class="form-control"
+                placeholder="Nome do funcionário"
+              />
+            </div>
+            <div class="filter-group">
+              <label>CPF</label>
+              <input
+                type="text"
+                id="func-cpf"
+                class="form-control"
+                data-mask="documento"
+                maxlength="14"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Email</label>
+              <input
+                type="email"
+                id="func-email"
+                class="form-control"
+                placeholder="email@empresa.com"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Telefone</label>
+              <input
+                type="text"
+                id="func-telefone"
+                class="form-control"
+                data-mask="telefone"
+                maxlength="15"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Cargo</label>
+              <select id="func-cargo" class="form-control">
+                <option value="">Selecione...</option>
+                <option>Gerente</option>
+                <option>Operador</option>
+                <option>Assistente</option>
+                <option>Motorista</option>
+                <option>Financeiro</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Data de Contratação</label>
+              <input type="date" id="func-contratacao" class="form-control" />
+            </div>
+            <div class="filter-group">
+              <label>Salário (R$)</label>
+              <input
+                type="number"
+                id="func-salario"
+                class="form-control"
+                placeholder="0,00"
+                step="0.01"
+                min="0"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Status</label>
+              <select id="func-situacao" class="form-control">
+                <option value="Ativo">Ativo</option>
+                <option value="Inativo">Inativo</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon info">
-            <span class="material-icons-round">work</span>
-          </div>
-          <div>
-            <h3>Admitidos Este Mês</h3>
-            <p id="admitidos-mes">0</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>CPF</th>
-              <th>Cargo</th>
-              <th>Unidade</th>
-              <th>Admissão</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-rh"></tbody>
-        </table>
-      </div>
-    </div>
-  </main>
-</div>
-
-<div id="modalRH" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="titulo-modal-rh">Novo Colaborador</h2>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label>Nome Completo</label>
-        <input type="text" id="func-nome" class="form-control">
-      </div>
-      <div class="form-group">
-        <label>CPF</label>
-        <input type="text" id="func-cpf" class="form-control" data-mask="documento" placeholder="000.000.000-00">
-      </div>
-      <div class="form-group">
-        <label>Cargo</label>
-        <input type="text" id="func-cargo" class="form-control">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Unidade/Filial</label>
-          <select id="func-filial"></select>
-        </div>
-        <div class="form-group">
-          <label>Data de Admissão</label>
-          <input type="date" id="func-admissao" class="form-control">
+        <div class="modal-footer">
+          <button
+            class="btn-secondary"
+            onclick="fecharModal('modalFuncionario')"
+          >
+            Cancelar
+          </button>
+          <button class="btn-primary" onclick="salvarFuncionario()">
+            <span class="material-icons-round">save</span> Salvar
+          </button>
         </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="fecharModal('modalRH'); limparFormulario('modalRH')">Cancelar</button>
-      <button class="btn-primary" onclick="salvarFuncionario()">Salvar</button>
+
+    <!-- MODAIS PADRÃO -->
+    <div id="modalAvatar" class="modal modal-avatar-hidden">
+      <div class="modal-content">
+        <div class="modal-header"><h2>Ajustar Foto</h2></div>
+        <div class="cropper-wrapper"><img id="image-to-crop" src="" /></div>
+        <div class="modal-footer">
+          <input
+            type="file"
+            id="inputImage"
+            accept="image/*"
+            class="input-file-hidden"
+          />
+          <button
+            class="btn-secondary"
+            onclick="document.getElementById('inputImage').click()"
+          >
+            Selecionar
+          </button>
+          <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+          <button class="btn-secondary" onclick="fecharModalAvatar()">
+            Cancelar
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
-<div id="modalAvatar" class="modal" style="display:none">
-  <div class="modal-content">
-    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">&times;</button></div>
-    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
-    <div class="modal-footer">
-      <input type="file" id="inputImage" accept="image/*" style="display:none">
-      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
-      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
-      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
+    <div id="modalZoom" onclick="fecharZoom()">
+      <img id="imgZoom" src="" alt="zoom" />
     </div>
-  </div>
-</div>
 
-<div id="modalZoom" class="modal" onclick="fecharZoom()">
-  <div class="zoom-content">
-    <img id="imgZoom" src="">
-  </div>
-</div>
+    <script>
+      window.onload = () => {
+        carregarStats();
+        carregarTabela();
+      };
 
-<script>
-let editId = null;
+      function carregarStats() {
+        const lista = getFuncionarios();
+        document.getElementById("stat-total").innerText = lista.length;
+        document.getElementById("stat-ativos").innerText = lista.filter(
+          (f) => f.situacao === "Ativo",
+        ).length;
+        const folha = lista.reduce(
+          (s, f) => s + (parseFloat(f.salario) || 0),
+          0,
+        );
+        document.getElementById("stat-folha").innerText = formatarMoeda(folha);
+      }
 
-window.onload = () => {
-    renderRH();
-    carregarFiliais();
-};
+      function carregarTabela() {
+        const lista = getFuncionarios();
+        const tabela = document.getElementById("tabela-rh");
+        if (!lista.length) {
+          tabela.innerHTML = `<tr><td colspan="9" class="tabela-vazia">
+        <span class="material-icons-round">badge</span>
+        <p>Nenhum funcionário cadastrado.</p></td></tr>`;
+          return;
+        }
+        tabela.innerHTML = lista
+          .map(
+            (f) => `
+      <tr>
+        <td class="td-bold">${f.nome}</td>
+        <td>${formatarDocumento(f.cpf)}</td>
+        <td>${f.email || "—"}</td>
+        <td>${f.telefone || "—"}</td>
+        <td><span class="badge-cargo">${f.cargo || "—"}</span></td>
+        <td>${formatarData(f.contratacao)}</td>
+        <td>${formatarMoeda(f.salario)}</td>
+        <td><span class="status ${f.situacao === "Ativo" ? "ativo" : "inativo"}">${f.situacao}</span></td>
+        <td>
+          <button class="btn-icon" onclick="editarFuncionario(${f.id})"><span class="material-icons-round">edit</span></button>
+          <button class="btn-icon danger" onclick="removerFuncionario(${f.id})"><span class="material-icons-round">delete</span></button>
+        </td>
+      </tr>`,
+          )
+          .join("");
+      }
 
-function renderRH() {
-    const lista = getFuncionarios();
-    const filiais = getFiliais();
-    const tabela = document.getElementById("tabela-rh");
+      function abrirModalNovo() {
+        document.getElementById("modal-titulo").innerText = "Novo Funcionário";
+        limparFormulario("modalFuncionario");
+        delete document.getElementById("modalFuncionario").dataset.editId;
+        abrirModal("modalFuncionario");
+      }
 
-    document.getElementById("total-funcionarios").innerText = lista.length;
-    
-    const mesAtual = new Date().toISOString().slice(0, 7);
-    const admitidos = lista.filter(f => f.dataAdmissao && f.dataAdmissao.startsWith(mesAtual)).length;
-    document.getElementById("admitidos-mes").innerText = admitidos;
+      function editarFuncionario(id) {
+        const f = getFuncionarioById(id);
+        if (!f) return;
+        document.getElementById("modal-titulo").innerText =
+          "Editar Funcionário";
+        document.getElementById("func-nome").value = f.nome;
+        document.getElementById("func-cpf").value = f.cpf || "";
+        document.getElementById("func-email").value = f.email || "";
+        document.getElementById("func-telefone").value = f.telefone || "";
+        document.getElementById("func-cargo").value = f.cargo || "";
+        document.getElementById("func-contratacao").value = f.contratacao
+          ? f.contratacao.split("T")[0]
+          : "";
+        document.getElementById("func-salario").value = f.salario || "";
+        document.getElementById("func-situacao").value = f.situacao || "Ativo";
+        document.getElementById("modalFuncionario").dataset.editId = id;
+        abrirModal("modalFuncionario");
+      }
 
-    tabela.innerHTML = lista.map(f => {
-        const filial = filiais.find(fl => fl.id == f.idFilial);
-        return `
-            <tr>
-                <td><strong>${f.nome}</strong></td>
-                <td>${formatarDocumento(f.cpf)}</td>
-                <td>${f.cargo}</td>
-                <td>${filial ? filial.nome : 'Não alocado'}</td>
-                <td>${formatarData(f.dataAdmissao)}</td>
-                <td>
-                    <button class="btn-icon" onclick="editarFuncionario(${f.id})">
-                        <span class="material-icons-round">edit</span>
-                    </button>
-                    <button class="btn-icon" onclick="removerFuncionario(${f.id})">
-                        <span class="material-icons-round">delete</span>
-                    </button>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
+      function salvarFuncionario() {
+        const nome = document.getElementById("func-nome").value.trim();
+        if (!nome) return alert("Nome é obrigatório.");
+        const dados = {
+          nome,
+          cpf: document.getElementById("func-cpf").value,
+          email: document.getElementById("func-email").value,
+          telefone: document.getElementById("func-telefone").value,
+          cargo: document.getElementById("func-cargo").value,
+          contratacao: document.getElementById("func-contratacao").value,
+          salario: document.getElementById("func-salario").value,
+          situacao: document.getElementById("func-situacao").value,
+        };
+        const editId =
+          document.getElementById("modalFuncionario").dataset.editId;
+        if (editId) updateFuncionario(editId, dados);
+        else createFuncionario(dados);
+        fecharModal("modalFuncionario");
+        carregarStats();
+        carregarTabela();
+      }
 
-function carregarFiliais() {
-    const filiais = getFiliais();
-    document.getElementById("func-filial").innerHTML = filiais.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
-}
-
-function salvarFuncionario() {
-    const modal = document.getElementById("modalRH");
-    const editId = modal.dataset.editId;
-    
-    const dados = {
-        nome: document.getElementById("func-nome").value,
-        cpf: document.getElementById("func-cpf").value,
-        cargo: document.getElementById("func-cargo").value,
-        idFilial: document.getElementById("func-filial").value,
-        dataAdmissao: document.getElementById("func-admissao").value
-    };
-
-    if (editId) {
-        updateFuncionario(editId, dados);
-    } else {
-        createFuncionario(dados);
-    }
-    
-    delete modal.dataset.editId;
-    document.querySelector("#modalRH h2").innerText = "Novo Colaborador";
-    limparFormulario('modalRH');
-    fecharModal('modalRH');
-    renderRH();
-}
-
-function editarFuncionario(id) {
-    const f = getFuncionarios().find(item => item.id == id);
-    if (!f) return;
-
-    document.getElementById("func-nome").value = f.nome;
-    document.getElementById("func-cpf").value = f.cpf;
-    document.getElementById("func-cargo").value = f.cargo;
-    document.getElementById("func-filial").value = f.idFilial;
-    document.getElementById("func-admissao").value = f.dataAdmissao ? f.dataAdmissao.split('T')[0] : '';
-
-    document.getElementById("modalRH").dataset.editId = id;
-    document.querySelector("#modalRH h2").innerText = "Editar Colaborador";
-    abrirModal('modalRH');
-}
-
-function removerFuncionario(id) {
-    if(confirm("Deseja remover este colaborador?")) {
-        deleteFuncionario(id);
-        renderRH();
-    }
-}
-
-function aplicarFiltrosTabela(tabelaId) {
-    const busca = document.getElementById('input-busca').value.toLowerCase();
-    const linhas = document.querySelectorAll('#' + tabelaId + ' tr');
-    linhas.forEach(linha => {
-        linha.style.display = linha.innerText.toLowerCase().includes(busca) ? '' : 'none';
-    });
-}
-</script>
-</body>
+      function removerFuncionario(id) {
+        if (confirm("Deseja remover este funcionário?")) {
+          deleteFuncionario(id);
+          carregarStats();
+          carregarTabela();
+        }
+      }
+    </script>
+  </body>
 </html>

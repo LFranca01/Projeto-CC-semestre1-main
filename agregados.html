@@ -1,314 +1,451 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agregados | Distribuidora Serginho</title>
-  
-  <link rel="stylesheet" href="./styles/style.css">
-  <link rel="stylesheet" href="./styles/agregados.css">
-  <link rel="stylesheet" href="./styles/pedidos.css">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Agregados | Distribuidora Serginho</title>
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="stylesheet" href="./styles/pedidos.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="ui-helper.js"></script>
+    <script>
+      requireAuth();
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img src="./assets/Logo.png" alt="Logo" />
+        </div>
+        <ul>
+          <li>
+            <a href="inicio.html"
+              ><span class="material-icons-round">dashboard</span
+              ><span>Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a href="pedidos.html"
+              ><span class="material-icons-round">inventory_2</span
+              ><span>Pedidos</span></a
+            >
+          </li>
+          <li>
+            <a href="clientes.html"
+              ><span class="material-icons-round">groups</span
+              ><span>Clientes</span></a
+            >
+          </li>
+          <li>
+            <a href="produtos.html"
+              ><span class="material-icons-round">category</span
+              ><span>Produtos</span></a
+            >
+          </li>
+          <li class="active">
+            <a href="agregados.html"
+              ><span class="material-icons-round">warehouse</span
+              ><span>Agregados</span></a
+            >
+          </li>
+          <li>
+            <a href="rh.html"
+              ><span class="material-icons-round">badge</span><span>RH</span></a
+            >
+          </li>
+          <li>
+            <a href="financeiro.html"
+              ><span class="material-icons-round">payments</span
+              ><span>Financeiro</span></a
+            >
+          </li>
+          <li>
+            <a href="logistica.html"
+              ><span class="material-icons-round">local_shipping</span
+              ><span>Logística</span></a
+            >
+          </li>
+        </ul>
+      </aside>
 
-  <script src="auth.js"></script>
-  <script src="api.js"></script>
-  <script src="theme.js"></script>
-  <script src="ui-helper.js"></script>
-  <script>requireAuth();</script>
-</head>
-<body>
-
-<div class="container">
-  <aside class="sidebar">
-    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
-    <ul>
-      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
-      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
-      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
-      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
-      <li><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
-      <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
-      <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
-      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
-      <li class="active"><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
-    </ul>
-  </aside>
-
-  <main class="main">
-    <header class="header">
-      <div class="search-box">
-        <span class="material-icons-round">search</span>
-        <input type="text" id="input-busca" placeholder="Buscar por nome ou veículo..." onkeyup="aplicarFiltrosTabela('tabela-agregados')">
-      </div>
-
-      <div class="header-right">
-        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
-          <span class="material-icons-round">dark_mode</span>
-        </button>
-        <button class="btn-primary" onclick="abrirModal('modalAgregado')">
-          <span class="material-icons-round">person_add</span> Novo Motorista
-        </button>
-        
-        <div class="user-menu" id="dropdownToggle">
-          <div class="profile-img-container">
-            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor: zoom-in;">
+      <main class="main">
+        <header class="header">
+          <div class="search-box">
+            <span class="material-icons-round">search</span>
+            <input
+              type="text"
+              id="input-busca"
+              placeholder="Buscar agregado..."
+              onkeyup="aplicarFiltros('tabela-agregados')"
+            />
           </div>
-          <div class="user-info">
-            <span id="user-name-display" class="user-name">Carregando...</span>
-            <span class="user-role">Administrador</span>
+          <div class="header-right">
+            <div class="theme-toggle-wrap">
+              <span class="material-icons-round">dark_mode</span>
+              <button class="theme-toggle" onclick="toggleDarkMode()"></button>
+            </div>
+            <button class="btn-primary" onclick="abrirModalNovo()">
+              <span class="material-icons-round">add</span> Novo Agregado
+            </button>
+            <div class="user-menu" id="dropdownToggle">
+              <div class="profile-img-container">
+                <img
+                  id="avatar-nav"
+                  src="https://i.pravatar.cc/100"
+                  alt="Perfil"
+                  onclick="abrirZoom(this.src)"
+                />
+              </div>
+              <div class="user-info">
+                <span id="user-name-display" class="user-name">...</span>
+                <span class="user-role">Administrador</span>
+              </div>
+              <span class="material-icons-round">expand_more</span>
+              <div class="dropdown-content" id="profileDropdown">
+                <a href="#" onclick="abrirModalAvatar()"
+                  ><span class="material-icons-round">photo_camera</span>
+                  Alterar Foto</a
+                >
+                <a href="#" onclick="logout()" class="logout-link"
+                  ><span class="material-icons-round">logout</span> Sair</a
+                >
+              </div>
+            </div>
           </div>
-          <span class="material-icons-round">expand_more</span>
+        </header>
 
-          <div class="dropdown-content" id="profileDropdown">
-            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
-            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+        <div class="content">
+          <div class="page-header-pedidos">
+            <h2>Gestão de Agregados</h2>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <span class="material-icons-round">local_shipping</span>
+              </div>
+              <div>
+                <h3>Total de Agregados</h3>
+                <p id="stat-total">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <span class="material-icons-round">check_circle</span>
+              </div>
+              <div>
+                <h3>Ativos</h3>
+                <p id="stat-ativos">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orange">
+                <span class="material-icons-round">directions_car</span>
+              </div>
+              <div>
+                <h3>Veículos Cadastrados</h3>
+                <p id="stat-veiculos">0</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-box">
+            <div class="filter-group">
+              <label>Filtrar por Status</label>
+              <select
+                id="select-filtro"
+                class="form-control"
+                onchange="aplicarFiltros('tabela-agregados')"
+              >
+                <option value="">Todos</option>
+                <option value="Ativo">Ativo</option>
+                <option value="Inativo">Inativo</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Tipo de Veículo</label>
+              <select
+                id="filtro-tipo-vei"
+                class="form-control"
+                onchange="aplicarFiltros('tabela-agregados')"
+              >
+                <option value="">Todos</option>
+                <option>Moto</option>
+                <option>Carro</option>
+                <option>Van</option>
+                <option>Caminhão</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="table-dashboard">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Telefone</th>
+                  <th>CNH</th>
+                  <th>Veículo</th>
+                  <th>Placa</th>
+                  <th>Rastreador</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-agregados"></tbody>
+            </table>
           </div>
         </div>
-      </div>
-    </header>
+      </main>
+    </div>
 
-    <div class="content">
-      <div class="page-header-simple">
-        <h2>Agregados (Motoristas Parceiros)</h2>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon accent">
-            <span class="material-icons-round">directions_car</span>
-          </div>
-          <div>
-            <h3>Motoristas Ativos</h3>
-            <p id="total-agregados">0</p>
+    <!-- MODAL AGREGADO -->
+    <div id="modalAgregado" class="modal">
+      <div class="modal-content agregado-modal-size">
+        <div class="modal-header"><h2 id="modal-titulo">Novo Agregado</h2></div>
+        <div class="modal-body">
+          <div class="agregado-form-grid">
+            <div class="filter-group span-2">
+              <label>Nome Completo</label>
+              <input
+                type="text"
+                id="agr-nome"
+                class="form-control"
+                placeholder="Nome do motorista"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Telefone</label>
+              <input
+                type="text"
+                id="agr-telefone"
+                class="form-control"
+                data-mask="telefone"
+                maxlength="15"
+              />
+            </div>
+            <div class="filter-group">
+              <label>CNH</label>
+              <input
+                type="text"
+                id="agr-cnh"
+                class="form-control"
+                placeholder="Número da CNH"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Tipo de Veículo</label>
+              <select id="agr-tipo-vei" class="form-control">
+                <option value="">Selecione...</option>
+                <option>Moto</option>
+                <option>Carro</option>
+                <option>Van</option>
+                <option>Caminhão</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Modelo do Veículo</label>
+              <input
+                type="text"
+                id="agr-modelo-vei"
+                class="form-control"
+                placeholder="Ex: Honda CG 160"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Placa</label>
+              <input
+                type="text"
+                id="agr-placa-vei"
+                class="form-control"
+                placeholder="AAA-0000"
+                maxlength="8"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Quantidade de Veículos</label>
+              <input
+                type="number"
+                id="agr-quanti-vei"
+                class="form-control"
+                min="1"
+                value="1"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Rastreador</label>
+              <select id="agr-rastrador" class="form-control">
+                <option value="Sim">Sim</option>
+                <option value="Não">Não</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>Status</label>
+              <select id="agr-situacao" class="form-control">
+                <option value="Ativo">Ativo</option>
+                <option value="Inativo">Inativo</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon info">
-            <span class="material-icons-round">local_shipping</span>
-          </div>
-          <div>
-            <h3>Entregas Hoje</h3>
-            <p id="entregas-hoje">0</p>
-          </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="fecharModal('modalAgregado')">
+            Cancelar
+          </button>
+          <button class="btn-primary" onclick="salvarAgregado()">
+            <span class="material-icons-round">save</span> Salvar
+          </button>
         </div>
-      </div>
-
-      <div class="filter-box">
-        <div class="filter-group">
-          <label>Filtrar por Status</label>
-          <select id="select-status" onchange="aplicarFiltrosTabela('tabela-agregados')">
-            <option value="">Todos</option>
-            <option value="Ativo">Ativo</option>
-            <option value="Inativo">Inativo</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>CPF</th>
-              <th>Telefone</th>
-              <th>Veículo</th>
-              <th>Placa</th>
-              <th>CNH</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-agregados"></tbody>
-        </table>
       </div>
     </div>
-  </main>
-</div>
 
-<div id="modalAgregado" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="titulo-modal-agregado">Novo Motorista</h2>
-    </div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label>Nome Completo</label>
-        <input type="text" id="agg-nome" class="form-control">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>CPF</label>
-          <input type="text" id="agg-cpf" class="form-control" data-mask="documento" placeholder="000.000.000-00">
-        </div>
-        <div class="form-group">
-          <label>Telefone</label>
-          <input type="text" id="agg-telefone" class="form-control" data-mask="telefone" placeholder="(00) 00000-0000">
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Veículo</label>
-          <select id="agg-veiculo" class="form-control">
-            <option value="Carro">Carro</option>
-            <option value="Moto">Moto</option>
-            <option value="Van">Van</option>
-            <option value="Caminhão">Caminhão</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Placa</label>
-          <input type="text" id="agg-placa" class="form-control" placeholder="AAA-0000" style="text-transform: uppercase;">
+    <!-- MODAIS PADRÃO -->
+    <div id="modalAvatar" class="modal modal-avatar-hidden">
+      <div class="modal-content">
+        <div class="modal-header"><h2>Ajustar Foto</h2></div>
+        <div class="cropper-wrapper"><img id="image-to-crop" src="" /></div>
+        <div class="modal-footer">
+          <input
+            type="file"
+            id="inputImage"
+            accept="image/*"
+            class="input-file-hidden"
+          />
+          <button
+            class="btn-secondary"
+            onclick="document.getElementById('inputImage').click()"
+          >
+            Selecionar
+          </button>
+          <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+          <button class="btn-secondary" onclick="fecharModalAvatar()">
+            Cancelar
+          </button>
         </div>
       </div>
-      <div class="form-group">
-        <label>CNH</label>
-        <input type="text" id="agg-cnh" class="form-control" placeholder="Número da CNH">
-      </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="fecharModal('modalAgregado'); limparFormulario('modalAgregado')">Cancelar</button>
-      <button class="btn-primary" onclick="salvarAgregado()">Salvar</button>
+    <div id="modalZoom" onclick="fecharZoom()">
+      <img id="imgZoom" src="" alt="zoom" />
     </div>
-  </div>
-</div>
 
-<div id="modalAvatar" class="modal" style="display:none">
-  <div class="modal-content">
-    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">&times;</button></div>
-    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
-    <div class="modal-footer">
-      <input type="file" id="inputImage" accept="image/*" style="display:none">
-      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
-      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
-      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
-    </div>
-  </div>
-</div>
+    <script>
+      window.onload = () => {
+        carregarStats();
+        carregarTabela();
+      };
 
-<div id="modalZoom" class="modal" onclick="fecharZoom()">
-  <div class="zoom-content">
-    <img id="imgZoom" src="">
-  </div>
-</div>
+      function carregarStats() {
+        const lista = getAgregados();
+        document.getElementById("stat-total").innerText = lista.length;
+        document.getElementById("stat-ativos").innerText = lista.filter(
+          (a) => a.situacao === "Ativo",
+        ).length;
+        document.getElementById("stat-veiculos").innerText = lista.reduce(
+          (s, a) => s + (parseInt(a.quantiVei) || 1),
+          0,
+        );
+      }
 
-<script>
-let editId = null;
+      function carregarTabela() {
+        const lista = getAgregados();
+        const tabela = document.getElementById("tabela-agregados");
+        if (!lista.length) {
+          tabela.innerHTML = `<tr><td colspan="8" class="tabela-vazia">
+        <span class="material-icons-round">local_shipping</span>
+        <p>Nenhum agregado cadastrado.</p></td></tr>`;
+          return;
+        }
+        tabela.innerHTML = lista
+          .map(
+            (a) => `
+      <tr>
+        <td class="td-bold">${a.nome}</td>
+        <td>${a.telefone || "—"}</td>
+        <td>${a.cnh || "—"}</td>
+        <td>${a.tipoVei ? `<span class="badge-tipo">${a.tipoVei}</span> ${a.modeloVei || ""}` : "—"}</td>
+        <td>${a.placaVei || "—"}</td>
+        <td><span class="status ${a.rastrador === "Sim" ? "ativo" : "inativo"}">${a.rastrador || "—"}</span></td>
+        <td><span class="status ${a.situacao === "Ativo" ? "ativo" : "inativo"}">${a.situacao}</span></td>
+        <td>
+          <button class="btn-icon" onclick="editarAgregado(${a.id})"><span class="material-icons-round">edit</span></button>
+          <button class="btn-icon danger" onclick="removerAgregado(${a.id})"><span class="material-icons-round">delete</span></button>
+        </td>
+      </tr>`,
+          )
+          .join("");
+      }
 
-window.onload = () => {
-    renderAgregados();
-};
+      function abrirModalNovo() {
+        document.getElementById("modal-titulo").innerText = "Novo Agregado";
+        limparFormulario("modalAgregado");
+        delete document.getElementById("modalAgregado").dataset.editId;
+        abrirModal("modalAgregado");
+      }
 
-function renderAgregados() {
-    const lista = getAgregados();
-    const entregas = getEntregas();
-    const tabela = document.getElementById("tabela-agregados");
+      function editarAgregado(id) {
+        const a = getAgregadoById(id);
+        if (!a) return;
+        document.getElementById("modal-titulo").innerText = "Editar Agregado";
+        document.getElementById("agr-nome").value = a.nome;
+        document.getElementById("agr-telefone").value = a.telefone || "";
+        document.getElementById("agr-cnh").value = a.cnh || "";
+        document.getElementById("agr-tipo-vei").value = a.tipoVei || "";
+        document.getElementById("agr-modelo-vei").value = a.modeloVei || "";
+        document.getElementById("agr-placa-vei").value = a.placaVei || "";
+        document.getElementById("agr-quanti-vei").value = a.quantiVei || 1;
+        document.getElementById("agr-rastrador").value = a.rastrador || "Não";
+        document.getElementById("agr-situacao").value = a.situacao || "Ativo";
+        document.getElementById("modalAgregado").dataset.editId = id;
+        abrirModal("modalAgregado");
+      }
 
-    document.getElementById("total-agregados").innerText = lista.filter(a => a.status === "Ativo").length;
-    
-    const hoje = new Date().toISOString().split('T')[0];
-    const entregasHoje = entregas.filter(e => e.dataSaida === hoje && e.agregadoId);
-    document.getElementById("entregas-hoje").innerText = entregasHoje.length;
+      function salvarAgregado() {
+        const nome = document.getElementById("agr-nome").value.trim();
+        if (!nome) return alert("Nome é obrigatório.");
+        const dados = {
+          nome,
+          telefone: document.getElementById("agr-telefone").value,
+          cnh: document.getElementById("agr-cnh").value,
+          tipoVei: document.getElementById("agr-tipo-vei").value,
+          modeloVei: document.getElementById("agr-modelo-vei").value,
+          placaVei: document.getElementById("agr-placa-vei").value,
+          quantiVei: document.getElementById("agr-quanti-vei").value,
+          rastrador: document.getElementById("agr-rastrador").value,
+          situacao: document.getElementById("agr-situacao").value,
+        };
+        const editId = document.getElementById("modalAgregado").dataset.editId;
+        if (editId) updateAgregado(editId, dados);
+        else createAgregado(dados);
+        fecharModal("modalAgregado");
+        carregarStats();
+        carregarTabela();
+      }
 
-    if (lista.length === 0) {
-        tabela.innerHTML = '<tr><td colspan="8" style="text-align:center; padding: 30px; color: var(--text-light)">Nenhum motorista parceiro cadastrado.</td></tr>';
-        return;
-    }
-
-    tabela.innerHTML = lista.map(a => {
-        const statusClass = a.status === "Ativo" ? "entregue" : "pendente";
-        return `
-            <tr>
-                <td style="font-weight:600;">${a.nome}</td>
-                <td>${formatarDocumento(a.cpf)}</td>
-                <td>${mascaraTelefone(a.telefone)}</td>
-                <td>${a.veiculo}</td>
-                <td><code>${a.placa}</code></td>
-                <td>${a.cnh}</td>
-                <td><span class="status ${statusClass}">${a.status}</span></td>
-                <td>
-                    <button class="btn-icon" onclick="editarAgregado(${a.id})">
-                        <span class="material-icons-round">edit</span>
-                    </button>
-                    <button class="btn-icon" onclick="removerAgregado(${a.id})">
-                        <span class="material-icons-round">delete</span>
-                    </button>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-function salvarAgregado() {
-    const modal = document.getElementById("modalAgregado");
-    const editId = modal.dataset.editId;
-    
-    const dados = {
-        nome: document.getElementById("agg-nome").value,
-        cpf: document.getElementById("agg-cpf").value.replace(/\D/g, ""),
-        telefone: document.getElementById("agg-telefone").value,
-        veiculo: document.getElementById("agg-veiculo").value,
-        placa: document.getElementById("agg-placa").value.toUpperCase(),
-        cnh: document.getElementById("agg-cnh").value
-    };
-
-    if (!dados.nome || !dados.cpf) {
-        alert("Preencha o nome e CPF.");
-        return;
-    }
-
-    if (editId) {
-        updateAgregado(editId, dados);
-    } else {
-        createAgregado(dados);
-    }
-    
-    delete modal.dataset.editId;
-    document.querySelector("#modalAgregado h2").innerText = "Novo Motorista";
-    limparFormulario('modalAgregado');
-    fecharModal('modalAgregado');
-    renderAgregados();
-}
-
-function editarAgregado(id) {
-    const a = getAgregadoById(id);
-    if (!a) return;
-
-    document.getElementById("agg-nome").value = a.nome;
-    document.getElementById("agg-cpf").value = mascaraDocumento(a.cpf);
-    document.getElementById("agg-telefone").value = a.telefone;
-    document.getElementById("agg-veiculo").value = a.veiculo;
-    document.getElementById("agg-placa").value = a.placa;
-    document.getElementById("agg-cnh").value = a.cnh;
-
-    document.getElementById("modalAgregado").dataset.editId = id;
-    document.querySelector("#modalAgregado h2").innerText = "Editar Motorista";
-    abrirModal('modalAgregado');
-}
-
-function removerAgregado(id) {
-    if(confirm("Tem certeza que deseja remover este motorista?")) {
-        deleteAgregado(id);
-        renderAgregados();
-    }
-}
-
-function aplicarFiltrosTabela(tabelaId) {
-    const busca = document.getElementById('input-busca').value.toLowerCase();
-    const statusFiltro = document.getElementById('select-status').value.toLowerCase();
-    const linhas = document.querySelectorAll('#' + tabelaId + ' tr');
-    linhas.forEach(linha => {
-        const texto = linha.innerText.toLowerCase();
-        const bateBusca = busca === '' || texto.includes(busca);
-        const bateStatus = statusFiltro === '' || texto.includes(statusFiltro);
-        linha.style.display = (bateBusca && bateStatus) ? '' : 'none';
-    });
-}
-</script>
-</body>
+      function removerAgregado(id) {
+        if (confirm("Deseja remover este agregado?")) {
+          deleteAgregado(id);
+          carregarStats();
+          carregarTabela();
+        }
+      }
+    </script>
+  </body>
 </html>

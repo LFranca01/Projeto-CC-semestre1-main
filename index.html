@@ -1,70 +1,78 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login | Distribuidora Serginho</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-
-  <link rel="stylesheet" href="./styles/login.css">
-  
-  <script src="auth.js"></script>
-  <script>redirectIfLogged();</script>
-</head>
-
-<body>
-  <div class="login-container">
-    <div class="login-left">
-        <img src="./assets/Logo.png" alt="Logo">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Distribuidora Serginho</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles/login.css" />
+    <script src="auth.js"></script>
+    <script>
+      redirectIfLogged();
+    </script>
+  </head>
+  <body>
+    <div class="login-container">
+      <div class="login-left">
+        <img src="./assets/Logo.png" alt="Logo" />
         <h1>Distribuidora Serginho</h1>
         <p>Hub Logístico: Conectando pedidos a motoristas com agilidade.</p>
-    </div>
-
-    <div class="login-right">
-      <div class="login-box">
-        <img src="./assets/Logo.png" class="logo" alt="Logo">
-        <h2>Acesse sua conta</h2>
-
-        <form id="form-login">
-          <div class="input-group">
-            <input type="email" id="email" required placeholder=" ">
-            <label for="email">E-mail Corporativo</label>
+      </div>
+      <div class="login-right">
+        <div class="login-box">
+          <img src="./assets/Logo.png" class="logo" alt="Logo" />
+          <h2>Acesse sua conta</h2>
+          <form id="form-login">
+            <div class="input-group">
+              <input type="email" id="email" required placeholder=" " />
+              <label for="email">E-mail Corporativo</label>
+            </div>
+            <div class="input-group">
+              <input type="password" id="senha" required placeholder=" " />
+              <label for="senha">Senha</label>
+            </div>
+            <button type="submit">
+              <span class="material-icons-round">login</span> Entrar
+            </button>
+            <p id="erro" class="error-message"></p>
+          </form>
+          <div class="login-footer">
+            <a
+              href="#"
+              onclick="
+                recuperarSenha();
+                return false;
+              "
+              >Esqueceu sua senha?</a
+            >
           </div>
-
-          <div class="input-group">
-            <input type="password" id="senha" required placeholder=" ">
-            <label for="senha">Senha</label>
-          </div>
-
-          <button type="submit">
-            <span class="material-icons-round">login</span> Entrar
-          </button>
-          <p id="erro" class="error-message"></p>
-        </form>
-
-        <div class="login-footer">
-          <a href="#" onclick="recuperarSenha(); return false;">Esqueceu sua senha?</a>
         </div>
       </div>
     </div>
-  </div>
-
-  <script>
-    document.getElementById('form-login').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const result = login(document.getElementById('email').value, document.getElementById('senha').value);
-      if (result.success) window.location.replace("inicio.html");
-      else document.getElementById('erro').innerText = result.message;
-    });
-
-    function recuperarSenha() {
-      const email = document.getElementById('email').value;
-      if (!email) alert("Por favor, digite seu e-mail no campo acima.");
-      else alert(`Link de recuperação enviado para: ${email}`);
-    }
-  </script>
-</body>
+    <script>
+      document
+        .getElementById("form-login")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const result = login(
+            document.getElementById("email").value,
+            document.getElementById("senha").value,
+          );
+          if (result.success) window.location.replace("inicio.html");
+          else document.getElementById("erro").innerText = result.message;
+        });
+      function recuperarSenha() {
+        const email = document.getElementById("email").value;
+        if (!email) alert("Por favor, digite seu e-mail no campo acima.");
+        else alert("Link de recuperação enviado para: " + email);
+      }
+    </script>
+  </body>
 </html>

@@ -1,245 +1,342 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Clientes | Distribuidora Serginho</title>
-  
-  <link rel="stylesheet" href="./styles/style.css">
-  <link rel="stylesheet" href="./styles/clientes.css">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Clientes | Distribuidora Serginho</title>
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="stylesheet" href="./styles/pedidos.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="ui-helper.js"></script>
+    <script>
+      requireAuth();
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img src="./assets/Logo.png" alt="Logo" />
+        </div>
+        <ul>
+          <li>
+            <a href="inicio.html"
+              ><span class="material-icons-round">dashboard</span
+              ><span>Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a href="pedidos.html"
+              ><span class="material-icons-round">inventory_2</span
+              ><span>Pedidos</span></a
+            >
+          </li>
+          <li class="active">
+            <a href="clientes.html"
+              ><span class="material-icons-round">groups</span
+              ><span>Clientes</span></a
+            >
+          </li>
+          <li>
+            <a href="produtos.html"
+              ><span class="material-icons-round">category</span
+              ><span>Produtos</span></a
+            >
+          </li>
+          <li>
+            <a href="agregados.html"
+              ><span class="material-icons-round">warehouse</span
+              ><span>Agregados</span></a
+            >
+          </li>
+          <li>
+            <a href="rh.html"
+              ><span class="material-icons-round">badge</span><span>RH</span></a
+            >
+          </li>
+          <li>
+            <a href="financeiro.html"
+              ><span class="material-icons-round">payments</span
+              ><span>Financeiro</span></a
+            >
+          </li>
+          <li>
+            <a href="logistica.html"
+              ><span class="material-icons-round">local_shipping</span
+              ><span>Logística</span></a
+            >
+          </li>
+        </ul>
+      </aside>
 
-  <script src="auth.js"></script>
-  <script src="api.js"></script>
-  <script src="theme.js"></script>
-  <script src="ui-helper.js"></script>
-  <script>requireAuth();</script>
-</head>
-<body>
-
-<div class="container">
-  <aside class="sidebar">
-    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
-    <ul>
-      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
-      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
-      <li class="active"><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
-      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
-      <li><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
-      <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
-      <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
-      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
-      <li><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
-    </ul>
-  </aside>
-
-  <main class="main">
-    <header class="header">
-      <div class="search-box">
-        <span class="material-icons-round">search</span>
-        <input type="text" id="input-busca" placeholder="Buscar por nome ou documento..." onkeyup="aplicarFiltrosTabela('tabela-clientes')">
-      </div>
-
-      <div class="header-right">
-        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
-          <span class="material-icons-round">dark_mode</span>
-        </button>
-        <button class="btn-primary" onclick="abrirModal('modalCliente')">
-          <span class="material-icons-round">person_add</span> Novo Cliente
-        </button>
-        
-        <div class="user-menu" id="dropdownToggle">
-          <div class="profile-img-container">
-            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor: zoom-in;">
+      <main class="main">
+        <header class="header">
+          <div class="search-box">
+            <span class="material-icons-round">search</span>
+            <input
+              type="text"
+              id="input-busca"
+              placeholder="Buscar por nome ou documento..."
+              onkeyup="aplicarFiltros('tabela-clientes')"
+            />
           </div>
-          <div class="user-info">
-            <span id="user-name-display" class="user-name">Carregando...</span>
-            <span class="user-role">Administrador</span>
+          <div class="header-right">
+            <div class="theme-toggle-wrap">
+              <span class="material-icons-round">dark_mode</span>
+              <button class="theme-toggle" onclick="toggleDarkMode()"></button>
+            </div>
+            <button class="btn-primary" onclick="abrirModalNovo()">
+              <span class="material-icons-round">person_add</span> Novo Cliente
+            </button>
+            <div class="user-menu" id="dropdownToggle">
+              <div class="profile-img-container">
+                <img
+                  id="avatar-nav"
+                  src="https://i.pravatar.cc/100"
+                  alt="Perfil"
+                  onclick="abrirZoom(this.src)"
+                />
+              </div>
+              <div class="user-info">
+                <span id="user-name-display" class="user-name">...</span>
+                <span class="user-role">Administrador</span>
+              </div>
+              <span class="material-icons-round">expand_more</span>
+              <div class="dropdown-content" id="profileDropdown">
+                <a href="#" onclick="abrirModalAvatar()"
+                  ><span class="material-icons-round">photo_camera</span>
+                  Alterar Foto</a
+                >
+                <a href="#" onclick="logout()" class="logout-link"
+                  ><span class="material-icons-round">logout</span> Sair</a
+                >
+              </div>
+            </div>
           </div>
-          <span class="material-icons-round">expand_more</span>
+        </header>
 
-          <div class="dropdown-content" id="profileDropdown">
-            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
-            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+        <div class="content">
+          <div class="page-header-pedidos"><h2>Gestão de Clientes</h2></div>
+          <div class="table-wrapper">
+            <table class="table-dashboard">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>Documento</th>
+                  <th>Telefone</th>
+                  <th>Endereço</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-clientes"></tbody>
+            </table>
           </div>
         </div>
-      </div>
-    </header>
+      </main>
+    </div>
 
-    <div class="content">
-      <div class="page-header-simple">
-        <h2>Gestão de Clientes</h2>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Documento</th>
-              <th>Telefone</th>
-              <th>Endereço</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-clientes"></tbody>
-        </table>
+    <!-- MODAL CLIENTE -->
+    <div id="modalCliente" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-titulo">Cadastrar Cliente</h2>
+        </div>
+        <div class="modal-body">
+          <div class="cliente-form-grid">
+            <div class="filter-group cli-span-2">
+              <label>Nome / Razão Social</label>
+              <input type="text" id="cli-nome" class="form-control" />
+            </div>
+            <div class="filter-group">
+              <label>CPF / CNPJ</label>
+              <input
+                type="text"
+                id="cli-doc"
+                class="form-control"
+                data-mask="documento"
+                maxlength="18"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Telefone</label>
+              <input
+                type="text"
+                id="cli-tel"
+                class="form-control"
+                data-mask="telefone"
+                maxlength="15"
+              />
+            </div>
+            <div class="filter-group">
+              <label>CEP</label>
+              <input
+                type="text"
+                id="cli-cep"
+                class="form-control"
+                data-mask="cep"
+                maxlength="9"
+              />
+            </div>
+            <div class="filter-group">
+              <label>Número</label>
+              <input type="text" id="cli-numero" class="form-control" />
+            </div>
+            <input type="hidden" id="cli-rua" />
+            <input type="hidden" id="cli-bairro" />
+            <input type="hidden" id="cli-cidade" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button
+            class="btn-secondary"
+            onclick="
+              fecharModal('modalCliente');
+              limparFormulario('modalCliente');
+            "
+          >
+            Cancelar
+          </button>
+          <button class="btn-primary" onclick="salvarCliente()">
+            <span class="material-icons-round">save</span> Salvar
+          </button>
+        </div>
       </div>
     </div>
-  </main>
-</div>
 
-<div id="modalCliente" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2 id="titulo-modal-cliente">Cadastrar Cliente</h2>
+    <!-- MODAIS PADRÃO -->
+    <div id="modalAvatar" class="modal modal-avatar-hidden">
+      <div class="modal-content">
+        <div class="modal-header"><h2>Ajustar Foto</h2></div>
+        <div class="cropper-wrapper">
+          <img id="image-to-crop" src="" alt="" />
+        </div>
+        <div class="modal-footer">
+          <input
+            type="file"
+            id="inputImage"
+            accept="image/*"
+            class="input-file-hidden"
+          />
+          <button
+            class="btn-secondary"
+            onclick="document.getElementById('inputImage').click()"
+          >
+            Selecionar
+          </button>
+          <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+          <button class="btn-secondary" onclick="fecharModalAvatar()">
+            Cancelar
+          </button>
+        </div>
+      </div>
     </div>
-    <div class="modal-body">
-      <div class="form-group" style="grid-column: span 2;">
-        <label>Nome / Razão Social</label>
-        <input type="text" id="cli-nome" class="form-control">
-      </div>
-      <div class="form-group">
-        <label>CPF/CNPJ</label>
-        <input type="text" id="cli-doc" class="form-control" data-mask="documento" maxlength="18">
-      </div>
-      <div class="form-group">
-        <label>Telefone</label>
-        <input type="text" id="cli-tel" class="form-control" data-mask="telefone" maxlength="15">
-      </div>
-      <div class="form-group">
-        <label>CEP</label>
-        <input type="text" id="cli-cep" class="form-control" data-mask="cep" maxlength="9">
-      </div>
-      <div class="form-group">
-        <label>Número</label>
-        <input type="text" id="cli-numero" class="form-control">
-      </div>
-      <input type="hidden" id="cli-rua">
-      <input type="hidden" id="cli-bairro">
-      <input type="hidden" id="cli-cidade">
+    <div id="modalZoom" onclick="fecharZoom()">
+      <img id="imgZoom" src="" alt="zoom" />
     </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="fecharModal('modalCliente'); limparFormulario('modalCliente')">Cancelar</button>
-      <button class="btn-primary" onclick="salvarNovoCliente()">Salvar Cliente</button>
-    </div>
-  </div>
-</div>
 
-<div id="modalAvatar" class="modal" style="display:none">
-  <div class="modal-content">
-    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">&times;</button></div>
-    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
-    <div class="modal-footer">
-      <input type="file" id="inputImage" accept="image/*" style="display:none">
-      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
-      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
-      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
-    </div>
-  </div>
-</div>
+    <script>
+      window.onload = () => carregarTabela();
 
-<div id="modalZoom" class="modal" onclick="fecharZoom()">
-  <div class="zoom-content">
-    <img id="imgZoom" src="">
-  </div>
-</div>
-
-<script>
-window.onload = () => {
-    carregarTabelaClientes();
-};
-
-function carregarTabelaClientes() {
-    const clientes = getClientes();
-    const tabela = document.getElementById("tabela-clientes");
-    
-    tabela.innerHTML = clientes.map(c => `
-    <tr>
-        <td style="font-weight:600;">${c.nome}</td>
+      function carregarTabela() {
+        const clientes = getClientes();
+        const tabela = document.getElementById("tabela-clientes");
+        if (!clientes.length) {
+          tabela.innerHTML =
+            '<tr><td colspan="5" class="tabela-vazia"><span class="material-icons-round">groups</span><p>Nenhum cliente cadastrado.</p></td></tr>';
+          return;
+        }
+        tabela.innerHTML = clientes
+          .map(
+            (c) => `
+      <tr>
+        <td class="td-bold">${c.nome}</td>
         <td>${formatarDocumento(c.documento)}</td>
-        <td>${mascaraTelefone(c.telefone || '')}</td>
+        <td>${c.telefone || "—"}</td>
         <td>
-            <small>${c.rua || 'S/R'}, ${c.numero || 'S/N'}</small><br>
-            <small style="color:var(--text-light)">${c.bairro || ''} - ${c.cidade || ''}</small>
+          <span class="cli-rua">${c.rua || "S/R"}, ${c.numero || "S/N"}</span>
+          <span class="cli-bairro">${c.bairro ? c.bairro + " — " : ""}${c.cidade || ""}</span>
         </td>
         <td>
-            <button class="btn-icon" onclick="editarCliente(${c.id})">
-                <span class="material-icons-round">edit</span>
-            </button>
-            <button class="btn-icon" onclick="removerCliente(${c.id})">
-                <span class="material-icons-round">delete</span>
-            </button>
+          <button class="btn-icon" onclick="editarCliente(${c.id})"><span class="material-icons-round">edit</span></button>
+          <button class="btn-icon danger" onclick="removerCliente(${c.id})"><span class="material-icons-round">delete</span></button>
         </td>
-    </tr>`).join('');
-}
+      </tr>`,
+          )
+          .join("");
+      }
 
-function salvarNovoCliente() {
-    const modal = document.getElementById("modalCliente");
-    const editId = modal.dataset.editId;
-    
-    const dados = {
-        nome: document.getElementById("cli-nome").value,
-        documento: document.getElementById("cli-doc").value.replace(/\D/g, ""),
-        telefone: document.getElementById("cli-tel").value,
-        cep: document.getElementById("cli-cep").value,
-        numero: document.getElementById("cli-numero").value,
-        rua: document.getElementById("cli-rua").value,
-        bairro: document.getElementById("cli-bairro").value,
-        cidade: document.getElementById("cli-cidade").value
-    };
+      function abrirModalNovo() {
+        document.getElementById("modal-titulo").innerText = "Cadastrar Cliente";
+        limparFormulario("modalCliente");
+        delete document.getElementById("modalCliente").dataset.editId;
+        abrirModal("modalCliente");
+      }
 
-    if (editId) {
-        updateCliente(editId, dados);
-    } else {
-        createCliente(dados);
-    }
-    
-    delete modal.dataset.editId;
-    document.querySelector("#modalCliente h2").innerText = "Cadastrar Cliente";
-    limparFormulario('modalCliente');
-    fecharModal('modalCliente');
-    carregarTabelaClientes();
-}
+      function editarCliente(id) {
+        const c = getClienteById(id);
+        if (!c) return;
+        document.getElementById("modal-titulo").innerText = "Editar Cliente";
+        document.getElementById("cli-nome").value = c.nome;
+        document.getElementById("cli-doc").value = formatarDocumento(
+          c.documento,
+        );
+        document.getElementById("cli-tel").value = c.telefone || "";
+        document.getElementById("cli-cep").value = c.cep || "";
+        document.getElementById("cli-numero").value = c.numero || "";
+        document.getElementById("cli-rua").value = c.rua || "";
+        document.getElementById("cli-bairro").value = c.bairro || "";
+        document.getElementById("cli-cidade").value = c.cidade || "";
+        document.getElementById("modalCliente").dataset.editId = id;
+        abrirModal("modalCliente");
+      }
 
-function removerCliente(id) {
-    if(confirm("Tem certeza que deseja excluir este cliente?")) {
-        deleteCliente(id);
-        carregarTabelaClientes();
-    }
-}
+      function salvarCliente() {
+        const nome = document.getElementById("cli-nome").value.trim();
+        if (!nome) return alert("Nome é obrigatório.");
+        const dados = {
+          nome,
+          documento: document
+            .getElementById("cli-doc")
+            .value.replace(/\D/g, ""),
+          telefone: document.getElementById("cli-tel").value,
+          cep: document.getElementById("cli-cep").value,
+          numero: document.getElementById("cli-numero").value,
+          rua: document.getElementById("cli-rua").value,
+          bairro: document.getElementById("cli-bairro").value,
+          cidade: document.getElementById("cli-cidade").value,
+        };
+        const editId = document.getElementById("modalCliente").dataset.editId;
+        if (editId) updateCliente(editId, dados);
+        else createCliente(dados);
+        delete document.getElementById("modalCliente").dataset.editId;
+        limparFormulario("modalCliente");
+        fecharModal("modalCliente");
+        carregarTabela();
+      }
 
-function editarCliente(id) {
-    const cliente = getClienteById(id);
-    if (!cliente) return;
-
-    document.getElementById("cli-nome").value = cliente.nome;
-    document.getElementById("cli-doc").value = mascaraDocumento(cliente.documento);
-    document.getElementById("cli-tel").value = cliente.telefone;
-    document.getElementById("cli-cep").value = cliente.cep;
-    document.getElementById("cli-numero").value = cliente.numero || "";
-    document.getElementById("cli-rua").value = cliente.rua || "";
-    document.getElementById("cli-bairro").value = cliente.bairro || "";
-    document.getElementById("cli-cidade").value = cliente.cidade || "";
-
-    document.getElementById("modalCliente").dataset.editId = id;
-    document.querySelector("#modalCliente h2").innerText = "Editar Cliente";
-    abrirModal('modalCliente');
-}
-
-function aplicarFiltrosTabela(tabelaId) {
-    const busca = document.getElementById('input-busca').value.toLowerCase();
-    const linhas = document.querySelectorAll('#' + tabelaId + ' tr');
-    linhas.forEach(linha => {
-        linha.style.display = linha.innerText.toLowerCase().includes(busca) ? '' : 'none';
-    });
-}
-</script>
-</body>
+      function removerCliente(id) {
+        if (confirm("Deseja excluir este cliente?")) {
+          deleteCliente(id);
+          carregarTabela();
+        }
+      }
+    </script>
+  </body>
 </html>

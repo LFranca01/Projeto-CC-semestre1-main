@@ -1,214 +1,324 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Estoque | Distribuidora Serginho</title>
-  
-<link rel="stylesheet" href="./styles/style.css">
-  <link rel="stylesheet" href="./styles/estoques.css">
-  <link rel="stylesheet" href="./styles/pedidos.css">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Estoque | Distribuidora Serginho</title>
 
-  <script src="auth.js"></script>
-  <script src="api.js"></script>
-  <script src="theme.js"></script>
-  <script src="ui-helper.js"></script>
-  <script>requireAuth();</script>
-</head>
-<body>
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="stylesheet" href="./styles/estoques.css" />
+    <link rel="stylesheet" href="./styles/pedidos.css" />
 
-<div class="container">
-  <aside class="sidebar">
-    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
-    <ul>
-      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
-      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
-      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
-      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
-      <li class="active"><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
-      <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
-      <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
-      <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
-      <li><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
-    </ul>
-  </aside>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
 
-  <main class="main">
-    <header class="header">
-      <div class="search-box">
-        <span class="material-icons-round">search</span>
-        <input type="text" id="input-busca" placeholder="Buscar por produto..." onkeyup="aplicarFiltrosTabela('tabela-estoque')">
-      </div>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
-      <div class="header-right">
-        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
-          <span class="material-icons-round">dark_mode</span>
-        </button>
-        <button class="btn-primary" onclick="abrirModal('modalEstoque')">
-          <span class="material-icons-round">add</span> Movimentar Estoque
-        </button>
-        
-        <div class="user-menu" id="dropdownToggle">
-          <div class="profile-img-container">
-            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor: zoom-in;">
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="theme.js"></script>
+    <script src="ui-helper.js"></script>
+    <script>
+      requireAuth();
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img src="./assets/Logo.png" alt="Logo" />
+        </div>
+        <ul>
+          <li>
+            <a href="inicio.html"
+              ><span class="material-icons-round">dashboard</span>
+              <span>Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a href="pedidos.html"
+              ><span class="material-icons-round">shopping_cart</span>
+              <span>Pedidos</span></a
+            >
+          </li>
+          <li>
+            <a href="clientes.html"
+              ><span class="material-icons-round">groups</span>
+              <span>Clientes</span></a
+            >
+          </li>
+          <li>
+            <a href="produtos.html"
+              ><span class="material-icons-round">category</span>
+              <span>Produtos</span></a
+            >
+          </li>
+          <li class="active">
+            <a href="estoques.html"
+              ><span class="material-icons-round">inventory_2</span>
+              <span>Estoque</span></a
+            >
+          </li>
+          <li>
+            <a href="rh.html"
+              ><span class="material-icons-round">badge</span>
+              <span>RH</span></a
+            >
+          </li>
+          <li>
+            <a href="financeiro.html"
+              ><span class="material-icons-round">payments</span>
+              <span>Financeiro</span></a
+            >
+          </li>
+          <li>
+            <a href="logistica.html"
+              ><span class="material-icons-round">local_shipping</span>
+              <span>Logística</span></a
+            >
+          </li>
+          <li>
+            <a href="agregados.html"
+              ><span class="material-icons-round">directions_car</span>
+              <span>Agregados</span></a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main">
+        <header class="header">
+          <div class="search-box">
+            <span class="material-icons-round">search</span>
+            <input
+              type="text"
+              id="input-busca"
+              placeholder="Buscar por produto..."
+              onkeyup="aplicarFiltrosTabela('tabela-estoque')"
+            />
           </div>
-          <div class="user-info">
-            <span id="user-name-display" class="user-name">Carregando...</span>
-            <span class="user-role">Administrador</span>
-          </div>
-          <span class="material-icons-round">expand_more</span>
 
-          <div class="dropdown-content" id="profileDropdown">
-            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
-            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+          <div class="header-right">
+            <button
+              class="theme-toggle"
+              id="theme-toggle-btn"
+              title="Alternar modo escuro"
+            >
+              <span class="material-icons-round">dark_mode</span>
+            </button>
+            <button class="btn-primary" onclick="abrirModal('modalEstoque')">
+              <span class="material-icons-round">add</span> Movimentar Estoque
+            </button>
+
+            <div class="user-menu" id="dropdownToggle">
+              <div class="profile-img-container">
+                <img
+                  id="avatar-nav"
+                  src="https://i.pravatar.cc/100"
+                  alt="Perfil"
+                  onclick="abrirZoom(this.src)"
+                  style="cursor: zoom-in"
+                />
+              </div>
+              <div class="user-info">
+                <span id="user-name-display" class="user-name"
+                  >Carregando...</span
+                >
+                <span class="user-role">Administrador</span>
+              </div>
+              <span class="material-icons-round">expand_more</span>
+
+              <div class="dropdown-content" id="profileDropdown">
+                <a href="#" onclick="abrirModalAvatar()"
+                  ><span class="material-icons-round">photo_camera</span>
+                  Alterar Foto</a
+                >
+                <a href="#" onclick="logout()" class="logout-link"
+                  ><span class="material-icons-round">logout</span> Sair</a
+                >
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="content">
+          <div class="page-header-simple">
+            <h2>Controle de Estoque</h2>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon accent">
+                <span class="material-icons-round">inventory</span>
+              </div>
+              <div>
+                <h3>Total em Estoque</h3>
+                <p id="total-itens">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon warning">
+                <span class="material-icons-round">warning</span>
+              </div>
+              <div>
+                <h3>Itens Críticos</h3>
+                <p id="itens-criticos">0</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Filial</th>
+                  <th>Produto</th>
+                  <th>Qtd. Atual</th>
+                  <th>Mín / Máx</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-estoque"></tbody>
+            </table>
           </div>
         </div>
-      </div>
-    </header>
+      </main>
+    </div>
 
-    <div class="content">
-      <div class="page-header-simple">
-        <h2>Controle de Estoque</h2>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon accent">
-            <span class="material-icons-round">inventory</span>
+    <div id="modalEstoque" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Gerenciar Estoque</h2>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Filial (Armazém)</label>
+              <select id="idFilial"></select>
+            </div>
+            <div class="form-group">
+              <label>Produto</label>
+              <select id="idProduto"></select>
+            </div>
           </div>
-          <div>
-            <h3>Total em Estoque</h3>
-            <p id="total-itens">0</p>
+          <div class="form-group">
+            <label>Quantidade Atual</label>
+            <input type="number" id="quantidadeAtual" min="0" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Estoque Mínimo</label>
+              <input
+                type="number"
+                id="estoqueMinimo"
+                placeholder="Alerta de falta"
+              />
+            </div>
+            <div class="form-group">
+              <label>Estoque Máximo</label>
+              <input
+                type="number"
+                id="estoqueMaximo"
+                placeholder="Capacidade total"
+              />
+            </div>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon warning">
-            <span class="material-icons-round">warning</span>
-          </div>
-          <div>
-            <h3>Itens Críticos</h3>
-            <p id="itens-criticos">0</p>
-          </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="fecharModal('modalEstoque')">
+            Cancelar
+          </button>
+          <button class="btn-primary" onclick="salvarEstoque()">
+            Atualizar
+          </button>
         </div>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>Filial</th>
-              <th>Produto</th>
-              <th>Qtd. Atual</th>
-              <th>Mín / Máx</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-estoque"></tbody>
-        </table>
       </div>
     </div>
-  </main>
-</div>
 
-<div id="modalEstoque" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Gerenciar Estoque</h2>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="form-group">
-          <label>Filial (Armazém)</label>
-          <select id="idFilial"></select>
+    <div id="modalAvatar" class="modal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Ajustar Foto</h2>
+          <button class="close" onclick="fecharModalAvatar()">&times;</button>
         </div>
-        <div class="form-group">
-          <label>Produto</label>
-          <select id="idProduto"></select>
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Quantidade Atual</label>
-        <input type="number" id="quantidadeAtual" min="0">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Estoque Mínimo</label>
-          <input type="number" id="estoqueMinimo" placeholder="Alerta de falta">
-        </div>
-        <div class="form-group">
-          <label>Estoque Máximo</label>
-          <input type="number" id="estoqueMaximo" placeholder="Capacidade total">
+        <div class="cropper-wrapper"><img id="image-to-crop" src="" /></div>
+        <div class="modal-footer">
+          <input
+            type="file"
+            id="inputImage"
+            accept="image/*"
+            style="display: none"
+          />
+          <button
+            class="btn-secondary"
+            onclick="document.getElementById('inputImage').click()"
+          >
+            Selecionar
+          </button>
+          <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+          <button class="btn-secondary" onclick="fecharModalAvatar()">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="fecharModal('modalEstoque')">Cancelar</button>
-      <button class="btn-primary" onclick="salvarEstoque()">Atualizar</button>
+
+    <div id="modalZoom" class="modal" onclick="fecharZoom()">
+      <div class="zoom-content">
+        <img id="imgZoom" src="" />
+      </div>
     </div>
-  </div>
-</div>
 
-<div id="modalAvatar" class="modal" style="display:none">
-  <div class="modal-content">
-    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">&times;</button></div>
-    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
-    <div class="modal-footer">
-      <input type="file" id="inputImage" accept="image/*" style="display:none">
-      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
-      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
-      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
-    </div>
-  </div>
-</div>
+    <script>
+      let editEstoque = null;
 
-<div id="modalZoom" class="modal" onclick="fecharZoom()">
-  <div class="zoom-content">
-    <img id="imgZoom" src="">
-  </div>
-</div>
+      window.onload = () => {
+        renderEstoque();
+        carregarSelects();
+      };
 
-<script>
-let editEstoque = null;
+      function renderEstoque() {
+        const produtos = getProdutos();
+        const tabela = document.getElementById("tabela-estoque");
+        let totalItens = 0;
+        let itensCriticos = 0;
 
-window.onload = () => {
-    renderEstoque();
-    carregarSelects();
-};
+        produtos.forEach((p) => {
+          totalItens += p.estoque || 0;
+          if ((p.estoque || 0) < 5) itensCriticos++;
+        });
 
-function renderEstoque() {
-    const produtos = getProdutos();
-    const tabela = document.getElementById("tabela-estoque");
-    let totalItens = 0;
-    let itensCriticos = 0;
+        document.getElementById("total-itens").innerText = totalItens;
+        document.getElementById("itens-criticos").innerText = itensCriticos;
 
-    produtos.forEach(p => {
-        totalItens += (p.estoque || 0);
-        if ((p.estoque || 0) < 5) itensCriticos++;
-    });
+        tabela.innerHTML = produtos
+          .map((p) => {
+            const quantidade = p.estoque || 0;
+            const minimo = 5;
+            let statusClass = "entregue";
+            let statusText = "OK";
 
-    document.getElementById("total-itens").innerText = totalItens;
-    document.getElementById("itens-criticos").innerText = itensCriticos;
+            if (quantidade <= minimo) {
+              statusClass = "pendente";
+              statusText = "Crítico";
+            }
 
-    tabela.innerHTML = produtos.map(p => {
-        const quantidade = p.estoque || 0;
-        const minimo = 5;
-        let statusClass = "entregue";
-        let statusText = "OK";
-        
-        if (quantidade <= minimo) {
-            statusClass = "pendente";
-            statusText = "Crítico";
-        }
-
-        return `
+            return `
             <tr>
                 <td>Matriz</td>
                 <td><strong>${p.nome}</strong></td>
@@ -222,54 +332,66 @@ function renderEstoque() {
                 </td>
             </tr>
         `;
-    }).join('');
-}
+          })
+          .join("");
+      }
 
-function carregarSelects() {
-    const produtos = getProdutos();
-    const filiais = getFiliais();
-    
-    document.getElementById("idFilial").innerHTML = filiais.map(f => `<option value="${f.id}">${f.nome}</option>`).join('');
-    document.getElementById("idProduto").innerHTML = produtos.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
-}
+      function carregarSelects() {
+        const produtos = getProdutos();
+        const filiais = getFiliais();
 
-function salvarEstoque() {
-    const dados = {
-        idFilial: document.getElementById("idFilial").value,
-        idProduto: document.getElementById("idProduto").value,
-        quantidadeAtual: parseInt(document.getElementById("quantidadeAtual").value) || 0,
-        estoqueMinimo: parseInt(document.getElementById("estoqueMinimo").value) || 0,
-        estoqueMaximo: parseInt(document.getElementById("estoqueMaximo").value) || 0
-    };
+        document.getElementById("idFilial").innerHTML = filiais
+          .map((f) => `<option value="${f.id}">${f.nome}</option>`)
+          .join("");
+        document.getElementById("idProduto").innerHTML = produtos
+          .map((p) => `<option value="${p.id}">${p.nome}</option>`)
+          .join("");
+      }
 
-    const p = getProdutoById(dados.idProduto);
-    if (p) {
-        p.estoque = dados.quantidadeAtual;
-        updateProduto(dados.idProduto, p);
-    }
-    
-    limparFormulario('modalEstoque');
-    fecharModal('modalEstoque');
-    renderEstoque();
-}
+      function salvarEstoque() {
+        const dados = {
+          idFilial: document.getElementById("idFilial").value,
+          idProduto: document.getElementById("idProduto").value,
+          quantidadeAtual:
+            parseInt(document.getElementById("quantidadeAtual").value) || 0,
+          estoqueMinimo:
+            parseInt(document.getElementById("estoqueMinimo").value) || 0,
+          estoqueMaximo:
+            parseInt(document.getElementById("estoqueMaximo").value) || 0,
+        };
 
-function editarEstoque(id) {
-    const p = getProdutoById(id);
-    if (!p) return;
+        const p = getProdutoById(dados.idProduto);
+        if (p) {
+          p.estoque = dados.quantidadeAtual;
+          updateProduto(dados.idProduto, p);
+        }
 
-    document.getElementById("idProduto").value = id;
-    document.getElementById("quantidadeAtual").value = p.estoque || 0;
-    document.getElementById("estoqueMinimo").value = 5;
-    abrirModal('modalEstoque');
-}
+        limparFormulario("modalEstoque");
+        fecharModal("modalEstoque");
+        renderEstoque();
+      }
 
-function aplicarFiltrosTabela(tabelaId) {
-    const busca = document.getElementById('input-busca').value.toLowerCase();
-    const linhas = document.querySelectorAll('#' + tabelaId + ' tr');
-    linhas.forEach(linha => {
-        linha.style.display = linha.innerText.toLowerCase().includes(busca) ? '' : 'none';
-    });
-}
-</script>
-</body>
+      function editarEstoque(id) {
+        const p = getProdutoById(id);
+        if (!p) return;
+
+        document.getElementById("idProduto").value = id;
+        document.getElementById("quantidadeAtual").value = p.estoque || 0;
+        document.getElementById("estoqueMinimo").value = 5;
+        abrirModal("modalEstoque");
+      }
+
+      function aplicarFiltrosTabela(tabelaId) {
+        const busca = document
+          .getElementById("input-busca")
+          .value.toLowerCase();
+        const linhas = document.querySelectorAll("#" + tabelaId + " tr");
+        linhas.forEach((linha) => {
+          linha.style.display = linha.innerText.toLowerCase().includes(busca)
+            ? ""
+            : "none";
+        });
+      }
+    </script>
+  </body>
 </html>

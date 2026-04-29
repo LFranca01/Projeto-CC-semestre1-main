@@ -1,300 +1,422 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Logística | Distribuidora Serginho</title>
-  
-  <link rel="stylesheet" href="./styles/style.css">
-  <link rel="stylesheet" href="./styles/pedidos.css">
-  
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Logística | Distribuidora Serginho</title>
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="stylesheet" href="./styles/pedidos.css" />
+    <link rel="stylesheet" href="./styles/logistica.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="auth.js"></script>
+    <script src="api.js"></script>
+    <script src="ui-helper.js"></script>
+    <script>
+      requireAuth();
+    </script>
+  </head>
+  <body>
+    <div class="container">
+      <aside class="sidebar">
+        <div class="sidebar-header">
+          <img src="./assets/Logo.png" alt="Logo" />
+        </div>
+        <ul>
+          <li>
+            <a href="inicio.html"
+              ><span class="material-icons-round">dashboard</span
+              ><span>Dashboard</span></a
+            >
+          </li>
+          <li>
+            <a href="pedidos.html"
+              ><span class="material-icons-round">inventory_2</span
+              ><span>Pedidos</span></a
+            >
+          </li>
+          <li>
+            <a href="clientes.html"
+              ><span class="material-icons-round">groups</span
+              ><span>Clientes</span></a
+            >
+          </li>
+          <li>
+            <a href="produtos.html"
+              ><span class="material-icons-round">category</span
+              ><span>Produtos</span></a
+            >
+          </li>
+          <li>
+            <a href="agregados.html"
+              ><span class="material-icons-round">warehouse</span
+              ><span>Agregados</span></a
+            >
+          </li>
+          <li>
+            <a href="rh.html"
+              ><span class="material-icons-round">badge</span><span>RH</span></a
+            >
+          </li>
+          <li>
+            <a href="financeiro.html"
+              ><span class="material-icons-round">payments</span
+              ><span>Financeiro</span></a
+            >
+          </li>
+          <li class="active">
+            <a href="logistica.html"
+              ><span class="material-icons-round">local_shipping</span
+              ><span>Logística</span></a
+            >
+          </li>
+        </ul>
+      </aside>
 
-  <script src="auth.js"></script>
-  <script src="api.js"></script>
-  <script src="theme.js"></script>
-  <script src="ui-helper.js"></script>
-  <script>requireAuth();</script>
-</head>
-<body>
-
-<div class="container">
-  <aside class="sidebar">
-    <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo"></div>
-    <ul>
-      <li><a href="inicio.html"><span class="material-icons-round">dashboard</span> <span>Dashboard</span></a></li>
-      <li><a href="pedidos.html"><span class="material-icons-round">shopping_cart</span> <span>Pedidos</span></a></li>
-      <li><a href="clientes.html"><span class="material-icons-round">groups</span> <span>Clientes</span></a></li>
-      <li><a href="produtos.html"><span class="material-icons-round">category</span> <span>Produtos</span></a></li>
-      <li><a href="estoques.html"><span class="material-icons-round">inventory_2</span> <span>Estoque</span></a></li>
-      <li><a href="rh.html"><span class="material-icons-round">badge</span> <span>RH</span></a></li>
-      <li><a href="financeiro.html"><span class="material-icons-round">payments</span> <span>Financeiro</span></a></li>
-      <li class="active"><a href="logistica.html"><span class="material-icons-round">local_shipping</span> <span>Logística</span></a></li>
-      <li><a href="agregados.html"><span class="material-icons-round">directions_car</span> <span>Agregados</span></a></li>
-    </ul>
-  </aside>
-
-  <main class="main">
-    <header class="header">
-      <div class="search-box">
-        <span class="material-icons-round">search</span>
-        <input type="text" id="input-busca" placeholder="Buscar por código de rastreio..." onkeyup="aplicarFiltrosTabela('tabela-logistica')">
-      </div>
-
-      <div class="header-right">
-        <button class="theme-toggle" id="theme-toggle-btn" title="Alternar modo escuro">
-          <span class="material-icons-round">dark_mode</span>
-        </button>
-        <button class="btn-primary" onclick="abrirModal('modalBipar')">
-          <span class="material-icons-round">qr_code_scanner</span> Bipar Pedido
-        </button>
-        
-        <div class="user-menu" id="dropdownToggle">
-          <div class="profile-img-container">
-            <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" style="cursor: zoom-in;">
+      <main class="main">
+        <header class="header">
+          <div class="search-box">
+            <span class="material-icons-round">search</span>
+            <input
+              type="text"
+              id="input-busca"
+              placeholder="Buscar rastreio ou pedido..."
+              onkeyup="aplicarFiltros('tabela-entregas')"
+            />
           </div>
-          <div class="user-info">
-            <span id="user-name-display" class="user-name">Carregando...</span>
-            <span class="user-role">Administrador</span>
+          <div class="header-right">
+            <div class="theme-toggle-wrap">
+              <span class="material-icons-round">dark_mode</span>
+              <button class="theme-toggle" onclick="toggleDarkMode()"></button>
+            </div>
+            <div class="user-menu" id="dropdownToggle">
+              <div class="profile-img-container">
+                <img
+                  id="avatar-nav"
+                  src="https://i.pravatar.cc/100"
+                  alt="Perfil"
+                  onclick="abrirZoom(this.src)"
+                />
+              </div>
+              <div class="user-info">
+                <span id="user-name-display" class="user-name">...</span>
+                <span class="user-role">Administrador</span>
+              </div>
+              <span class="material-icons-round">expand_more</span>
+              <div class="dropdown-content" id="profileDropdown">
+                <a href="#" onclick="abrirModalAvatar()"
+                  ><span class="material-icons-round">photo_camera</span>
+                  Alterar Foto</a
+                >
+                <a href="#" onclick="logout()" class="logout-link"
+                  ><span class="material-icons-round">logout</span> Sair</a
+                >
+              </div>
+            </div>
           </div>
-          <span class="material-icons-round">expand_more</span>
+        </header>
 
-          <div class="dropdown-content" id="profileDropdown">
-            <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
-            <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+        <div class="content">
+          <div class="page-header-pedidos"><h2>Logística de Entregas</h2></div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon orange">
+                <span class="material-icons-round">pending_actions</span>
+              </div>
+              <div>
+                <h3>Pedidos Pendentes</h3>
+                <p id="stat-pendentes">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon blue">
+                <span class="material-icons-round">local_shipping</span>
+              </div>
+              <div>
+                <h3>Em Trânsito</h3>
+                <p id="stat-transito">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon green">
+                <span class="material-icons-round">done_all</span>
+              </div>
+              <div>
+                <h3>Entregues</h3>
+                <p id="stat-entregues">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- BIPAGEM -->
+          <div class="bip-box">
+            <div class="bip-header">
+              <span class="material-icons-round">qr_code_scanner</span>
+              <h3>Bipagem de Pedido</h3>
+            </div>
+            <p class="bip-desc">
+              Selecione o agregado e informe o ID do pedido para registrar a
+              saída
+            </p>
+            <div class="bip-form">
+              <div class="filter-group">
+                <label>Agregado Responsável</label>
+                <select id="bip-agregado" class="form-control"></select>
+              </div>
+              <div class="filter-group">
+                <label>ID do Pedido</label>
+                <input
+                  type="number"
+                  id="bip-pedido"
+                  class="form-control bip-input"
+                  placeholder="Ex: 12"
+                  min="1"
+                />
+              </div>
+              <button class="btn-primary bip-btn" onclick="bipar()">
+                <span class="material-icons-round">barcode_reader</span> Bipar
+                Pedido
+              </button>
+            </div>
+            <div id="bip-resultado"></div>
+          </div>
+
+          <!-- FILTROS ENTREGAS -->
+          <div class="filter-box">
+            <div class="filter-group">
+              <label>Status</label>
+              <select
+                id="select-filtro"
+                class="form-control"
+                onchange="aplicarFiltros('tabela-entregas')"
+              >
+                <option value="">Todos</option>
+                <option value="Em Trânsito">Em Trânsito</option>
+                <option value="Entregue">Entregue</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="table-dashboard">
+              <thead>
+                <tr>
+                  <th>ID Pedido</th>
+                  <th>Agregado</th>
+                  <th>Cód. Rastreio</th>
+                  <th>Saída</th>
+                  <th>Previsão</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabela-entregas"></tbody>
+            </table>
           </div>
         </div>
-      </div>
-    </header>
+      </main>
+    </div>
 
-    <div class="content">
-      <div class="page-header-simple">
-        <h2>Gerenciamento de Entregas</h2>
-      </div>
-
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-icon info">
-            <span class="material-icons-round">local_shipping</span>
-          </div>
-          <div>
-            <h3>Em Trânsito</h3>
-            <p id="total-transito">0</p>
+    <!-- MODAL MARCAR ENTREGUE -->
+    <div id="modalEntregue" class="modal">
+      <div class="modal-content">
+        <div class="modal-header"><h2>Confirmar Entrega</h2></div>
+        <div class="modal-body">
+          <p>
+            Confirma que o pedido <strong id="entregue-pedido-id"></strong> foi
+            entregue?
+          </p>
+          <div class="filter-group filter-group-mt">
+            <label>Data de Entrega</label>
+            <input type="date" id="entregue-data" class="form-control" />
           </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon warning">
-            <span class="material-icons-round">schedule</span>
-          </div>
-          <div>
-            <h3>Aguardando Coleta</h3>
-            <p id="total-aguardando">0</p>
-          </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" onclick="fecharModal('modalEntregue')">
+            Cancelar
+          </button>
+          <button class="btn-primary" onclick="confirmarEntrega()">
+            <span class="material-icons-round">check_circle</span> Confirmar
+          </button>
         </div>
-        <div class="stat-card">
-          <div class="stat-icon accent">
-            <span class="material-icons-round">check_circle</span>
-          </div>
-          <div>
-            <h3>Entregues Hoje</h3>
-            <p id="entregues-hoje">0</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="filter-box">
-        <div class="filter-group">
-          <label>Filtrar por Status</label>
-          <select id="select-status-log" onchange="aplicarFiltrosTabela('tabela-logistica')">
-            <option value="">Todos</option>
-            <option value="Aguardando">Aguardando</option>
-            <option value="Em Trânsito">Em Trânsito</option>
-            <option value="Entregue">Entregue</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="table-container">
-        <table>
-          <thead>
-            <tr>
-              <th>EAN Pedido</th>
-              <th>Cód. Rastreio</th>
-              <th>Data Saída</th>
-              <th>Previsão</th>
-              <th>Motorista</th>
-              <th>Status</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="tabela-logistica"></tbody>
-        </table>
       </div>
     </div>
-  </main>
-</div>
 
-<div id="modalBipar" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h2>Bipar Pedido no Hub</h2>
-    </div>
-    <div class="modal-body">
-      <div class="bipar-area">
-        <div class="bipar-icon">
-          <span class="material-icons-round">qr_code_scanner</span>
-        </div>
-        <p>Escaneie o código EAN do pedido ou digite manualmente:</p>
-        <div class="form-group">
-          <input type="text" id="bipar-ean" class="form-control" placeholder="Digite o EAN ou ID do pedido">
+    <!-- MODAIS PADRÃO -->
+    <div id="modalAvatar" class="modal modal-avatar-hidden">
+      <div class="modal-content">
+        <div class="modal-header"><h2>Ajustar Foto</h2></div>
+        <div class="cropper-wrapper"><img id="image-to-crop" src="" /></div>
+        <div class="modal-footer">
+          <input
+            type="file"
+            id="inputImage"
+            accept="image/*"
+            class="input-file-hidden"
+          />
+          <button
+            class="btn-secondary"
+            onclick="document.getElementById('inputImage').click()"
+          >
+            Selecionar
+          </button>
+          <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
+          <button class="btn-secondary" onclick="fecharModalAvatar()">
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="fecharModal('modalBipar')">Cancelar</button>
-      <button class="btn-primary" onclick="biparPedido()">Confirmar</button>
+    <div id="modalZoom" onclick="fecharZoom()">
+      <img id="imgZoom" src="" alt="zoom" />
     </div>
-  </div>
-</div>
 
-<div id="modalAvatar" class="modal" style="display:none">
-  <div class="modal-content">
-    <div class="modal-header"><h2>Ajustar Foto</h2><button class="close" onclick="fecharModalAvatar()">&times;</button></div>
-    <div class="cropper-wrapper"><img id="image-to-crop" src=""></div>
-    <div class="modal-footer">
-      <input type="file" id="inputImage" accept="image/*" style="display:none">
-      <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
-      <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
-      <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
-    </div>
-  </div>
-</div>
+    <script>
+      let entregaEditandoId = null;
 
-<div id="modalZoom" class="modal" onclick="fecharZoom()">
-  <div class="zoom-content">
-    <img id="imgZoom" src="">
-  </div>
-</div>
+      window.onload = () => {
+        carregarStats();
+        carregarTabela();
+        popularAgregados();
+        document.getElementById("entregue-data").value = new Date()
+          .toISOString()
+          .split("T")[0];
+      };
 
-<script>
-window.onload = () => {
-    renderLogistica();
-};
+      function carregarStats() {
+        const pedidos = getPedidos();
+        const entregas = getEntregas();
+        document.getElementById("stat-pendentes").innerText = pedidos.filter(
+          (p) => p.status === "Pendente",
+        ).length;
+        document.getElementById("stat-transito").innerText = entregas.filter(
+          (e) => e.situacao === "Em Trânsito",
+        ).length;
+        document.getElementById("stat-entregues").innerText = entregas.filter(
+          (e) => e.situacao === "Entregue",
+        ).length;
+      }
 
-function renderLogistica() {
-    const entregas = getEntregas();
-    const pedidos = getPedidos();
-    const agregados = getAgregados();
-    const tabela = document.getElementById("tabela-logistica");
+      function popularAgregados() {
+        const lista = getAgregados().filter((a) => a.situacao === "Ativo");
+        const sel = document.getElementById("bip-agregado");
+        sel.innerHTML = lista.length
+          ? lista
+              .map(
+                (a) =>
+                  `<option value="${a.id}">${a.nome} — ${a.tipoVei || ""} ${a.placaVei || ""}</option>`,
+              )
+              .join("")
+          : '<option value="">Nenhum agregado ativo</option>';
+      }
 
-    document.getElementById("total-transito").innerText = entregas.filter(e => e.status === "Em Trânsito").length;
-    document.getElementById("total-aguardando").innerText = entregas.filter(e => e.status === "Aguardando").length;
-    
-    const hoje = new Date().toISOString().split('T')[0];
-    document.getElementById("entregues-hoje").innerText = entregas.filter(e => e.status === "Entregue" && e.dataEntrega === hoje).length;
-
-    tabela.innerHTML = entregas.map(e => {
-        const pedido = pedidos.find(p => p.id == e.pedidoId);
-        const agregado = agregados.find(a => a.id == e.agregadoId);
-        let statusClass = "pendente";
-        if (e.status === "Em Trânsito") statusClass = "transito";
-        if (e.status === "Entregue") statusClass = "entregue";
-        
-        return `
-            <tr>
-                <td><code>${pedido ? (pedido.ean ? pedido.ean.slice(-8) : '#' + pedido.id) : '-'}</code></td>
-                <td><code>${e.codRastreio || '-'}</code></td>
-                <td>${formatarData(e.dataSaida)}</td>
-                <td>${formatarData(e.previsaoEntrega)}</td>
-                <td>${agregado ? agregado.nome : 'Não atribuído'}</td>
-                <td><span class="status ${statusClass}">${e.status}</span></td>
-                <td>
-                    <button class="btn-icon" onclick="marcarEntregue(${e.id})" title="Marcar como Entregue">
-                        <span class="material-icons-round">check_circle</span>
-                    </button>
-                    <button class="btn-icon" onclick="deletarEntrega(${e.id})">
-                        <span class="material-icons-round">delete</span>
-                    </button>
-                </td>
-            </tr>
-        `;
-    }).join('');
-}
-
-function biparPedido() {
-    const eanInput = document.getElementById("bipar-ean").value.trim();
-    if (!eanInput) return alert("Digite o EAN ou ID do pedido.");
-
-    const pedidos = getPedidos();
-    const pedido = pedidos.find(p => 
-        (p.ean && p.ean.includes(eanInput)) || 
-        String(p.id) === eanInput ||
-        p.ean.slice(-8) === eanInput
-    );
-
-    if (!pedido) {
-        alert("Pedido não encontrado!");
-        return;
-    }
-
-    const dados = {
-        pedidoId: pedido.id,
-        dataSaida: new Date().toISOString().split('T')[0],
-        previsaoEntrega: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        status: "Em Trânsito"
-    };
-
-    createEntrega(dados);
-    document.getElementById("bipar-ean").value = "";
-    fecharModal('modalBipar');
-    renderLogistica();
-    alert(`Pedido #${pedido.id} bipado com sucesso! Status: Em Trânsito`);
-}
-
-function marcarEntregue(id) {
-    if(confirm("Confirmar entrega deste pedido?")) {
-        atualizarStatusEntrega(id, "Entregue");
-        
-        const db = getDB();
-        const entrega = db.entregas.find(e => e.id == id);
-        if (entrega) {
-            entrega.dataEntrega = new Date().toISOString().split('T')[0];
-            saveDB(db);
-            
-            const idxPedido = db.pedidos.findIndex(p => p.id == entrega.pedidoId);
-            if (idxPedido !== -1) {
-                db.pedidos[idxPedido].status = "Entregue";
-                saveDB(db);
-            }
+      function carregarTabela() {
+        const entregas = getEntregas();
+        const agregados = getAgregados();
+        const tabela = document.getElementById("tabela-entregas");
+        if (!entregas.length) {
+          tabela.innerHTML = `<tr><td colspan="7" class="tabela-vazia">
+        <span class="material-icons-round">local_shipping</span>
+        <p>Nenhuma entrega registrada. Use a bipagem acima para registrar saídas.</p></td></tr>`;
+          return;
         }
-        
-        renderLogistica();
-    }
-}
+        tabela.innerHTML = entregas
+          .map((e) => {
+            const agr = agregados.find((a) => a.id == e.idAgregado);
+            return `
+        <tr>
+          <td class="td-bold">#${e.idPedido}</td>
+          <td>${agr ? agr.nome : "—"}</td>
+          <td><code>${e.codRastreio}</code></td>
+          <td>${formatarData(e.dataSaida)}</td>
+          <td>${e.dataPrevista ? formatarData(e.dataPrevista) : "—"}</td>
+          <td><span class="status ${e.situacao === "Entregue" ? "entregue" : "transito"}">${e.situacao}</span></td>
+          <td>
+            ${e.situacao !== "Entregue" ? `<button class="btn-icon" title="Marcar como entregue" onclick="abrirConfirmarEntrega(${e.id},${e.idPedido})"><span class="material-icons-round">check_circle</span></button>` : ""}
+            <button class="btn-icon danger" onclick="removerEntrega(${e.id})"><span class="material-icons-round">delete</span></button>
+          </td>
+        </tr>`;
+          })
+          .join("");
+      }
 
-function deletarEntrega(id) {
-    if(confirm("Excluir este registro de logística?")) {
-        deleteEntrega(id);
-        renderLogistica();
-    }
-}
+      function bipar() {
+        const idAgregado = document.getElementById("bip-agregado").value;
+        const idPedido = parseInt(document.getElementById("bip-pedido").value);
+        const res = document.getElementById("bip-resultado");
 
-function aplicarFiltrosTabela(tabelaId) {
-    const busca = document.getElementById('input-busca').value.toLowerCase();
-    const statusFiltro = document.getElementById('select-status-log').value.toLowerCase();
-    const linhas = document.querySelectorAll('#' + tabelaId + ' tr');
-    linhas.forEach(linha => {
-        const texto = linha.innerText.toLowerCase();
-        const bateBusca = busca === '' || texto.includes(busca);
-        const bateStatus = statusFiltro === '' || texto.includes(statusFiltro);
-        linha.style.display = (bateBusca && bateStatus) ? '' : 'none';
-    });
-}
-</script>
-</body>
+        if (!idAgregado || !idPedido) {
+          res.innerHTML = `<div class="bip-msg erro"><span class="material-icons-round">error</span> Preencha o agregado e o ID do pedido.</div>`;
+          return;
+        }
+
+        const resultado = biparPedido(idPedido, idAgregado);
+
+        if (resultado.ok) {
+          res.innerHTML = `<div class="bip-msg sucesso">
+        <span class="material-icons-round">check_circle</span>
+        Pedido <strong>#${idPedido}</strong> bipado com sucesso! Rastreio: <code>${resultado.entrega.codRastreio}</code>
+      </div>`;
+          document.getElementById("bip-pedido").value = "";
+          carregarStats();
+          carregarTabela();
+        } else {
+          res.innerHTML = `<div class="bip-msg erro"><span class="material-icons-round">error</span> ${resultado.msg}</div>`;
+        }
+        setTimeout(() => {
+          res.innerHTML = "";
+        }, 5000);
+      }
+
+      function abrirConfirmarEntrega(idEntrega, idPedido) {
+        entregaEditandoId = idEntrega;
+        document.getElementById("entregue-pedido-id").innerText =
+          "#" + idPedido;
+        abrirModal("modalEntregue");
+      }
+
+      function confirmarEntrega() {
+        if (!entregaEditandoId) return;
+        const data = document.getElementById("entregue-data").value;
+        updateEntrega(entregaEditandoId, {
+          situacao: "Entregue",
+          dataEntrega: data,
+        });
+        // Atualiza pedido
+        const entrega = getEntregas().find((e) => e.id == entregaEditandoId);
+        if (entrega)
+          updatePedido(entrega.idPedido, {
+            status: "Entregue",
+            situacao: "Entregue",
+          });
+        fecharModal("modalEntregue");
+        carregarStats();
+        carregarTabela();
+        entregaEditandoId = null;
+      }
+
+      function removerEntrega(id) {
+        if (confirm("Remover este registro de entrega?")) {
+          deleteEntrega(id);
+          carregarStats();
+          carregarTabela();
+        }
+      }
+    </script>
+  </body>
 </html>

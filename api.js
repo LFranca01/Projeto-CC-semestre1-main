@@ -1,144 +1,126 @@
-// ================= BANCO DE DADOS (Persistência em LocalStorage) =================
+// ================= BANCO DE DADOS (LocalStorage) =================
 function getDB() {
-  const db = JSON.parse(localStorage.getItem("db")) || {
-    clientes: [],
-    produtos: [],
-    pedidos: [],
-    funcionarios: [], 
-    entregas: [],      
-    armazens: [],      
-    pagamentos: [],
-    agregados: [],
-    filiais: [
-      { id: 1, nome: "Matriz - Centro" },
-      { id: 2, nome: "Filial - Norte" }
-    ]
-  };
-  return db;
+  return (
+    JSON.parse(localStorage.getItem("db")) || {
+      clientes: [],
+      produtos: [],
+      pedidos: [],
+      funcionarios: [],
+      entregas: [],
+      armazens: [],
+      pagamentos: [],
+      agregados: [],
+      notasFiscais: [],
+    }
+  );
 }
-
 function saveDB(db) {
   localStorage.setItem("db", JSON.stringify(db));
 }
 
-// ================= GERAÇÃO DE EAN/SKU =================
-function gerarEAN() {
-  let ean = '';
-  for (let i = 0; i < 12; i++) ean += Math.floor(Math.random() * 10);
-  let soma = 0;
-  for (let i = 0; i < 12; i++) {
-    soma += (i % 2 === 0) ? parseInt(ean[i]) * 1 : parseInt(ean[i]) * 3;
-  }
-  const verificador = (10 - (soma % 10)) % 10;
-  return ean + verificador;
+// ================= CLIENTES =================
+function getClientes() {
+  return getDB().clientes;
 }
-
-function gerarSKU() {
-  const letras = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  let sku = '';
-  for (let i = 0; i < 3; i++) sku += letras[Math.floor(Math.random() * 26)];
-  sku += '-';
-  for (let i = 0; i < 4; i++) sku += Math.floor(Math.random() * 10);
-  return sku;
+function getClienteById(id) {
+  return getDB().clientes.find((c) => c.id == id);
 }
-
-// ================= GESTÃO DE FILIAIS =================
-function getFiliais() { return getDB().filiais; }
-function getFilialById(id) { return getDB().filiais.find(f => f.id == id); }
-function createFilial(dados) {
-  const db = getDB();
-  db.filiais.push({ id: Date.now(), nome: dados.nome });
-  saveDB(db);
-}
-
-// ================= GESTÃO DE CLIENTES (Tabela dbo.Clientes) =================
-function getClientes() { return getDB().clientes; }
-
-function getClienteById(id) { return getDB().clientes.find(c => c.id == id); }
 
 function createCliente(dados) {
   const db = getDB();
-  const novo = {
-    id: Date.now(),
-    nome: dados.nome,
-    documento: dados.documento,
-    telefone: dados.telefone || "",
-    cep: dados.cep || "",
-    numero: dados.numero || "",
-    rua: dados.rua || "",
-    bairro: dados.bairro || "",
-    cidade: dados.cidade || ""
-  };
+  const novo = { id: Date.now(), ...dados };
   db.clientes.push(novo);
   saveDB(db);
   return novo;
 }
-
 function updateCliente(id, dados) {
   const db = getDB();
-  const index = db.clientes.findIndex(c => c.id == id);
-  if (index !== -1) {
-    db.clientes[index] = { ...db.clientes[index], ...dados };
+  const i = db.clientes.findIndex((c) => c.id == id);
+  if (i !== -1) {
+    db.clientes[i] = { ...db.clientes[i], ...dados };
     saveDB(db);
   }
 }
-
 function deleteCliente(id) {
   const db = getDB();
-  db.clientes = db.clientes.filter(c => c.id != id);
+  db.clientes = db.clientes.filter((c) => c.id != id);
   saveDB(db);
 }
 
-// ================= GESTÃO DE PRODUTOS (Catálogo de Terceiros) =================
-function getProdutos() { return getDB().produtos; }
-function getProdutoById(id) { return getDB().produtos.find(p => p.id == id); }
+// ================= PRODUTOS (criados via pedido) =================
+function getProdutos() {
+  return getDB().produtos;
+}
+function getProdutoById(id) {
+  return getDB().produtos.find((p) => p.id == id);
+}
 
-function createProduto(dados) {
-  const db = getDB();
-  const novo = {
-    id: Date.now(),
-    nome: dados.nome,
-    codigoBarras: dados.codigoBarras || gerarEAN(),
-    sku: dados.sku || gerarSKU(),
-    precoVenda: parseFloat(dados.precoVenda) || 0,
-    unidade: dados.unidade || "UN",
-    estoque: dados.estoque || 0,
-    categoria: dados.categoria || "Geral"
-  };
-  db.produtos.push(novo);
-  saveDB(db);
-  return novo;
+function gerarSKU() {
+  const l = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const n = "0123456789";
+  let s = "";
+  for (let i = 0; i < 4; i++) s += l[Math.floor(Math.random() * l.length)];
+  for (let i = 0; i < 3; i++) s += n[Math.floor(Math.random() * n.length)];
+  return s;
 }
 
 function updateProduto(id, dados) {
   const db = getDB();
-  const index = db.produtos.findIndex(p => p.id == id);
-  if (index !== -1) {
-    db.produtos[index] = { ...db.produtos[index], ...dados };
+  const i = db.produtos.findIndex((p) => p.id == id);
+  if (i !== -1) {
+    db.produtos[i] = { ...db.produtos[i], ...dados };
     saveDB(db);
   }
 }
-
 function deleteProduto(id) {
   const db = getDB();
-  db.produtos = db.produtos.filter(p => p.id != id);
+  db.produtos = db.produtos.filter((p) => p.id != id);
   saveDB(db);
 }
 
-// ================= GESTÃO DE PEDIDOS (Transbordo) =================
-function getPedidos() { return getDB().pedidos; }
+// ================= PEDIDOS =================
+function getPedidos() {
+  return getDB().pedidos;
+}
 
 function createPedido(dados) {
   const db = getDB();
+  // Registra produtos novos com SKU automático
+  if (dados.itens && Array.isArray(dados.itens)) {
+    dados.itens.forEach(function (item) {
+      const nome = (item.produto || "").trim();
+      if (!nome) return;
+      const existe = db.produtos.find(
+        (p) => p.nome.toLowerCase() === nome.toLowerCase(),
+      );
+      if (!existe) {
+        db.produtos.push({
+          id: Date.now() + Math.random(),
+          nome: nome,
+          sku: gerarSKU(),
+          codigoBarras: "",
+          precoVenda: parseFloat(item.preco) || 0,
+          unidade: "UN",
+          categoria: "",
+          peso: null,
+          volume: null,
+          descricao: "",
+          situacao: "Ativo",
+        });
+      }
+    });
+  }
   const novo = {
     id: db.pedidos.length + 1,
-    ean: gerarEAN(),
     dataPedido: new Date().toISOString(),
     clienteId: dados.clienteId,
     clienteNome: dados.clienteNome,
-    itens: dados.itens, 
+    idFuncionario: dados.idFuncionario || null,
+    itens: dados.itens,
     total: dados.total,
-    status: "Pendente"
+    observacao: dados.observacao || "",
+    status: "Pendente",
+    situacao: "Pendente",
   };
   db.pedidos.push(novo);
   saveDB(db);
@@ -147,143 +129,265 @@ function createPedido(dados) {
 
 function updatePedido(id, dados) {
   const db = getDB();
-  // Encontra o índice do pedido pelo ID
-  const index = db.pedidos.findIndex(p => p.id == id);
-  if (index !== -1) {
-    // Mantém o ID original e a data, mas atualiza o restante
-    db.pedidos[index] = { ...db.pedidos[index], ...dados };
+  const i = db.pedidos.findIndex((p) => p.id == id);
+  if (i !== -1) {
+    db.pedidos[i] = { ...db.pedidos[i], ...dados };
     saveDB(db);
   }
 }
-
 function deletePedido(id) {
   const db = getDB();
-  db.pedidos = db.pedidos.filter(p => p.id != id);
+  db.pedidos = db.pedidos.filter((p) => p.id != id);
   saveDB(db);
 }
 
-// ================= UTILITÁRIOS =================
-function formatarMoeda(v) { return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v); }
-function formatarData(d) { return d ? new Date(d).toLocaleDateString('pt-BR') : "-"; }
-function formatarDocumento(v) {
-  v = v.replace(/\D/g, "");
-  if (v.length <= 11) {
-    return v.replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  } else {
-    return v.replace(/^(\d{2})(\d)/, "$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3").replace(/\.(\d{3})(\d)/, ".$1/$2").replace(/(\d{4})(\d)/, "$1-$2");
-  }
+// ================= AGREGADOS (motoristas parceiros) =================
+function getAgregados() {
+  return getDB().agregados;
 }
-function mascaraTelefone(v) {
-  v = v.replace(/\D/g, "");
-  v = v.replace(/^(\d{2})(\d)/g, "($1) $2");
-  v = v.replace(/(\d)(\d{4})$/, "$1-$2");
-  return v;
+function getAgregadoById(id) {
+  return getDB().agregados.find((a) => a.id == id);
 }
-
-// ================= GESTÃO DE AGREGADOS (Motoristas Parceiros) =================
-function getAgregados() { return getDB().agregados; }
-function getAgregadoById(id) { return getDB().agregados.find(a => a.id == id); }
 
 function createAgregado(dados) {
   const db = getDB();
   const novo = {
     id: Date.now(),
     nome: dados.nome,
-    cpf: dados.cpf,
-    telefone: dados.telefone,
-    veiculo: dados.veiculo,
-    placa: dados.placa.toUpperCase(),
-    cnh: dados.cnh,
-    status: "Ativo",
-    dataCadastro: new Date().toISOString()
+    placaVei: dados.placaVei || "",
+    modeloVei: dados.modeloVei || "",
+    quantiVei: parseInt(dados.quantiVei) || 1,
+    tipoVei: dados.tipoVei || "",
+    cnh: dados.cnh || "",
+    rastrador: dados.rastrador || "",
+    telefone: dados.telefone || "",
+    situacao: "Ativo",
   };
   db.agregados.push(novo);
   saveDB(db);
   return novo;
 }
-
 function updateAgregado(id, dados) {
   const db = getDB();
-  const index = db.agregados.findIndex(a => a.id == id);
-  if (index !== -1) {
-    db.agregados[index] = { ...db.agregados[index], ...dados };
+  const i = db.agregados.findIndex((a) => a.id == id);
+  if (i !== -1) {
+    db.agregados[i] = { ...db.agregados[i], ...dados };
     saveDB(db);
   }
 }
-
 function deleteAgregado(id) {
   const db = getDB();
-  db.agregados = db.agregados.filter(a => a.id != id);
+  db.agregados = db.agregados.filter((a) => a.id != id);
   saveDB(db);
 }
 
-// ================= GESTÃO DE PAGAMENTOS (Financeiro) =================
-function getPagamentos() { return getDB().pagamentos; }
+// ================= FUNCIONÁRIOS =================
+function getFuncionarios() {
+  return getDB().funcionarios;
+}
+function getFuncionarioById(id) {
+  return getDB().funcionarios.find((f) => f.id == id);
+}
+
+function createFuncionario(dados) {
+  const db = getDB();
+  const novo = {
+    id: Date.now(),
+    nome: dados.nome,
+    email: dados.email || "",
+    telefone: dados.telefone || "",
+    cpf: dados.cpf || "",
+    contratacao: dados.contratacao || "",
+    cargo: dados.cargo || "",
+    salario: parseFloat(dados.salario) || 0,
+    situacao: dados.situacao || "Ativo",
+  };
+  db.funcionarios.push(novo);
+  saveDB(db);
+  return novo;
+}
+function updateFuncionario(id, dados) {
+  const db = getDB();
+  const i = db.funcionarios.findIndex((f) => f.id == id);
+  if (i !== -1) {
+    db.funcionarios[i] = { ...db.funcionarios[i], ...dados };
+    saveDB(db);
+  }
+}
+function deleteFuncionario(id) {
+  const db = getDB();
+  db.funcionarios = db.funcionarios.filter((f) => f.id != id);
+  saveDB(db);
+}
+
+// ================= ENTREGAS =================
+function getEntregas() {
+  return getDB().entregas;
+}
+
+function createEntrega(dados) {
+  const db = getDB();
+  const novo = {
+    id: Date.now(),
+    idPedido: dados.idPedido,
+    idAgregado: dados.idAgregado || null,
+    dataSaida: dados.dataSaida || new Date().toISOString(),
+    dataPrevista: dados.dataPrevista || "",
+    dataEntrega: null,
+    codRastreio: dados.codRastreio || gerarRastreio(),
+    situacao: "Em Trânsito",
+  };
+  // Muda status do pedido
+  const pi = db.pedidos.findIndex((p) => p.id == dados.idPedido);
+  if (pi !== -1) db.pedidos[pi].status = "Enviado";
+  db.entregas.push(novo);
+  saveDB(db);
+  return novo;
+}
+function updateEntrega(id, dados) {
+  const db = getDB();
+  const i = db.entregas.findIndex((e) => e.id == id);
+  if (i !== -1) {
+    db.entregas[i] = { ...db.entregas[i], ...dados };
+    saveDB(db);
+  }
+}
+function deleteEntrega(id) {
+  const db = getDB();
+  db.entregas = db.entregas.filter((e) => e.id != id);
+  saveDB(db);
+}
+function gerarRastreio() {
+  return (
+    "BR" + Math.random().toString(36).substring(2, 10).toUpperCase() + "SL"
+  );
+}
+// Bipagem do pedido pelo agregado
+function biparPedido(idPedido, idAgregado) {
+  const db = getDB();
+  const pi = db.pedidos.findIndex((p) => p.id == idPedido);
+  if (pi === -1) return { ok: false, msg: "Pedido não encontrado" };
+  if (db.pedidos[pi].status !== "Pendente")
+    return { ok: false, msg: "Pedido já processado" };
+  // Cria entrega
+  const entrega = {
+    id: Date.now(),
+    idPedido: idPedido,
+    idAgregado: idAgregado,
+    dataSaida: new Date().toISOString(),
+    dataPrevista: "",
+    dataEntrega: null,
+    codRastreio: gerarRastreio(),
+    situacao: "Em Trânsito",
+  };
+  db.pedidos[pi].status = "Enviado";
+  db.pedidos[pi].situacao = "Enviado";
+  db.entregas.push(entrega);
+  saveDB(db);
+  return { ok: true, entrega: entrega, pedido: db.pedidos[pi] };
+}
+
+// ================= PAGAMENTOS =================
+function getPagamentos() {
+  return getDB().pagamentos;
+}
 
 function createPagamento(dados) {
   const db = getDB();
   const novo = {
     id: Date.now(),
-    pedidoId: dados.pedidoId,
-    valor: parseFloat(dados.valor),
-    metodo: dados.metodo,
-    dataPagamento: dados.dataPagamento || new Date().toISOString().split('T')[0],
-    status: "Pago",
-    notaFiscal: gerarNF()
+    idPedido: dados.idPedido,
+    valor: parseFloat(dados.valor) || 0,
+    dataPagamento:
+      dados.dataPagamento || new Date().toISOString().split("T")[0],
+    metodo: dados.metodo || "Pix",
+    situacao: dados.situacao || "Pago",
   };
   db.pagamentos.push(novo);
   saveDB(db);
   return novo;
 }
-
-function gerarNF() {
-  const nf = 'NF-' + Date.now().toString().slice(-8);
-  return nf;
-}
-
-function getSaldoTotal() {
+function updatePagamento(id, dados) {
   const db = getDB();
-  const pagamentos = db.pagamentos || [];
-  return pagamentos.filter(p => p && p.status === 'Pago').reduce((acc, p) => acc + (p.valor || 0), 0);
-}
-
-// ================= GESTÃO DE EXPEDIÇÕES (Logística) =================
-function getEntregas() { return getDB().entregas; }
-function getEntregaById(id) { return getDB().entregas.find(e => e.id == id); }
-
-function createEntrega(dados) {
-  const db = getDB();
-  const codRastreio = 'BR' + Date.now().toString().slice(-8);
-  const novo = {
-    id: Date.now(),
-    pedidoId: dados.pedidoId,
-    codRastreio: codRastreio,
-    dataSaida: dados.dataSaida,
-    previsaoEntrega: dados.previsaoEntrega,
-    agregadoId: dados.agregadoId || null,
-    status: "Aguardando"
-  };
-  db.entregas.push(novo);
-  
-  const idxPedido = db.pedidos.findIndex(p => p.id == dados.pedidoId);
-  if (idxPedido !== -1) {
-    db.pedidos[idxPedido].status = "Em Trânsito";
-  }
-  saveDB(db);
-  return novo;
-}
-
-function atualizarStatusEntrega(id, status) {
-  const db = getDB();
-  const index = db.entregas.findIndex(e => e.id == id);
-  if (index !== -1) {
-    db.entregas[index].status = status;
+  const i = db.pagamentos.findIndex((p) => p.id == id);
+  if (i !== -1) {
+    db.pagamentos[i] = { ...db.pagamentos[i], ...dados };
     saveDB(db);
   }
 }
-
-function deleteEntrega(id) {
+function deletePagamento(id) {
   const db = getDB();
-  db.entregas = db.entregas.filter(e => e.id != id);
+  db.pagamentos = db.pagamentos.filter((p) => p.id != id);
   saveDB(db);
+}
+function getSaldoTotal() {
+  return getDB()
+    .pagamentos.filter((p) => p.situacao === "Pago")
+    .reduce((a, p) => a + p.valor, 0);
+}
+
+// ================= NOTAS FISCAIS =================
+function getNotasFiscais() {
+  return getDB().notasFiscais;
+}
+
+function createNotaFiscal(dados) {
+  const db = getDB();
+  const novo = {
+    id: Date.now(),
+    idPedido: dados.idPedido,
+    numero: "NF-" + String(db.notasFiscais.length + 1).padStart(5, "0"),
+    serie: dados.serie || "A1",
+    dataEmissao: new Date().toISOString(),
+    valor: parseFloat(dados.valor) || 0,
+    chaveAcesso: gerarChaveNF(),
+    email: dados.email || "",
+    cidade: dados.cidade || "",
+    estado: dados.estado || "",
+    prazoEntrega: parseInt(dados.prazoEntrega) || 3,
+    situacao: "Emitida",
+  };
+  db.notasFiscais.push(novo);
+  saveDB(db);
+  return novo;
+}
+function gerarChaveNF() {
+  return Array.from({ length: 44 }, () => Math.floor(Math.random() * 10)).join(
+    "",
+  );
+}
+
+// ================= ARMAZÉNS =================
+function getArmazens() {
+  return getDB().armazens;
+}
+function updateEstoque(dados) {
+  const db = getDB();
+  const i = db.armazens.findIndex(
+    (a) => a.idFilial == dados.idFilial && a.idProduto == dados.idProduto,
+  );
+  if (i !== -1) {
+    db.armazens[i] = { ...db.armazens[i], ...dados };
+  } else {
+    db.armazens.push({ id: Date.now(), ...dados });
+  }
+  saveDB(db);
+}
+
+// ================= UTILITÁRIOS =================
+function formatarMoeda(v) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(v || 0);
+}
+function formatarData(d) {
+  return d ? new Date(d).toLocaleDateString("pt-BR") : "—";
+}
+function formatarDocumento(v) {
+  if (!v) return "—";
+  v = v.replace(/\D/g, "");
+  if (v.length <= 11)
+    return v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+  return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
 }
