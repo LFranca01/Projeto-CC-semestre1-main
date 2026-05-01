@@ -1,4 +1,16 @@
-﻿// ================= AUTH CORE =================
+// ================= AUTH CORE =================
+//
+// ⚠️  ATENÇÃO — FAKE AUTH PARA DEMONSTRAÇÃO ACADÊMICA
+// ----------------------------------------------------
+// As credenciais abaixo estão *hardcoded em JavaScript do cliente*. Qualquer
+// pessoa com acesso ao DevTools pode lê-las. Isso é proposital: o projeto
+// simula um ERP sem backend real (usa localStorage como banco). Para uso em
+// produção, este módulo precisa ser substituído por:
+//   1. Endpoint de autenticação no servidor (HTTPS).
+//   2. Armazenamento da senha como hash + salt (bcrypt/argon2).
+//   3. Token de sessão (JWT ou cookie HttpOnly) com expiração.
+//   4. Rate limiting para evitar brute-force.
+// ----------------------------------------------------
 
 // pega usuário logado
 function getUser() {
@@ -33,13 +45,13 @@ function login(email, senha) {
   };
 
   if (email === usuarioPadrao.email && senha === usuarioPadrao.senha) {
-    // salva sessão
-    sessionStorage.setItem("user", JSON.stringify(usuarioPadrao));
-
+    // Não persistimos a senha na sessão — só email e nome.
+    const sessao = { email: usuarioPadrao.email, nome: usuarioPadrao.nome };
+    sessionStorage.setItem("user", JSON.stringify(sessao));
     return { success: true };
   }
 
-  return { success: false, message: "Email ou senha inválidos" };
+  return { success: false, message: "E-mail ou senha inválidos" };
 }
 
 // logout
@@ -47,4 +59,3 @@ function logout() {
   sessionStorage.removeItem("user");
   window.location.replace("index.html");
 }
-

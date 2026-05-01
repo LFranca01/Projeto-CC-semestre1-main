@@ -1,4 +1,9 @@
-﻿// ================= AGREGADOS MODULE =================
+// ================= AGREGADOS MODULE =================
+
+function _avisoAgr(msg, tipo) {
+  if (typeof showToast === "function") showToast(msg, tipo);
+  else alert(msg);
+}
 
 function carregarStatsAgregados() {
   const lista = getAgregados();
@@ -22,22 +27,25 @@ function carregarTabelaAgregados() {
     return;
   }
   tabela.innerHTML = lista
-    .map(
-      (a) => `
-<tr>
-  <td class="td-bold">${a.nome}</td>
-  <td>${a.telefone || "—"}</td>
-  <td>${a.cnh || "—"}</td>
-  <td>${a.tipoVei ? `<span class="badge-tipo">${a.tipoVei}</span> ${a.modeloVei || ""}` : "—"}</td>
-  <td>${a.placaVei || "—"}</td>
-  <td><span class="status ${a.rastrador === "Sim" ? "ativo" : "inativo"}">${a.rastrador || "—"}</span></td>
-  <td><span class="status ${a.situacao === "Ativo" ? "ativo" : "inativo"}">${a.situacao}</span></td>
+    .map((a) => {
+      // Compatibilidade com registros antigos que usavam "rastrador" (typo).
+      const rastreador = a.rastreador ?? a.rastrador ?? "";
+      const situacao = a.situacao || "Ativo";
+      return `
+<tr data-status="${esc(situacao.toLowerCase())}" data-tipo-vei="${esc((a.tipoVei || "").toLowerCase())}">
+  <td class="td-bold">${esc(a.nome)}</td>
+  <td>${esc(a.telefone) || "—"}</td>
+  <td>${esc(a.cnh) || "—"}</td>
+  <td>${a.tipoVei ? `<span class="badge-tipo">${esc(a.tipoVei)}</span> ${esc(a.modeloVei) || ""}` : "—"}</td>
+  <td>${esc(a.placaVei) || "—"}</td>
+  <td><span class="status ${rastreador === "Sim" ? "ativo" : "inativo"}">${esc(rastreador) || "—"}</span></td>
+  <td><span class="status ${situacao === "Ativo" ? "ativo" : "inativo"}">${esc(situacao)}</span></td>
   <td>
-    <button class="btn-icon" onclick="editarAgregado(${a.id})"><span class="material-icons-round">edit</span></button>
-    <button class="btn-icon danger" onclick="removerAgregado(${a.id})"><span class="material-icons-round">delete</span></button>
+    <button class="btn-icon" onclick="editarAgregado(${esc(a.id)})" aria-label="Editar agregado"><span class="material-icons-round">edit</span></button>
+    <button class="btn-icon danger" onclick="removerAgregado(${esc(a.id)})" aria-label="Excluir agregado"><span class="material-icons-round">delete</span></button>
   </td>
-</tr>`,
-    )
+</tr>`;
+    })
     .join("");
 }
 
@@ -59,7 +67,7 @@ function editarAgregado(id) {
   document.getElementById("agr-modelo-vei").value = a.modeloVei || "";
   document.getElementById("agr-placa-vei").value = a.placaVei || "";
   document.getElementById("agr-quanti-vei").value = a.quantiVei || 1;
-  document.getElementById("agr-rastrador").value = a.rastrador || "Não";
+  document.getElementById("agr-rastreador").value = a.rastreador ?? a.rastrador ?? "Não";
   document.getElementById("agr-situacao").value = a.situacao || "Ativo";
   document.getElementById("modalAgregado").dataset.editId = id;
   abrirModal("modalAgregado");
@@ -67,7 +75,7 @@ function editarAgregado(id) {
 
 function salvarAgregado() {
   const nome = document.getElementById("agr-nome").value.trim();
-  if (!nome) return alert("Nome é obrigatório.");
+  if (!nome) return _avisoAgr("Nome é obrigatório.", "error");
   const dados = {
     nome,
     telefone: document.getElementById("agr-telefone").value,
@@ -76,12 +84,17 @@ function salvarAgregado() {
     modeloVei: document.getElementById("agr-modelo-vei").value,
     placaVei: document.getElementById("agr-placa-vei").value,
     quantiVei: document.getElementById("agr-quanti-vei").value,
-    rastrador: document.getElementById("agr-rastrador").value,
+    rastreador: document.getElementById("agr-rastreador").value,
     situacao: document.getElementById("agr-situacao").value,
   };
   const editId = document.getElementById("modalAgregado").dataset.editId;
-  if (editId) updateAgregado(editId, dados);
-  else createAgregado(dados);
+  if (editId) {
+    updateAgregado(editId, dados);
+    _avisoAgr("Agregado atualizado.", "success");
+  } else {
+    createAgregado(dados);
+    _avisoAgr("Agregado cadastrado.", "success");
+  }
   fecharModal("modalAgregado");
   carregarStatsAgregados();
   carregarTabelaAgregados();
@@ -90,6 +103,7 @@ function salvarAgregado() {
 function removerAgregado(id) {
   if (confirm("Deseja remover este agregado?")) {
     deleteAgregado(id);
+    _avisoAgr("Agregado removido.", "success");
     carregarStatsAgregados();
     carregarTabelaAgregados();
   }

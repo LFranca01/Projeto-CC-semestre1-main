@@ -1,69 +1,34 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>Filiais | Distribuidora Serginho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Filiais | Serginho Leva Atrás</title>
     <link rel="stylesheet" href="./styles/style.css" />
-    <link rel="stylesheet" href="./styles/pedidos.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="auth.js"></script>
     <script src="api.js"></script>
     <script src="ui-helper.js"></script>
     <script src="filiais.js"></script>
-    <script>
-      requireAuth();
-    </script>
+    <script>requireAuth();</script>
   </head>
   <body>
     <div class="container">
       <aside class="sidebar">
-        <div class="sidebar-header">
-          <img src="./assets/Logo.png" alt="Logo" />
-        </div>
+        <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo" /></div>
         <ul>
-          <li>
-            <a href="inicio.html"><span class="material-icons-round">dashboard</span><span>Dashboard</span></a>
-          </li>
-          <li>
-            <a href="pedidos.html"><span class="material-icons-round">inventory_2</span><span>Pedidos</span></a>
-          </li>
-          <li>
-            <a href="clientes.html"><span class="material-icons-round">groups</span><span>Clientes</span></a>
-          </li>
-          <li>
-            <a href="produtos.html"><span class="material-icons-round">category</span><span>Produtos</span></a>
-          </li>
-          <li class="active">
-            <a href="filiais.html"><span class="material-icons-round">hub</span><span>Filiais</span></a>
-          </li>
-          <li>
-            <a href="agregados.html"><span class="material-icons-round">warehouse</span><span>Agregados</span></a>
-          </li>
-          <li>
-            <a href="rh.html"><span class="material-icons-round">badge</span><span>RH</span></a>
-          </li>
-          <li>
-            <a href="financeiro.html"><span class="material-icons-round">payments</span><span>Financeiro</span></a>
-          </li>
-          <li>
-            <a href="logistica.html"><span class="material-icons-round">local_shipping</span><span>Logística</span></a>
-          </li>
+          <li><a href="inicio.html"><span class="material-icons-round">dashboard</span><span>Dashboard</span></a></li>
+          <li><a href="pedidos.html"><span class="material-icons-round">inventory_2</span><span>Pedidos</span></a></li>
+          <li class="active"><a href="filiais.html"><span class="material-icons-round">hub</span><span>Filiais</span></a></li>
+          <li><a href="produtos.html"><span class="material-icons-round">category</span><span>Produtos</span></a></li>
+          <li><a href="rh.html"><span class="material-icons-round">badge</span><span>RH</span></a></li>
+          <li><a href="clientes.html"><span class="material-icons-round">groups</span><span>Clientes</span></a></li>
+          <li><a href="agregados.html"><span class="material-icons-round">warehouse</span><span>Agregados</span></a></li>
+          <li><a href="financeiro.html"><span class="material-icons-round">payments</span><span>Relatórios</span></a></li>
+          <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span><span>Logística</span></a></li>
         </ul>
       </aside>
 
@@ -71,140 +36,105 @@
         <header class="header">
           <div class="search-box">
             <span class="material-icons-round">search</span>
-            <input
-              type="text"
-              id="input-busca"
-              placeholder="Buscar filial..."
-              onkeyup="aplicarFiltrosFiliais()"
-            />
+            <input type="text" id="input-busca" placeholder="Buscar filial, cidade..." onkeyup="aplicarFiltrosFiliais()" maxlength="60" />
           </div>
           <div class="header-right">
-            <div class="theme-toggle-wrap">
-              <span class="material-icons-round">dark_mode</span>
-              <button class="theme-toggle" onclick="toggleDarkMode()"></button>
-            </div>
-            <button class="btn-primary" onclick="abrirModalTransferencia()">
-              <span class="material-icons-round">sync_alt</span> Transferir
-            </button>
-            <div class="user-menu" id="dropdownToggle">
-              <div class="profile-img-container">
-                <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" onclick="abrirZoom(this.src)" />
+            <div class="theme-toggle-wrap"><button class="theme-toggle" onclick="toggleDarkMode()" aria-label="Alternar tema"></button></div>
+            <div class="header-user" id="dropdownToggle">
+              <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" class="header-user-avatar" onclick="event.stopPropagation(); abrirZoom(this.src);" />
+              <div class="header-user-info">
+                <span class="name" id="user-name-display">...</span>
+                <span class="role">Operations Lead</span>
               </div>
-              <div class="user-info">
-                <span id="user-name-display" class="user-name">...</span>
-                <span class="user-role">Administrador</span>
-              </div>
-              <span class="material-icons-round">expand_more</span>
+              <span class="material-icons-round header-user-chevron">expand_more</span>
               <div class="dropdown-content" id="profileDropdown">
-                <a href="#" onclick="abrirModalAvatar()"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
-                <a href="#" onclick="logout()" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
+                <a href="#" onclick="abrirModalAvatar(); return false;"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
+                <a href="#" onclick="logout(); return false;" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
               </div>
             </div>
           </div>
         </header>
 
         <div class="content">
-          <div class="page-header-pedidos"><h2>Gestão de Filiais e Hubs</h2></div>
+          <div class="page-header-pedidos">
+            <div>
+              <h2>Hubs Logísticos</h2>
+              <p class="page-subtitle">Operação consolidada das 8 filiais nacionais.</p>
+            </div>
+            <div class="page-actions">
+              <button class="btn-primary" onclick="abrirModalTransferencia()">
+                <span class="material-icons-round">sync_alt</span><span>Transferir Pedido</span>
+              </button>
+            </div>
+          </div>
 
           <div class="stats-grid">
             <div class="stat-card">
               <div class="stat-icon blue"><span class="material-icons-round">hub</span></div>
-              <div>
-                <h3>Filiais Ativas</h3>
-                <p id="total-filiais">0</p>
-              </div>
+              <div><h3>Filiais Ativas</h3><p id="total-filiais">8</p></div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon orange"><span class="material-icons-round">inventory_2</span></div>
-              <div>
-                <h3>Pedidos Vinculados</h3>
-                <p id="total-pedidos-filiais">0</p>
-              </div>
+              <div class="stat-icon green"><span class="material-icons-round">inventory_2</span></div>
+              <div><h3>Pedidos</h3><p id="total-pedidos-filiais">0</p></div>
             </div>
             <div class="stat-card">
               <div class="stat-icon purple"><span class="material-icons-round">sync_alt</span></div>
-              <div>
-                <h3>Transferências</h3>
-                <p id="total-transferencias">0</p>
-              </div>
+              <div><h3>Transferências</h3><p id="total-transferencias">0</p></div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon green"><span class="material-icons-round">payments</span></div>
-              <div>
-                <h3>Receita de Frete</h3>
-                <p id="receita-filiais">R$ 0,00</p>
+              <div class="stat-icon orange"><span class="material-icons-round">payments</span></div>
+              <div><h3>Receita</h3><p id="receita-filiais">R$ 0,00</p></div>
+            </div>
+          </div>
+
+          <div class="fin-row">
+            <div class="table-wrapper">
+              <div style="padding:16px 20px 0;">
+                <h3 style="font-size:15px; font-weight:600; color:var(--text-strong); margin-bottom:6px;">Hubs Operacionais</h3>
+              </div>
+              <div class="table-scroll-area">
+                <table class="table-dashboard">
+                  <thead><tr><th>Filial</th><th>Localização</th><th>Distância</th><th>Pedidos</th><th>Receita</th><th>Status</th></tr></thead>
+                  <tbody id="tabela-filiais"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="table-wrapper">
+              <div style="padding:16px 20px 0;">
+                <h3 style="font-size:15px; font-weight:600; color:var(--text-strong); margin-bottom:6px;">Transferências Recentes</h3>
+              </div>
+              <div class="table-scroll-area">
+                <table class="table-dashboard">
+                  <thead><tr><th>Data</th><th>Origem → Destino</th><th>Status</th></tr></thead>
+                  <tbody id="tabela-transferencias-compact"></tbody>
+                </table>
               </div>
             </div>
           </div>
 
-          <div class="table-wrapper">
-            <table class="table-dashboard">
-              <thead>
-                <tr>
-                  <th>Filial</th>
-                  <th>Localização</th>
-                  <th>Base Operacional</th>
-                  <th>Pedidos</th>
-                  <th>Receita</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="tabela-filiais"></tbody>
-            </table>
-          </div>
-
-          <div class="table-wrapper">
-            <div class="dashboard-table-header"><h3>Transferências entre Filiais</h3></div>
-            <table class="table-dashboard">
-              <thead>
-                <tr>
-                  <th>Data</th>
-                  <th>Origem</th>
-                  <th>Destino</th>
-                  <th>Pedido</th>
-                  <th>Responsável</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="tabela-transferencias"></tbody>
-            </table>
+          <div style="display:none">
+            <table><tbody id="tabela-transferencias"></tbody></table>
           </div>
         </div>
       </main>
     </div>
 
-    <div id="modalTransferencia" class="modal">
+    <!-- MODAL TRANSFERENCIA -->
+    <div id="modalTransferencia" class="modal" role="dialog" aria-modal="true">
       <div class="modal-content">
-        <div class="modal-header"><h2>Transferência entre Filiais</h2></div>
+        <div class="modal-header"><h2>Transferir entre Filiais</h2></div>
         <div class="modal-body">
-          <div class="produto-form-grid">
-            <div class="filter-group">
-              <label>Origem</label>
-              <select id="transf-origem" class="form-control"></select>
-            </div>
-            <div class="filter-group">
-              <label>Destino</label>
-              <select id="transf-destino" class="form-control"></select>
-            </div>
-            <div class="filter-group">
-              <label>Pedido vinculado</label>
-              <input type="number" id="transf-pedido" class="form-control" placeholder="Opcional" min="1" />
-            </div>
-            <div class="filter-group">
-              <label>Responsável</label>
-              <input type="text" id="transf-responsavel" class="form-control" placeholder="Nome do operador" />
-            </div>
-            <div class="filter-group produto-descricao-grupo">
-              <label>Observação</label>
-              <textarea id="transf-observacao" class="form-control" placeholder="Motivo ou instrução operacional"></textarea>
-            </div>
+          <div class="cliente-form-grid">
+            <div class="filter-group"><label>Origem</label><select id="transf-origem" class="form-control"></select></div>
+            <div class="filter-group"><label>Destino</label><select id="transf-destino" class="form-control"></select></div>
+            <div class="filter-group cli-span-2"><label>Pedido (opcional)</label><input type="number" id="transf-pedido" class="form-control" placeholder="Ex: 123" min="1" max="999999" inputmode="numeric" /></div>
+            <div class="filter-group cli-span-2"><label>Responsável</label><input type="text" id="transf-responsavel" class="form-control" maxlength="100" /></div>
+            <div class="filter-group cli-span-2"><label>Observação</label><textarea id="transf-observacao" class="form-control" maxlength="200"></textarea></div>
           </div>
         </div>
         <div class="modal-footer">
           <button class="btn-secondary" onclick="fecharModal('modalTransferencia')">Cancelar</button>
-          <button class="btn-primary" onclick="salvarTransferencia()">
-            <span class="material-icons-round">save</span> Registrar
-          </button>
+          <button class="btn-primary" onclick="salvarTransferencia()">Confirmar</button>
         </div>
       </div>
     </div>
@@ -212,27 +142,24 @@
     <div id="modalAvatar" class="modal modal-avatar-hidden">
       <div class="modal-content">
         <div class="modal-header"><h2>Ajustar Foto</h2></div>
-        <div class="cropper-wrapper"><img id="image-to-crop" src="" alt="" /></div>
+        <div class="modal-body"><div class="cropper-wrapper"><img id="image-to-crop" src="" alt="" /></div></div>
         <div class="modal-footer">
           <input type="file" id="inputImage" accept="image/*" class="input-file-hidden" />
           <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
-          <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
           <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
+          <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
         </div>
       </div>
     </div>
-    <div id="modalZoom" onclick="fecharZoom()">
-      <img id="imgZoom" src="" alt="zoom" />
-    </div>
+    <div id="modalZoom" onclick="fecharZoom()"><img id="imgZoom" src="" alt="zoom" /></div>
 
     <script>
       window.onload = () => {
         carregarStatsFiliais();
         renderFiliais();
         renderTransferencias();
+        renderTransferenciasCompact();
       };
     </script>
   </body>
 </html>
-
-

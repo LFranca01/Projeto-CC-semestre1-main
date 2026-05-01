@@ -1,4 +1,17 @@
-﻿// ================= BANCO DE DADOS (LocalStorage) =================
+// ================= BANCO DE DADOS (LocalStorage) =================
+// Constantes do cálculo de frete
+const FATOR_PESO_CUBADO = 6000; // divisor padrão do mercado (poderia ser 5000 dependendo do modal)
+const PRECO_KG = 4.5; // R$ por kg taxado
+const PERCENTUAL_ADICIONAL = 0.025; // 2,5% por adicional
+const PERCENTUAL_IMPOSTO = 0.035; // 3,5% imposto sobre subtotal
+
+// Constantes da heurística de distância
+const DIST_INTRA_CIDADE = 12;
+const DIST_INTRA_ESTADO_MATRIZ = 28;
+const DIST_INTRA_ESTADO = 45;
+const DIST_INTERESTADUAL_MIN = 80;
+const DIST_TRIGGER_ADICIONAL_KM = 35;
+
 const FILIAIS_PADRAO = [
   { id: "matriz-sp", nome: "Matriz", cidade: "Vila Maria", estado: "SP", distanciaKm: 0 },
   { id: "cajamar-sp", nome: "Cajamar", cidade: "Cajamar", estado: "SP", distanciaKm: 42 },
@@ -9,6 +22,7 @@ const FILIAIS_PADRAO = [
   { id: "salvador-ba", nome: "Salvador", cidade: "Salvador", estado: "BA", distanciaKm: 1960 },
   { id: "manaus-am", nome: "Manaus", cidade: "Manaus", estado: "AM", distanciaKm: 3890 },
 ];
+const ID_FILIAL_MATRIZ = "matriz-sp";
 
 function getDefaultDB() {
   return {
@@ -26,19 +40,57 @@ function getDefaultDB() {
   };
 }
 
+// Cache em memória para evitar parse repetido do localStorage.
+let _dbCache = null;
+function _invalidarCache() {
+  _dbCache = null;
+}
+
 function getDB() {
-  const salvo = JSON.parse(localStorage.getItem("db")) || {};
+  if (_dbCache) return _dbCache;
+  const salvo = JSON.parse(localStorage.getItem("db") || "null") || {};
   const db = { ...getDefaultDB(), ...salvo };
   db.filiais = FILIAIS_PADRAO.map((filial) => {
     const existente = (salvo.filiais || []).find((f) => f.id === filial.id);
     return { ...filial, ...(existente || {}) };
   });
   db.transferencias = db.transferencias || [];
+  _dbCache = db;
   return db;
 }
 
 function saveDB(db) {
-  localStorage.setItem("db", JSON.stringify({ ...getDefaultDB(), ...db }));
+  _dbCache = db;
+  try {
+    localStorage.setItem("db", JSON.stringify({ ...getDefaultDB(), ...db }));
+  } catch (e) {
+    console.error("Falha ao salvar DB:", e);
+    if (typeof showToast === "function") {
+      showToast("Sem espaço para salvar dados. Limpe o cache do navegador.", "error");
+    } else {
+      alert("Sem espaço para salvar dados. Limpe o cache do navegador.");
+    }
+  }
+}
+
+// ================= UTILITÁRIOS BÁSICOS =================
+// Escape HTML — protege contra XSS em interpolações de innerHTML.
+function esc(s) {
+  if (s === null || s === undefined) return "";
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }[c]));
+}
+
+// Gera IDs únicos sem colisões mesmo em loops apertados.
+let _idSeq = 0;
+function gerarId() {
+  _idSeq = (_idSeq + 1) % 1000;
+  return Date.now() * 1000 + _idSeq;
 }
 
 // ================= FILIAIS / HUBS =================
@@ -59,7 +111,7 @@ function createTransferencia(dados) {
   const origem = getFilialById(dados.origemId);
   const destino = getFilialById(dados.destinoId);
   const nova = {
-    id: Date.now(),
+    id: gerarId(),
     origemId: dados.origemId,
     origemNome: origem ? formatarFilial(origem) : "",
     destinoId: dados.destinoId,
@@ -70,6 +122,16 @@ function createTransferencia(dados) {
     data: new Date().toISOString(),
     status: "Em transferência",
   };
+
+  // Mover o pedido entre filiais (transferência efetiva, não só log).
+  if (dados.pedidoId && destino) {
+    const pi = db.pedidos.findIndex((p) => p.id == dados.pedidoId);
+    if (pi !== -1) {
+      db.pedidos[pi].filialId = destino.id;
+      db.pedidos[pi].filialNome = formatarFilial(destino);
+    }
+  }
+
   db.transferencias.push(nova);
   saveDB(db);
   return nova;
@@ -100,7 +162,7 @@ function getClienteById(id) {
 
 function createCliente(dados) {
   const db = getDB();
-  const novo = { id: Date.now(), estado: dados.estado || "", ...dados };
+  const novo = { id: gerarId(), estado: dados.estado || "", ...dados };
   db.clientes.push(novo);
   saveDB(db);
   return novo;
@@ -140,6 +202,11 @@ function updateProduto(id, dados) {
   const db = getDB();
   const i = db.produtos.findIndex((p) => p.id == id);
   if (i !== -1) {
+    // Se mudou a filial, atualiza o nome cacheado.
+    if (dados.filialId && dados.filialId !== db.produtos[i].filialId) {
+      const filial = getFilialById(dados.filialId);
+      dados.filialNome = formatarFilial(filial);
+    }
     db.produtos[i] = { ...db.produtos[i], ...dados };
     saveDB(db);
   }
@@ -160,9 +227,15 @@ function calcularDistancia(filialId, cliente) {
   const estadoCliente = (cliente?.estado || "").toUpperCase();
   const cidadeCliente = (cliente?.cidade || "").toLowerCase();
 
-  if (estadoCliente && estadoCliente !== filial.estado) return Math.max(filial.distanciaKm, 80);
-  if (cidadeCliente && cidadeCliente.includes(filial.cidade.toLowerCase())) return 12;
-  if (estadoCliente === filial.estado) return filial.id === "matriz-sp" ? 28 : 45;
+  if (estadoCliente && estadoCliente !== filial.estado) {
+    return Math.max(filial.distanciaKm, DIST_INTERESTADUAL_MIN);
+  }
+  if (cidadeCliente && cidadeCliente.includes(filial.cidade.toLowerCase())) {
+    return DIST_INTRA_CIDADE;
+  }
+  if (estadoCliente === filial.estado) {
+    return filial.id === ID_FILIAL_MATRIZ ? DIST_INTRA_ESTADO_MATRIZ : DIST_INTRA_ESTADO;
+  }
   return filial.distanciaKm || 60;
 }
 
@@ -171,24 +244,30 @@ function calcularFrete(dados, cliente) {
   const comprimento = parseFloat(dados.comprimento) || 0;
   const largura = parseFloat(dados.largura) || 0;
   const altura = parseFloat(dados.altura) || 0;
-  const pesoCubado = (comprimento * largura * altura) / 6000;
+  const pesoCubado = (comprimento * largura * altura) / FATOR_PESO_CUBADO;
   const pesoTaxado = Math.max(pesoReal, pesoCubado);
-  const freteBase = pesoTaxado * 4.5;
+  const freteBase = pesoTaxado * PRECO_KG;
   const filial = getFilialById(dados.filialId);
   const distanciaKm = calcularDistancia(dados.filialId, cliente);
-  const outroEstado = Boolean(cliente?.estado && filial && cliente.estado.toUpperCase() !== filial.estado);
+  const outroEstado = Boolean(
+    cliente?.estado && filial && cliente.estado.toUpperCase() !== filial.estado,
+  );
   const adicionais = [];
 
-  if (distanciaKm > 35 || outroEstado) adicionais.push("Distância acima de 35km ou outro estado");
+  // Adicionais separados — cada condição vira um item próprio (mais transparente).
+  if (distanciaKm > DIST_TRIGGER_ADICIONAL_KM) adicionais.push("Distância >35km");
+  if (outroEstado) adicionais.push("Operação interestadual");
   if (dados.pedagio) adicionais.push("Pedágio");
   if (dados.taxaRisco) adicionais.push("Taxa de risco");
   if (dados.seguro) adicionais.push("Seguro");
-  if (["Frágil", "Perigosa"].includes(dados.tipoCarga)) adicionais.push(`Carga ${dados.tipoCarga.toLowerCase()}`);
+  if (["Frágil", "Perigosa"].includes(dados.tipoCarga)) {
+    adicionais.push(`Carga ${dados.tipoCarga.toLowerCase()}`);
+  }
 
-  const percentualAdicional = adicionais.length * 0.025;
+  const percentualAdicional = adicionais.length * PERCENTUAL_ADICIONAL;
   const valorAdicionais = freteBase * percentualAdicional;
   const subtotal = freteBase + valorAdicionais;
-  const imposto = subtotal * 0.035;
+  const imposto = subtotal * PERCENTUAL_IMPOSTO;
   const freteFinal = subtotal + imposto;
 
   return {
@@ -213,21 +292,93 @@ function calcularFrete(dados, cliente) {
   };
 }
 
+function _valorPedidoFinanceiro(pedido) {
+  return parseFloat(pedido?.freteFinal ?? pedido?.receitaFrete ?? pedido?.total) || 0;
+}
+
+function _sincronizarProdutosDoPedido(db, pedido, frete) {
+  const itens = Array.isArray(pedido.itens) ? pedido.itens : [];
+  const filial = getFilialById(pedido.filialId);
+  const filialNome = formatarFilial(filial);
+  const idsMantidos = new Set();
+
+  itens.forEach((item, index) => {
+    const nome = (item.produto || "").trim();
+    if (!nome) return;
+
+    let produto = db.produtos.find(
+      (p) => p.pedidoOrigemId == pedido.id && Number(p.itemPedidoIndex) === index,
+    );
+    if (!produto) {
+      produto = db.produtos.find(
+        (p) =>
+          p.pedidoOrigemId == pedido.id &&
+          !idsMantidos.has(String(p.id)) &&
+          (p.nome || "").toLowerCase() === nome.toLowerCase(),
+      );
+    }
+
+    const dadosProduto = {
+      nome,
+      pedidoOrigemId: pedido.id,
+      itemPedidoIndex: index,
+      filialId: pedido.filialId,
+      filialNome,
+      precoVenda: parseFloat(item.preco) || 0,
+      peso: frete.pesoReal || null,
+      volume: frete.pesoCubado || null,
+      unidade: produto?.unidade || "UN",
+      situacao: produto?.situacao || "Ativo",
+    };
+
+    if (produto) {
+      Object.assign(produto, dadosProduto);
+      idsMantidos.add(String(produto.id));
+    } else {
+      const novo = {
+        id: gerarId(),
+        sku: gerarSKU(),
+        codigoBarras: "",
+        categoria: "",
+        descricao: "",
+        ...dadosProduto,
+      };
+      db.produtos.push(novo);
+      idsMantidos.add(String(novo.id));
+    }
+  });
+
+  db.produtos = db.produtos.filter(
+    (p) => p.pedidoOrigemId != pedido.id || idsMantidos.has(String(p.id)),
+  );
+}
+
+function _sincronizarFinanceiroDoPedido(db, idPedido, valorAnterior, valorNovo) {
+  db.notasFiscais.forEach((nf) => {
+    if (nf.idPedido != idPedido) return;
+    nf.valor = valorNovo;
+  });
+}
+
 function createPedido(dados) {
   const db = getDB();
   const cliente = db.clientes.find((c) => c.id == dados.clienteId);
   const filial = getFilialById(dados.filialId) || FILIAIS_PADRAO[0];
-  const idPedido = db.pedidos.length ? Math.max(...db.pedidos.map((p) => Number(p.id) || 0)) + 1 : 1;
+  const idPedido = db.pedidos.length
+    ? Math.max(...db.pedidos.map((p) => Number(p.id) || 0)) + 1
+    : 1;
   const frete = calcularFrete({ ...dados, filialId: filial.id }, cliente);
 
   if (dados.itens && Array.isArray(dados.itens)) {
     dados.itens.forEach(function (item) {
       const nome = (item.produto || "").trim();
       if (!nome) return;
-      const existe = db.produtos.find((p) => p.nome.toLowerCase() === nome.toLowerCase());
+      const existe = db.produtos.find(
+        (p) => p.nome.toLowerCase() === nome.toLowerCase(),
+      );
       if (!existe) {
         db.produtos.push({
-          id: Date.now() + Math.random(),
+          id: gerarId(),
           nome,
           sku: gerarSKU(),
           pedidoOrigemId: idPedido,
@@ -266,6 +417,7 @@ function createPedido(dados) {
     situacao: "Pendente",
   };
   db.pedidos.push(novo);
+  _sincronizarProdutosDoPedido(db, novo, frete);
   saveDB(db);
   return novo;
 }
@@ -274,20 +426,33 @@ function updatePedido(id, dados) {
   const db = getDB();
   const i = db.pedidos.findIndex((p) => p.id == id);
   if (i !== -1) {
-    const cliente = db.clientes.find((c) => c.id == (dados.clienteId || db.pedidos[i].clienteId));
-    const filialId = dados.filialId || db.pedidos[i].filialId || FILIAIS_PADRAO[0].id;
-    const frete = calcularFrete({ ...db.pedidos[i].frete, ...dados, filialId }, cliente);
+    const pedidoAnterior = db.pedidos[i];
+    const valorAnterior = _valorPedidoFinanceiro(pedidoAnterior);
+    const cliente = db.clientes.find(
+      (c) => c.id == (dados.clienteId || pedidoAnterior.clienteId),
+    );
+    const filialId = dados.filialId || pedidoAnterior.filialId || FILIAIS_PADRAO[0].id;
+    const frete = calcularFrete(
+      { ...pedidoAnterior.frete, ...dados, filialId },
+      cliente,
+    );
     db.pedidos[i] = {
-      ...db.pedidos[i],
+      ...pedidoAnterior,
       ...dados,
       filialId,
       filialNome: formatarFilial(getFilialById(filialId)),
-      enderecoEntrega: dados.enderecoEntrega || db.pedidos[i].enderecoEntrega || montarEnderecoCliente(cliente),
+      enderecoEntrega:
+        dados.enderecoEntrega ||
+        pedidoAnterior.enderecoEntrega ||
+        montarEnderecoCliente(cliente),
+      totalProdutos: dados.total ?? pedidoAnterior.totalProdutos ?? 0,
       total: frete.freteFinal,
       receitaFrete: frete.freteFinal,
       freteFinal: frete.freteFinal,
       frete,
     };
+    _sincronizarProdutosDoPedido(db, db.pedidos[i], frete);
+    _sincronizarFinanceiroDoPedido(db, id, valorAnterior, frete.freteFinal);
     saveDB(db);
   }
 }
@@ -319,16 +484,17 @@ function getAgregadoById(id) {
 
 function createAgregado(dados) {
   const db = getDB();
+  // Compatibilidade: aceita "rastrador" (chave antiga com typo) mas grava sempre "rastreador".
+  const rastreador = dados.rastreador ?? dados.rastrador ?? "";
   const novo = {
-    id: Date.now(),
+    id: gerarId(),
     nome: dados.nome,
     placaVei: dados.placaVei || "",
     modeloVei: dados.modeloVei || "",
     quantiVei: parseInt(dados.quantiVei) || 1,
     tipoVei: dados.tipoVei || "",
     cnh: dados.cnh || "",
-    rastreador: dados.rastreador || dados.rastrador || "",
-    rastrador: dados.rastreador || dados.rastrador || "",
+    rastreador,
     telefone: dados.telefone || "",
     situacao: dados.situacao || "Ativo",
   };
@@ -340,6 +506,11 @@ function updateAgregado(id, dados) {
   const db = getDB();
   const i = db.agregados.findIndex((a) => a.id == id);
   if (i !== -1) {
+    // Compatibilidade legada: se vier "rastrador" no payload, normalizar.
+    if (dados.rastrador !== undefined && dados.rastreador === undefined) {
+      dados.rastreador = dados.rastrador;
+      delete dados.rastrador;
+    }
     db.agregados[i] = { ...db.agregados[i], ...dados };
     saveDB(db);
   }
@@ -362,7 +533,7 @@ function createFuncionario(dados) {
   const db = getDB();
   const filial = getFilialById(dados.filialId);
   const novo = {
-    id: Date.now(),
+    id: gerarId(),
     nome: dados.nome,
     email: dados.email || "",
     telefone: dados.telefone || "",
@@ -406,7 +577,7 @@ function getEntregas() {
 function createEntrega(dados) {
   const db = getDB();
   const novo = {
-    id: Date.now(),
+    id: gerarId(),
     idPedido: dados.idPedido,
     idAgregado: dados.idAgregado || null,
     dataSaida: dados.dataSaida || new Date().toISOString(),
@@ -446,7 +617,7 @@ function biparPedido(idPedido, idAgregado) {
   if (pi === -1) return { ok: false, msg: "Pedido não encontrado" };
   if (db.pedidos[pi].status !== "Pendente") return { ok: false, msg: "Pedido já processado" };
   const entrega = {
-    id: Date.now(),
+    id: gerarId(),
     idPedido,
     idAgregado,
     dataSaida: new Date().toISOString(),
@@ -470,11 +641,12 @@ function getPagamentos() {
 function createPagamento(dados) {
   const db = getDB();
   const novo = {
-    id: Date.now(),
+    id: gerarId(),
     idPedido: dados.idPedido,
     valor: parseFloat(dados.valor) || 0,
     dataPagamento: dados.dataPagamento || new Date().toISOString().split("T")[0],
     metodo: dados.metodo || "Pix",
+    tipo: dados.tipo || "Sinal",
     situacao: dados.situacao || "Pago",
   };
   db.pagamentos.push(novo);
@@ -508,7 +680,7 @@ function getNotasFiscais() {
 function createNotaFiscal(dados) {
   const db = getDB();
   const novo = {
-    id: Date.now(),
+    id: gerarId(),
     idPedido: dados.idPedido,
     numero: "NF-" + String(db.notasFiscais.length + 1).padStart(5, "0"),
     serie: dados.serie || "A1",
@@ -546,8 +718,7 @@ function formatarData(d) {
 }
 function formatarDocumento(v) {
   if (!v) return "—";
-  v = v.replace(/\D/g, "");
+  v = String(v).replace(/\D/g, "");
   if (v.length <= 11) return v.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
   return v.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
 }
-

@@ -1,4 +1,9 @@
-﻿// ================= CLIENTES MODULE =================
+// ================= CLIENTES MODULE =================
+
+function _avisoCli(msg, tipo) {
+  if (typeof showToast === "function") showToast(msg, tipo);
+  else alert(msg);
+}
 
 function carregarTabelaClientes() {
   const clientes = getClientes();
@@ -12,16 +17,16 @@ function carregarTabelaClientes() {
     .map(
       (c) => `
   <tr>
-    <td class="td-bold">${c.nome}</td>
+    <td class="td-bold">${esc(c.nome)}</td>
     <td>${formatarDocumento(c.documento)}</td>
-    <td>${c.telefone || "—"}</td>
+    <td>${esc(c.telefone) || "—"}</td>
     <td>
-      <span class="cli-rua">${c.rua || "S/R"}, ${c.numero || "S/N"}</span>
-      <span class="cli-bairro">${c.bairro ? c.bairro + " — " : ""}${c.cidade || ""}${c.estado ? "/" + c.estado : ""}</span>
+      <span class="cli-rua">${esc(c.rua) || "S/R"}, ${esc(c.numero) || "S/N"}</span>
+      <span class="cli-bairro">${c.bairro ? esc(c.bairro) + " — " : ""}${esc(c.cidade) || ""}${c.estado ? "/" + esc(c.estado) : ""}</span>
     </td>
     <td>
-      <button class="btn-icon" onclick="editarCliente(${c.id})"><span class="material-icons-round">edit</span></button>
-      <button class="btn-icon danger" onclick="removerCliente(${c.id})"><span class="material-icons-round">delete</span></button>
+      <button class="btn-icon" onclick="editarCliente(${esc(c.id)})" aria-label="Editar cliente"><span class="material-icons-round">edit</span></button>
+      <button class="btn-icon danger" onclick="removerCliente(${esc(c.id)})" aria-label="Excluir cliente"><span class="material-icons-round">delete</span></button>
     </td>
   </tr>`,
     )
@@ -54,7 +59,7 @@ function editarCliente(id) {
 
 function salvarCliente() {
   const nome = document.getElementById("cli-nome").value.trim();
-  if (!nome) return alert("Nome é obrigatório.");
+  if (!nome) return _avisoCli("Nome é obrigatório.", "error");
   const dados = {
     nome,
     documento: document.getElementById("cli-doc").value.replace(/\D/g, ""),
@@ -67,8 +72,13 @@ function salvarCliente() {
     estado: document.getElementById("cli-estado").value,
   };
   const editId = document.getElementById("modalCliente").dataset.editId;
-  if (editId) updateCliente(editId, dados);
-  else createCliente(dados);
+  if (editId) {
+    updateCliente(editId, dados);
+    _avisoCli("Cliente atualizado.", "success");
+  } else {
+    createCliente(dados);
+    _avisoCli("Cliente cadastrado.", "success");
+  }
   delete document.getElementById("modalCliente").dataset.editId;
   limparFormulario("modalCliente");
   fecharModal("modalCliente");
@@ -78,7 +88,7 @@ function salvarCliente() {
 function removerCliente(id) {
   if (confirm("Deseja excluir este cliente?")) {
     deleteCliente(id);
+    _avisoCli("Cliente removido.", "success");
     carregarTabelaClientes();
   }
 }
-

@@ -1,47 +1,60 @@
-﻿// ================= LOGISTICA MODULE =================
+// ================= LOGISTICA MODULE =================
 
 let entregaEditandoId = null;
+
+function _avisoLog(msg, tipo) {
+  if (typeof showToast === "function") showToast(msg, tipo);
+  else alert(msg);
+}
+
+function _statusClass(situacao) {
+  if (situacao === "Entregue") return "entregue";
+  if (situacao === "Em Trânsito") return "transito";
+  return "pendente";
+}
 
 function carregarStatsLogistica() {
   const pedidos = getPedidos();
   const entregas = getEntregas();
-  document.getElementById("stat-pendentes").innerText = pedidos.filter((p) => p.status === "Pendente").length;
-  document.getElementById("stat-transito").innerText = entregas.filter((e) => e.situacao === "Em Trânsito").length;
-  document.getElementById("stat-entregues").innerText = entregas.filter((e) => e.situacao === "Entregue").length;
+  const _set = (id, v) => { const e = document.getElementById(id); if (e) e.innerText = v; };
+  _set("stat-pendentes", pedidos.filter((p) => (p.status || "Pendente") === "Pendente").length);
+  _set("stat-transito", entregas.filter((e) => e.situacao === "Em Trânsito").length);
+  _set("stat-entregues", entregas.filter((e) => e.situacao === "Entregue").length);
 }
 
 function popularAgregados() {
   const lista = getAgregados().filter((a) => a.situacao === "Ativo");
   const sel = document.getElementById("bip-agregado");
+  if (!sel) return;
   sel.innerHTML = lista.length
-    ? lista.map((a) => `<option value="${a.id}">${a.nome} — ${a.tipoVei || ""} ${a.placaVei || ""}</option>`).join("")
+    ? lista.map((a) => `<option value="${esc(a.id)}">${esc(a.nome)} — ${esc(a.tipoVei) || ""} ${esc(a.placaVei) || ""}</option>`).join("")
     : '<option value="">Nenhum agregado ativo</option>';
 }
 
 function carregarTabelaEntregas() {
-  const entregas = getEntregas();
+  const entregas = getEntregas().slice().reverse();
   const agregados = getAgregados();
   const tabela = document.getElementById("tabela-entregas");
   if (!entregas.length) {
-    tabela.innerHTML = `<tr><td colspan="7" class="tabela-vazia">
+    tabela.innerHTML = `<tr><td colspan="6" class="tabela-vazia">
   <span class="material-icons-round">local_shipping</span>
-  <p>Nenhuma entrega registrada. Use a bipagem acima para registrar saídas.</p></td></tr>`;
+  <p>Nenhuma entrega registrada. Bipe um pedido para começar.</p></td></tr>`;
     return;
   }
   tabela.innerHTML = entregas
     .map((e) => {
       const agr = agregados.find((a) => a.id == e.idAgregado);
+      const situacao = e.situacao || "Em Trânsito";
       return `
-  <tr>
-    <td class="td-bold">#${e.idPedido}</td>
-    <td>${agr ? agr.nome : "—"}</td>
-    <td><code>${e.codRastreio}</code></td>
+  <tr data-status="${esc(situacao.toLowerCase())}">
+    <td class="td-bold">#${esc(e.idPedido)}</td>
+    <td>${agr ? esc(agr.nome) : "—"}</td>
+    <td><span class="sku-tag">${esc(e.codRastreio)}</span></td>
     <td>${formatarData(e.dataSaida)}</td>
-    <td>${e.dataPrevista ? formatarData(e.dataPrevista) : "—"}</td>
-    <td><span class="status ${e.situacao === "Entregue" ? "entregue" : "transito"}">${e.situacao}</span></td>
+    <td><span class="status ${_statusClass(situacao)}">${esc(situacao)}</span></td>
     <td>
-      ${e.situacao !== "Entregue" ? `<button class="btn-icon" title="Marcar como entregue" onclick="abrirConfirmarEntrega(${e.id},${e.idPedido})"><span class="material-icons-round">check_circle</span></button>` : ""}
-      <button class="btn-icon danger" onclick="removerEntrega(${e.id})"><span class="material-icons-round">delete</span></button>
+      ${situacao !== "Entregue" ? `<button class="btn-icon" title="Marcar como entregue" onclick="abrirConfirmarEntrega(${esc(e.id)},${esc(e.idPedido)})" aria-label="Marcar como entregue"><span class="material-icons-round">check_circle</span></button>` : ""}
+      <button class="btn-icon danger" onclick="removerEntrega(${esc(e.id)})" aria-label="Remover"><span class="material-icons-round">delete</span></button>
     </td>
   </tr>`;
     })
@@ -63,17 +76,16 @@ function bipar() {
   if (resultado.ok) {
     res.innerHTML = `<div class="bip-msg sucesso">
   <span class="material-icons-round">check_circle</span>
-  Pedido <strong>#${idPedido}</strong> bipado com sucesso! Rastreio: <code>${resultado.entrega.codRastreio}</code>
+  Pedido <strong>#${esc(idPedido)}</strong> bipado! Rastreio: <span class="sku-tag">${esc(resultado.entrega.codRastreio)}</span>
 </div>`;
     document.getElementById("bip-pedido").value = "";
+    _avisoLog("Pedido bipado com sucesso.", "success");
     carregarStatsLogistica();
     carregarTabelaEntregas();
   } else {
-    res.innerHTML = `<div class="bip-msg erro"><span class="material-icons-round">error</span> ${resultado.msg}</div>`;
+    res.innerHTML = `<div class="bip-msg erro"><span class="material-icons-round">error</span> ${esc(resultado.msg)}</div>`;
   }
-  setTimeout(() => {
-    res.innerHTML = "";
-  }, 5000);
+  setTimeout(() => { if (res) res.innerHTML = ""; }, 5000);
 }
 
 function abrirConfirmarEntrega(idEntrega, idPedido) {
@@ -85,17 +97,10 @@ function abrirConfirmarEntrega(idEntrega, idPedido) {
 function confirmarEntrega() {
   if (!entregaEditandoId) return;
   const data = document.getElementById("entregue-data").value;
-  updateEntrega(entregaEditandoId, {
-    situacao: "Entregue",
-    dataEntrega: data,
-  });
+  updateEntrega(entregaEditandoId, { situacao: "Entregue", dataEntrega: data });
   const entrega = getEntregas().find((e) => e.id == entregaEditandoId);
-  if (entrega) {
-    updatePedido(entrega.idPedido, {
-      status: "Entregue",
-      situacao: "Entregue",
-    });
-  }
+  if (entrega) updatePedido(entrega.idPedido, { status: "Entregue", situacao: "Entregue" });
+  _avisoLog("Entrega confirmada.", "success");
   fecharModal("modalEntregue");
   carregarStatsLogistica();
   carregarTabelaEntregas();
@@ -105,17 +110,8 @@ function confirmarEntrega() {
 function removerEntrega(id) {
   if (confirm("Remover este registro de entrega?")) {
     deleteEntrega(id);
+    _avisoLog("Registro removido.", "success");
     carregarStatsLogistica();
     carregarTabelaEntregas();
   }
 }
-
-function aplicarFiltros(tabelaId) {
-  const filtro = document.getElementById("select-filtro").value.toLowerCase();
-  const linhas = document.querySelectorAll("#" + tabelaId + " tr");
-  linhas.forEach((linha) => {
-    const status = linha.querySelector(".status")?.textContent.toLowerCase() || "";
-    linha.style.display = !filtro || status.includes(filtro) ? "" : "none";
-  });
-}
-

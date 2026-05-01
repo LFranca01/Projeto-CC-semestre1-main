@@ -1,268 +1,39 @@
 /* ============================================================
-   PEDIDOS.CSS
+   Page-specific complementary styles
+   (loaded by pedidos, clientes, produtos, filiais, agregados)
    ============================================================ */
 
-.page-header-pedidos {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-}
-
-/* Caixa de filtros compacta */
-.filter-box-sm {
-  max-width: 320px;
-}
-
-/* Itens do pedido no modal */
-.lista-itens-container {
-  margin-top: 12px;
-  max-height: 240px;
-  overflow-y: auto;
-  padding-right: 4px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.row-item-pedido {
-  display: grid;
-  grid-template-columns: 2fr 0.6fr 1fr auto;
-  gap: 8px;
-  align-items: center;
-}
-
-.input-produto {
-  height: 36px;
-}
-.input-qtd {
-  height: 36px;
-  text-align: center;
-}
-.input-preco {
-  height: 36px;
-}
-
-/* Botão adicionar item */
-.btn-add-item {
-  width: 100%;
-  padding: 9px;
-  background: var(--bg);
-  border: 1.5px dashed var(--border);
-  border-radius: 8px;
-  color: var(--text-light);
-  cursor: pointer;
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 13px;
-  font-family: "Josefin Sans", sans-serif;
-  transition:
-    border-color var(--transition),
-    color var(--transition),
-    background var(--transition);
-}
-
-.btn-add-item:hover {
-  border-color: var(--primary-light);
-  color: var(--primary);
-  background: var(--white);
-}
-
-.btn-add-item .material-icons-round {
-  font-size: 18px;
-}
-
-/* Modal tamanho pedido */
-.pedido-modal-size {
-  max-width: 760px;
-}
-
-/* Grid do formulário do modal */
-.pedido-form-top {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 16px;
-}
-
-.frete-options {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 12px 0;
-  color: var(--text);
-  font-size: 13px;
-}
-
-.frete-options label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.frete-preview {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 12px 0 16px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text);
-  font-size: 13px;
-}
-
-/* Ocultar spinner nos inputs number */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-input[type="number"] {
- appearance: textfield; -moz-appearance: textfield;
-}
-
-/* Status na tabela */
-.status.pendente {
-  background: #fef3c7;
-  color: #d97706;
-}
-.status.enviado {
-  background: #dbeafe;
-  color: #2563eb;
-}
-.status.entregue {
-  background: #d1fae5;
-  color: #059669;
-}
-
-/* SKU badge na tabela de produtos */
-.sku-tag {
-  background: var(--bg);
-  color: var(--primary);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  letter-spacing: 0.5px;
-  display: inline-block;
-  border: 1px solid var(--border);
-}
-
-/* Pedido origem badge */
-.pedido-origem {
-  background: #ede9fe;
-  color: #7c3aed;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 6px;
-  display: inline-block;
-}
-
-/* Unidade badge */
-.prod-unidade {
-  background: #e1e7f0;
-  color: var(--primary);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 3px 8px;
-  border-radius: 4px;
-  display: inline-block;
-}
-
-/* Produtos summary pills */
-.produtos-summary {
-  display: flex;
-  gap: 14px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-}
-
-.summary-pill {
-  background: var(--white);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text);
-  transition:
-    background var(--transition),
-    border-color var(--transition);
-}
-
-.summary-pill .material-icons-round {
-  font-size: 17px;
-  color: var(--text-light);
-}
-.summary-pill strong {
-  font-size: 17px;
-  color: var(--primary);
-  font-weight: 700;
-}
-.summary-pill-ok .material-icons-round,
-.summary-pill-ok strong {
-  color: #059669;
-}
-.summary-pill-warn .material-icons-round,
-.summary-pill-warn strong {
-  color: #d97706;
-}
-
-/* Status produtos */
-.status.completo {
-  background: #d1fae5;
-  color: #059669;
-}
-
-/* Readonly input */
-.input-readonly {
-  background: var(--bg);
-  color: var(--text-light);
-  cursor: not-allowed;
-}
-
-/* Produto form grid no modal */
-.produto-form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.produto-descricao-grupo {
-  grid-column: span 2;
-}
-.produto-nome-grupo {
-  margin-bottom: 14px;
-}
-
 .label-hint {
-  font-size: 11px;
-  color: var(--text-light);
   font-weight: 400;
-  text-transform: none;
-  letter-spacing: 0;
+  color: var(--text-muted);
+  font-size: 11px;
   margin-left: 4px;
 }
 
-@media (max-width: 768px) {
-  .pedido-form-top {
-    grid-template-columns: 1fr;
-  }
-  .row-item-pedido {
-    grid-template-columns: 1fr 0.5fr 0.8fr auto;
-  }
-  .produto-form-grid {
-    grid-template-columns: 1fr;
-  }
-  .produto-descricao-grupo {
-    grid-column: span 1;
-  }
+.input-produto,
+.input-qtd,
+.input-preco {
+  width: 100%;
+}
+
+/* Filter group margin helper used in financeiro modals */
+.filter-group-mb {
+  margin-bottom: 4px;
+}
+
+/* Lista de itens (pedidos) */
+.lista-itens-container .row-item-pedido {
+  background: var(--surface-muted);
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.lista-itens-container .row-item-pedido .form-control {
+  background: var(--surface);
+}
+
+/* Cliente address grid helper */
+.cliente-form-grid .filter-group {
+  min-width: 0;
 }

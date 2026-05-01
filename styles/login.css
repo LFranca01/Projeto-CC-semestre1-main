@@ -1,166 +1,385 @@
-:root {
-  --primary: #153856;
-  --accent: #4caf50;
-  --bg: #f3f4f6;
-  --white: #ffffff;
-  --text: #111827;
-  --border: #e5e7eb;
-}
+/* ============================================================
+   LOGIN — Serginho Leva Atrás
+   • Mobile: card centralizado (source of truth — inalterado)
+   • Desktop: shell com painel-marca à esquerda + card à direita
+   • Background da página preservado (sem fundo dentro do card)
+   ============================================================ */
 
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: "Josefin Sans", sans-serif;
 }
 
-/* O body agora é o responsável por centralizar o .login-container na tela */
-body {
-  background: var(--border);
-  height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-
-.login-container {
-  background-color: var(--white);
-  display: flex;
-  min-height: 480px;
-  max-width: 100%;
-  width: 768px;
-  justify-content: center;
-  align-self: center;
-  box-shadow: 0 0 20px 10px rgba(0, 0, 0, 0.15); /* Sombra para dar profundidade ao box */
-  border-radius: 30px;
-  overflow: hidden; /* Garante que o gradiente da esquerda respeite o arredondamento */
-}
-
-/* LADO ESQUERDO: Texto e Branding */
-.login-left {
-  flex: 1.3; /* Um pouco mais largo que o lado direito */
-  background: linear-gradient(to right, #265527, #153856, #0b2840);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 60px;
-  border-top-right-radius: 30%;
-  border-bottom-right-radius: 30%;
-}
-
-.login-left img {
-  max-width: 400px;
-  width: 100%;
-  margin-bottom: 10px;
-  filter: brightness(1.4) contrast(1.2);
-  align-self: center;
-}
-.login-left h1 {
-  font-size: 2.5rem;
-  margin-bottom: 10px;
-  line-height: 1.1;
-}
-.login-left p {
-  opacity: 0.8;
-  font-weight: 300;
-}
-
-/* LADO DIREITO: Formulário */
-.login-right {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 60px;
-  background: var(--white);
-}
-
-.login-box {
-  width: 100%;
-  max-width: 300px;
-  text-align: center;
-}
-
-.login-box h2 {
-  margin-bottom: 25px;
-  color: var(--text);
-}
-
-.logo {
-  max-width: 200px;
-  max-height: 133px;
-  width: 100%;
+html, body {
   height: 100%;
-  margin-bottom: 10px;
-  filter: brightness(1.4) contrast(1.2);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.input-group {
+body {
+  font-family: 'Josefin Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(at 10% 20%, rgba(59, 130, 246, 0.15), transparent 45%),
+    radial-gradient(at 90% 80%, rgba(139, 92, 246, 0.12), transparent 45%),
+    linear-gradient(135deg, #0f2942 0%, #1a3f63 50%, #0f2942 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
   position: relative;
-  margin-bottom: 25px;
-  text-align: left;
 }
+
+/* Decorative grid background — preserved */
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+}
+
+/* ============================================================
+   SHELL — wraps brand panel + card on desktop
+   On mobile, shell is invisible (display: contents-equivalent)
+   ============================================================ */
+.login-shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  animation: fadeIn 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Brand panel — hidden on mobile */
+.login-brand {
+  display: none;
+}
+
+/* ============================================================
+   LOGIN CARD — same component used on mobile and desktop
+   (no internal background changes — preserves source of truth)
+   ============================================================ */
+.login-card {
+  width: 100%;
+  background: #fff;
+  color: #0f172a;
+  padding: 40px 36px 32px;
+  border-radius: 24px;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.4),
+    0 8px 16px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Logo area */
+.login-logo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.login-logo {
+  width: 100px;
+  height: 100px;
+  border-radius: 22px;
+  object-fit: cover;
+  background: linear-gradient(135deg, #0f2942 0%, #1a3f63 100%);
+  padding: 14px;
+  box-shadow:
+    0 12px 32px rgba(15, 41, 66, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.login-brand-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  margin-top: 4px;
+}
+
+/* Headings */
+.login-card h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: center;
+  letter-spacing: -0.4px;
+  margin: 0;
+}
+
+.login-sub {
+  font-size: 14px;
+  color: #64748b;
+  text-align: center;
+  margin: -8px 0 4px;
+}
+
+/* Form */
+#form-login {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 4px;
+}
+
+.input-group { position: relative; }
 
 .input-group input {
   width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  padding: 16px 16px 12px;
+  font-size: 15px;
+  border: 1px solid #e5e9f0;
+  border-radius: 12px;
   outline: none;
-  background: #f9fafb;
+  background: #f8fafc;
+  color: #0f172a;
+  font-family: inherit;
+  transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-group input:focus {
+  border-color: #3b82f6;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .input-group label {
   position: absolute;
-  left: 12px;
-  top: 12px;
-  color: #999;
-  transition: 0.2s;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
   pointer-events: none;
+  font-size: 14px;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  padding: 0 4px;
 }
 
-.input-group input:focus ~ label,
-.input-group input:not(:placeholder-shown) ~ label {
-  top: -20px;
-  left: 0;
-  font-size: 12px;
-  color: var(--primary);
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+  top: 0;
+  transform: translateY(-50%) scale(0.85);
+  background: #fff;
+  color: #3b82f6;
+  font-weight: 500;
+  left: 12px;
 }
 
-button {
-  width: 100%;
-  padding: 14px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
+#form-login button[type="submit"] {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
+  background: #0f2942;
+  color: #fff;
+  border: none;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 15px;
   font-weight: 600;
-  transition: background 0.3s;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 6px;
+  box-shadow: 0 4px 12px rgba(15, 41, 66, 0.2);
 }
 
-button:hover {
-  background: var(--primary-dark);
+#form-login button[type="submit"]:hover {
+  background: #143452;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(15, 41, 66, 0.3);
 }
+
+#form-login button[type="submit"]:active { transform: translateY(0); }
+#form-login button .material-icons-round { font-size: 18px; }
 
 .error-message {
-  color: #dc2626;
-  margin-top: 15px;
-  font-size: 14px;
-  min-height: 1em;
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: -4px;
+  text-align: center;
+  min-height: 18px;
+  font-weight: 500;
 }
 
 .login-footer {
-  margin-top: 20px;
+  text-align: center;
+  font-size: 13.5px;
+  margin-top: 4px;
 }
+
 .login-footer a {
-  color: var(--primary);
+  color: #3b82f6;
   text-decoration: none;
-  font-size: 14px;
+  font-weight: 500;
+  transition: color 220ms;
+}
+
+.login-footer a:hover {
+  color: #2563eb;
+  text-decoration: underline;
+}
+
+.login-credentials-hint {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #f1f5f9;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #64748b;
+  text-align: center;
+  border: 1px dashed #cbd5e1;
+}
+
+.login-credentials-hint code {
+  font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  background: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #0f2942;
+  font-weight: 600;
+  font-size: 11.5px;
+  border: 1px solid #e2e8f0;
+}
+
+/* ============================================================
+   MOBILE TWEAKS — source of truth, kept identical
+   ============================================================ */
+@media (max-width: 480px) {
+  body { padding: 16px; }
+  .login-card { padding: 32px 24px 24px; border-radius: 20px; }
+  .login-logo { width: 100px; height: 100px; }
+  .login-card h2 { font-size: 22px; }
+}
+
+@media (max-height: 700px) and (max-width: 900px) {
+  .login-logo { width: 100px; height: 100px; }
+  .login-card { padding: 28px 32px 24px; gap: 14px; }
+}
+
+/* ============================================================
+   DESKTOP — Shell with brand panel + card (matches Image 3)
+   Activates ≥ 901px. Card stays the same — only repositioned.
+   ============================================================ */
+@media (min-width: 901px) {
+  body { padding: 32px; }
+
+  .login-shell {
+    max-width: 1040px;
+    min-height: 600px;
+    border-radius: 28px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.45),
+      0 12px 30px rgba(0, 0, 0, 0.18);
+  }
+
+  /* Brand panel: green→navy gradient with curved right edge */
+  .login-brand {
+    position: relative;
+    flex: 0 0 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 64px 56px;
+    color: #fff;
+    background:
+      radial-gradient(at 80% 100%, rgba(56, 189, 96, 0.45), transparent 55%),
+      radial-gradient(at 20% 0%, rgba(15, 41, 66, 0.4), transparent 50%),
+      linear-gradient(110deg, #2e8b3f 0%, #1a5d3a 35%, #0f2942 80%);
+    /* Convex bulge on right edge — corners recede, middle extends out.
+       Horizontal radius 28% of width, vertical radius 50% of height
+       creates an elliptical curve matching the reference image. */
+    border-top-right-radius: 28% 50%;
+    border-bottom-right-radius: 28% 50%;
+    overflow: hidden;
+  }
+
+  /* Subtle decorative orb */
+  .login-brand::before {
+    content: "";
+    position: absolute;
+    top: -30%;
+    right: -10%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .login-brand-logo {
+    width: 280px;
+    height: auto;
+    margin-bottom: 32px;
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
+  }
+
+  .login-brand h1 {
+    font-size: 42px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+    margin-bottom: 16px;
+    max-width: 320px;
+  }
+
+  .login-brand p {
+    font-size: 15px;
+    line-height: 1.55;
+    color: rgba(255, 255, 255, 0.78);
+    max-width: 300px;
+  }
+
+  /* Card sits on the right half — same component, only repositioned.
+     No external shadow (the shell carries it), no border-radius
+     (the shell handles rounding via overflow:hidden). */
+  .login-shell .login-card {
+    flex: 1;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+    padding: 64px 56px 56px;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  /* Slight adjustment for desktop proportions inside the card —
+     same component, just scaled to feel right at this size. */
+  .login-shell .login-logo { width: 120px; height: 120px; }
+  .login-shell .login-card h2 { font-size: 26px; }
+}
+
+/* Large screens — extra breathing room */
+@media (min-width: 1280px) {
+  .login-shell { max-width: 900px; max-height: 640px; }
+  .login-brand { padding: 72px 64px; }
+  .login-brand h1 { font-size: 46px; }
+  .login-shell .login-card { padding: 72px 64px 64px; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .login-shell { animation: none; }
 }

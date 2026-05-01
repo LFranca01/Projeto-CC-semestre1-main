@@ -1,96 +1,35 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>Financeiro | Distribuidora Serginho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Relatórios | Serginho Leva Atrás</title>
     <link rel="stylesheet" href="./styles/style.css" />
-    <link rel="stylesheet" href="./styles/pedidos.css" />
-    <link rel="stylesheet" href="./styles/financeiro.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="auth.js"></script>
     <script src="api.js"></script>
     <script src="ui-helper.js"></script>
     <script src="financeiro.js"></script>
-    <script>
-      requireAuth();
-    </script>
+    <script>requireAuth();</script>
   </head>
   <body>
     <div class="container">
       <aside class="sidebar">
-        <div class="sidebar-header">
-          <img src="./assets/Logo.png" alt="Logo" />
-        </div>
+        <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo" /></div>
         <ul>
-          <li>
-            <a href="inicio.html"
-              ><span class="material-icons-round">dashboard</span
-              ><span>Dashboard</span></a
-            >
-          </li>
-          <li>
-            <a href="pedidos.html"
-              ><span class="material-icons-round">inventory_2</span
-              ><span>Pedidos</span></a
-            >
-          </li>
-          <li>
-            <a href="clientes.html"
-              ><span class="material-icons-round">groups</span
-              ><span>Clientes</span></a
-            >
-          </li>
-          <li>
-            <a href="produtos.html"
-              ><span class="material-icons-round">category</span
-              ><span>Produtos</span></a
-            >
-          </li>
-          <li>
-            <a href="filiais.html"
-              ><span class="material-icons-round">hub</span
-              ><span>Filiais</span></a
-            >
-          </li>
-          <li>
-            <a href="agregados.html"
-              ><span class="material-icons-round">warehouse</span
-              ><span>Agregados</span></a
-            >
-          </li>
-          <li>
-            <a href="rh.html"
-              ><span class="material-icons-round">badge</span><span>RH</span></a
-            >
-          </li>
-          <li class="active">
-            <a href="financeiro.html"
-              ><span class="material-icons-round">payments</span
-              ><span>Financeiro</span></a
-            >
-          </li>
-          <li>
-            <a href="logistica.html"
-              ><span class="material-icons-round">local_shipping</span
-              ><span>Logística</span></a
-            >
-          </li>
+          <li><a href="inicio.html"><span class="material-icons-round">dashboard</span><span>Dashboard</span></a></li>
+          <li><a href="pedidos.html"><span class="material-icons-round">inventory_2</span><span>Pedidos</span></a></li>
+          <li><a href="filiais.html"><span class="material-icons-round">hub</span><span>Filiais</span></a></li>
+          <li><a href="produtos.html"><span class="material-icons-round">category</span><span>Produtos</span></a></li>
+          <li><a href="rh.html"><span class="material-icons-round">badge</span><span>RH</span></a></li>
+          <li><a href="clientes.html"><span class="material-icons-round">groups</span><span>Clientes</span></a></li>
+          <li><a href="agregados.html"><span class="material-icons-round">warehouse</span><span>Agregados</span></a></li>
+          <li class="active"><a href="financeiro.html"><span class="material-icons-round">payments</span><span>Relatórios</span></a></li>
+          <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span><span>Logística</span></a></li>
         </ul>
       </aside>
 
@@ -98,197 +37,162 @@
         <header class="header">
           <div class="search-box">
             <span class="material-icons-round">search</span>
-            <input
-              type="text"
-              id="input-busca"
-              placeholder="Buscar pagamento..."
-              onkeyup="aplicarFiltros('tabela-financeiro')"
-            />
+            <input type="text" id="busca-nf" placeholder="Buscar relatórios..." onkeyup="renderNotas()" maxlength="60" />
           </div>
           <div class="header-right">
-            <div class="theme-toggle-wrap">
-              <span class="material-icons-round">dark_mode</span>
-              <button class="theme-toggle" onclick="toggleDarkMode()"></button>
-            </div>
-            <button class="btn-primary" onclick="abrirModal('modalPagamento')">
-              <span class="material-icons-round">add</span> Registrar Pagamento
-            </button>
-            <div class="user-menu" id="dropdownToggle">
-              <div class="profile-img-container">
-                <img
-                  id="avatar-nav"
-                  src="https://i.pravatar.cc/100"
-                  alt="Perfil"
-                  onclick="abrirZoom(this.src)"
-                />
+            <div class="theme-toggle-wrap"><button class="theme-toggle" onclick="toggleDarkMode()" aria-label="Alternar tema"></button></div>
+            <div class="header-user" id="dropdownToggle">
+              <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" class="header-user-avatar" onclick="event.stopPropagation(); abrirZoom(this.src);" />
+              <div class="header-user-info">
+                <span class="name" id="user-name-display">...</span>
+                <span class="role">Operations Lead</span>
               </div>
-              <div class="user-info">
-                <span id="user-name-display" class="user-name">...</span>
-                <span class="user-role">Administrador</span>
-              </div>
-              <span class="material-icons-round">expand_more</span>
+              <span class="material-icons-round header-user-chevron">expand_more</span>
               <div class="dropdown-content" id="profileDropdown">
-                <a href="#" onclick="abrirModalAvatar()"
-                  ><span class="material-icons-round">photo_camera</span>
-                  Alterar Foto</a
-                >
-                <a href="#" onclick="logout()" class="logout-link"
-                  ><span class="material-icons-round">logout</span> Sair</a
-                >
+                <a href="#" onclick="abrirModalAvatar(); return false;"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
+                <a href="#" onclick="logout(); return false;" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
               </div>
             </div>
           </div>
         </header>
 
-        <div class="content">
+        <div class="content content-scroll">
           <div class="page-header-pedidos">
-            <h2>Financeiro</h2>
-            <button class="btn-secondary" onclick="imprimirRelatorio()">
-              <span class="material-icons-round">print</span> Imprimir Relatório
-            </button>
+            <div>
+              <h2>Painel Financeiro Detalhado</h2>
+              <p class="page-subtitle">Acompanhamento consolidado de receitas, despesas e emissões fiscais.</p>
+            </div>
+            <div class="page-actions">
+              <label class="summary-pill fin-period-filter" for="filtro-dias-fin">
+                <span class="material-icons-round">calendar_today</span>
+                <select id="filtro-dias-fin" onchange="atualizarFinanceiro()" aria-label="Filtrar periodo financeiro">
+                  <option value="7">Ultimos 7 dias</option>
+                  <option value="30" selected>Ultimos 30 dias</option>
+                  <option value="90">Ultimos 90 dias</option>
+                  <option value="todos">Todo o periodo</option>
+                </select>
+              </label>
+              <span class="summary-pill"><span class="material-icons-round">calendar_today</span> Últimos 30 dias</span>
+              <button class="btn-primary" onclick="imprimirRelatorio()">
+                <span class="material-icons-round">print</span><span>Imprimir PDF</span>
+              </button>
+            </div>
           </div>
 
+          <!-- KPIs -->
           <div class="stats-grid">
             <div class="stat-card">
-              <div class="stat-icon green">
-                <span class="material-icons-round">trending_up</span>
-              </div>
+              <div class="stat-icon green"><span class="material-icons-round">savings</span></div>
               <div>
-                <h3>Saldo Total Recebido</h3>
+                <h3>Receitas (Período)</h3>
                 <p id="stat-saldo">R$ 0,00</p>
+                <span class="delta up"><span class="material-icons-round" style="font-size:14px">trending_up</span> +12,5%</span>
               </div>
             </div>
             <div class="stat-card">
-              <div class="stat-icon blue">
-                <span class="material-icons-round">today</span>
-              </div>
+              <div class="stat-icon red"><span class="material-icons-round">credit_card</span></div>
               <div>
-                <h3>Recebido Hoje</h3>
-                <p id="stat-hoje">R$ 0,00</p>
+                <h3>Despesas Operacionais</h3>
+                <p id="stat-despesas">R$ 0,00</p>
+                <span class="delta up"><span class="material-icons-round" style="font-size:14px">trending_up</span> +4,2%</span>
               </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-icon orange">
-                <span class="material-icons-round">pending_actions</span>
-              </div>
+            <div class="stat-card featured">
+              <div class="stat-icon"><span class="material-icons-round">account_balance_wallet</span></div>
               <div>
-                <h3>Pagamentos Pendentes</h3>
-                <p id="stat-pendentes">0</p>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon purple">
-                <span class="material-icons-round">receipt_long</span>
-              </div>
-              <div>
-                <h3>Notas Fiscais Emitidas</h3>
-                <p id="stat-nf">0</p>
+                <h3>Saldo Líquido</h3>
+                <p id="stat-saldo-liquido">R$ 0,00</p>
+                <span class="delta" style="color:rgba(255,255,255,0.7)">Margem operacional</span>
               </div>
             </div>
           </div>
 
-          <!-- TABS -->
-          <div class="fin-tabs">
-            <button class="fin-tab ativo" onclick="setTab('pagamentos', this)">
-              <span class="material-icons-round">payments</span> Pagamentos
-            </button>
-            <button class="fin-tab" onclick="setTab('notas', this)">
-              <span class="material-icons-round">receipt_long</span> Notas
-              Fiscais
-            </button>
+          <!-- Linha do meio: Chart + Categorias -->
+          <div class="fin-row">
+            <div class="chart-card">
+              <div class="chart-card-header">
+                <div>
+                  <h3>Fluxo de Caixa Diário</h3>
+                  <div class="subtitle">Entradas e saídas dos últimos 7 dias</div>
+                </div>
+              </div>
+              <div class="chart-body"><canvas id="chartFluxo"></canvas></div>
+            </div>
+            <div class="panel-card">
+              <div class="panel-header">
+                <h3>Despesas por Categoria</h3>
+              </div>
+              <div class="category-list" id="lista-categorias"></div>
+            </div>
           </div>
 
-          <!-- PAGAMENTOS -->
-          <div id="tab-pagamentos">
-            <div class="filter-box">
-              <div class="filter-group">
-                <label>Filtrar por Status</label>
-                <select
-                  id="select-filtro"
-                  class="form-control"
-                  onchange="aplicarFiltros('tabela-financeiro')"
-                >
-                  <option value="">Todos</option>
-                  <option value="Pago">Pago</option>
-                  <option value="Pendente">Pendente</option>
-                </select>
-              </div>
-              <div class="filter-group">
-                <label>Método de Pagamento</label>
-                <select
-                  id="filtro-metodo"
-                  class="form-control"
-                  onchange="aplicarFiltros('tabela-financeiro')"
-                >
-                  <option value="">Todos</option>
-                  <option>Pix</option>
-                  <option>Cartão</option>
-                  <option>Dinheiro</option>
-                  <option>Boleto</option>
-                </select>
-              </div>
-              <div class="filter-group">
-                <label>Data</label>
-                <input
-                  type="date"
-                  id="filtro-data"
-                  class="form-control"
-                  oninput="aplicarFiltros('tabela-financeiro')"
-                />
-              </div>
+          <!-- Tabs Pagamentos / NFs -->
+          <div class="page-header-pedidos" style="margin-top:0; align-items:center">
+            <div class="fin-tabs">
+              <button class="fin-tab ativo" onclick="setTab('pagamentos', this)">
+                <span class="material-icons-round">payments</span> Pagamentos
+              </button>
+              <button class="fin-tab" onclick="setTab('notas', this)">
+                <span class="material-icons-round">receipt_long</span> Notas Fiscais
+              </button>
             </div>
+            <div class="page-actions">
+              <button class="btn-secondary" onclick="abrirModalPagamento()" id="btn-novo-pag">
+                <span class="material-icons-round">add</span><span>Pagamento</span>
+              </button>
+            </div>
+          </div>
 
-            <div class="table-wrapper">
+          <!-- Tab Pagamentos -->
+          <div class="table-wrapper" id="tab-pagamentos">
+            <div class="table-scroll-area">
               <table class="table-dashboard">
                 <thead>
-                  <tr>
-                    <th>ID Pedido</th>
-                    <th>Data</th>
-                    <th>Método</th>
-                    <th>Valor</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                  </tr>
+                  <tr><th>Pedido</th><th>Data</th><th>Método</th><th>Valor</th><th>Status</th><th>Ações</th></tr>
                 </thead>
                 <tbody id="tabela-financeiro"></tbody>
               </table>
             </div>
           </div>
 
-          <!-- NOTAS FISCAIS -->
-          <div id="tab-notas" class="tab-hidden">
-            <div class="filter-box">
-              <div class="filter-group">
-                <label>Buscar por Nº ou Pedido</label>
-                <input
-                  type="text"
-                  id="busca-nf"
-                  class="form-control"
-                  placeholder="NF-00001 ou #12"
-                  oninput="renderNotas()"
-                />
+          <!-- Tab NFs (com seção de emissão integrada) -->
+          <div class="tab-hidden" id="tab-notas" style="display:flex; flex-direction:column; gap:14px; flex:1; min-height:0;">
+            <div class="nf-emit-section">
+              <div class="nf-emit-header">
+                <div>
+                  <span class="material-icons-round" style="color:var(--text-muted)">receipt_long</span>
+                  <div>
+                    <h3>Emissão de Notas Fiscais</h3>
+                    <div class="subtitle">Gere NFs sequenciais para serviços de frete.</div>
+                  </div>
+                </div>
+                <button class="btn-secondary" onclick="abrirModalNFAvancado()">
+                  <span class="material-icons-round">tune</span><span>Mais opções</span>
+                </button>
               </div>
+              <form class="nf-emit-grid" onsubmit="emitirNFRapida(event)">
+                <div class="filter-group">
+                  <label>Cliente / Tomador (Pedido)</label>
+                  <select id="nf-rapido-pedido" class="form-control" required></select>
+                </div>
+                <div class="filter-group">
+                  <label>Valor Total (R$)</label>
+                  <input type="number" min="0" step="0.01" id="nf-rapido-valor" class="form-control" placeholder="0,00" required />
+                </div>
+                <button type="submit" class="btn-success">
+                  <span class="material-icons-round">verified</span><span>Gerar NF-e</span>
+                </button>
+              </form>
             </div>
             <div class="table-wrapper">
-              <table class="table-dashboard">
-                <thead>
-                  <tr>
-                    <th>Número</th>
-                    <th>ID Pedido</th>
-                    <th>Emissão</th>
-                    <th>Valor</th>
-                    <th>Cidade/Estado</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                  </tr>
-                </thead>
-                <tbody id="tabela-notas"></tbody>
-              </table>
-            </div>
-            <div class="nf-actions">
-              <button class="btn-primary" onclick="abrirModal('modalNF')">
-                <span class="material-icons-round">add</span> Emitir Nota Fiscal
-              </button>
+              <div class="table-scroll-area">
+                <table class="table-dashboard">
+                  <thead>
+                    <tr><th>NF</th><th>Pedido</th><th>Emissão</th><th>Valor</th><th>Cidade/UF</th><th>Status</th><th>Ações</th></tr>
+                  </thead>
+                  <tbody id="tabela-notas"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -296,189 +200,95 @@
     </div>
 
     <!-- MODAL PAGAMENTO -->
-    <div id="modalPagamento" class="modal">
+    <div id="modalPagamento" class="modal" role="dialog" aria-modal="true">
       <div class="modal-content">
         <div class="modal-header"><h2>Registrar Pagamento</h2></div>
         <div class="modal-body">
-          <div class="filter-group filter-group-mb">
-            <label>Pedido</label>
-            <select id="pag-pedido" class="form-control"></select>
-          </div>
           <div class="fin-form-grid">
-            <div class="filter-group">
-              <label>Valor (R$)</label>
-              <input
-                type="number"
-                id="pag-valor"
-                class="form-control"
-                placeholder="0,00"
-                step="0.01"
-                min="0"
-              />
+            <div class="filter-group span-2">
+              <label>Pedido</label>
+              <select id="pag-pedido" class="form-control"></select>
             </div>
-            <div class="filter-group">
-              <label>Data do Pagamento</label>
-              <input type="date" id="pag-data" class="form-control" />
-            </div>
+            <div class="filter-group"><label>Valor (R$)</label><input type="number" min="0" step="0.01" id="pag-valor" class="form-control" /></div>
+            <div class="filter-group"><label>Data</label><input type="date" id="pag-data" class="form-control" /></div>
             <div class="filter-group">
               <label>Método</label>
               <select id="pag-metodo" class="form-control">
-                <option>Pix</option>
-                <option>Cartão</option>
-                <option>Dinheiro</option>
-                <option>Boleto</option>
+                <option>Pix</option><option>Cartão</option><option>Dinheiro</option><option>Boleto</option>
               </select>
             </div>
             <div class="filter-group">
               <label>Status</label>
-              <select id="pag-situacao" class="form-control">
-                <option value="Pago">Pago</option>
-                <option value="Pendente">Pendente</option>
-              </select>
+              <select id="pag-situacao" class="form-control"><option>Pago</option><option>Pendente</option></select>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-secondary" onclick="fecharModal('modalPagamento')">
-            Cancelar
-          </button>
-          <button class="btn-primary" onclick="salvarPagamento()">
-            <span class="material-icons-round">save</span> Salvar
-          </button>
+          <button class="btn-secondary" onclick="fecharModal('modalPagamento')">Cancelar</button>
+          <button class="btn-primary" onclick="salvarPagamento()">Salvar</button>
         </div>
       </div>
     </div>
 
-    <!-- MODAL NOTA FISCAL -->
-    <div id="modalNF" class="modal">
+    <!-- MODAL NF AVANÇADO (com mais campos) -->
+    <div id="modalNF" class="modal" role="dialog" aria-modal="true">
       <div class="modal-content nf-modal-size">
-        <div class="modal-header"><h2>Emitir Nota Fiscal</h2></div>
+        <div class="modal-header"><h2>Emissão de Nota Fiscal</h2></div>
         <div class="modal-body">
-          <div class="filter-group filter-group-mb">
-            <label>Pedido de Referência</label>
-            <select id="nf-pedido" class="form-control"></select>
-          </div>
           <div class="fin-form-grid">
-            <div class="filter-group">
-              <label>Valor (R$)</label>
-              <input
-                type="number"
-                id="nf-valor"
-                class="form-control"
-                step="0.01"
-                min="0"
-              />
+            <div class="filter-group span-2">
+              <label>Pedido</label>
+              <select id="nf-pedido" class="form-control"></select>
             </div>
-            <div class="filter-group">
-              <label>Série</label>
-              <input
-                type="text"
-                id="nf-serie"
-                class="form-control"
-                value="A1"
-                maxlength="2"
-              />
-            </div>
-            <div class="filter-group">
-              <label>Email do Destinatário</label>
-              <input
-                type="email"
-                id="nf-email"
-                class="form-control"
-                placeholder="email@cliente.com"
-              />
-            </div>
-            <div class="filter-group">
-              <label>Prazo de Entrega (dias)</label>
-              <input
-                type="number"
-                id="nf-prazo"
-                class="form-control"
-                value="3"
-                min="1"
-              />
-            </div>
-            <div class="filter-group">
-              <label>Cidade</label>
-              <input type="text" id="nf-cidade" class="form-control" />
-            </div>
-            <div class="filter-group">
-              <label>Estado</label>
-              <input
-                type="text"
-                id="nf-estado"
-                class="form-control"
-                maxlength="2"
-                placeholder="SP"
-              />
-            </div>
+            <div class="filter-group"><label>Valor (R$)</label><input type="number" min="0" step="0.01" id="nf-valor" class="form-control" /></div>
+            <div class="filter-group"><label>Série</label><input type="text" id="nf-serie" class="form-control" value="A1" maxlength="5" /></div>
+            <div class="filter-group span-2"><label>E-mail</label><input type="email" id="nf-email" class="form-control" maxlength="100" /></div>
+            <div class="filter-group"><label>Cidade</label><input type="text" id="nf-cidade" class="form-control" maxlength="60" /></div>
+            <div class="filter-group"><label>UF</label><input type="text" id="nf-estado" class="form-control" data-mask="uf" maxlength="2" placeholder="SP" style="text-transform:uppercase" /></div>
+            <div class="filter-group span-2"><label>Prazo de Entrega (dias)</label><input type="number" min="1" max="90" id="nf-prazo" class="form-control" value="3" /></div>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-secondary" onclick="fecharModal('modalNF')">
-            Cancelar
-          </button>
-          <button class="btn-primary" onclick="emitirNF()">
-            <span class="material-icons-round">receipt_long</span> Emitir
-          </button>
+          <button class="btn-secondary" onclick="fecharModal('modalNF')">Cancelar</button>
+          <button class="btn-success" onclick="emitirNF()"><span class="material-icons-round">verified</span> Gerar NF-e</button>
         </div>
       </div>
     </div>
 
-    <!-- MODAL NF VISUALIZAÇÃO / IMPRESSÃO -->
-    <div id="modalNFView" class="modal">
+    <!-- MODAL VISUALIZAR NF -->
+    <div id="modalNFView" class="modal" role="dialog" aria-modal="true">
       <div class="modal-content nf-view-size">
         <div class="modal-header"><h2>Nota Fiscal</h2></div>
         <div class="modal-body" id="nf-print-area"></div>
         <div class="modal-footer">
-          <button class="btn-secondary" onclick="fecharModal('modalNFView')">
-            Fechar
-          </button>
-          <button class="btn-primary" onclick="window.print()">
-            <span class="material-icons-round">print</span> Imprimir
-          </button>
+          <button class="btn-secondary" onclick="fecharModal('modalNFView')">Fechar</button>
+          <button class="btn-primary" onclick="imprimirModalNF()"><span class="material-icons-round">print</span> Imprimir</button>
         </div>
       </div>
     </div>
 
-    <!-- MODAIS PADRÃO -->
     <div id="modalAvatar" class="modal modal-avatar-hidden">
       <div class="modal-content">
         <div class="modal-header"><h2>Ajustar Foto</h2></div>
-        <div class="cropper-wrapper"><img id="image-to-crop" src="" /></div>
+        <div class="modal-body"><div class="cropper-wrapper"><img id="image-to-crop" src="" alt="" /></div></div>
         <div class="modal-footer">
-          <input
-            type="file"
-            id="inputImage"
-            accept="image/*"
-            class="input-file-hidden"
-          />
-          <button
-            class="btn-secondary"
-            onclick="document.getElementById('inputImage').click()"
-          >
-            Selecionar
-          </button>
+          <input type="file" id="inputImage" accept="image/*" class="input-file-hidden" />
+          <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
+          <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
           <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
-          <button class="btn-secondary" onclick="fecharModalAvatar()">
-            Cancelar
-          </button>
         </div>
       </div>
     </div>
-    <div id="modalZoom" onclick="fecharZoom()">
-      <img id="imgZoom" src="" alt="zoom" />
-    </div>
+    <div id="modalZoom" onclick="fecharZoom()"><img id="imgZoom" src="" alt="zoom" /></div>
 
     <script>
       window.onload = () => {
         carregarStatsFinanceiro();
-        renderPagamentos();
         popularSelectPedidos();
+        renderPagamentos();
+        renderCategorias();
+        initChartFluxo();
       };
     </script>
   </body>
 </html>
-
-
-

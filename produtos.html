@@ -1,95 +1,34 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>Produtos | Distribuidora Serginho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Produtos | Serginho Leva Atrás</title>
     <link rel="stylesheet" href="./styles/style.css" />
-    <link rel="stylesheet" href="./styles/pedidos.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="auth.js"></script>
     <script src="api.js"></script>
     <script src="ui-helper.js"></script>
     <script src="produtos.js"></script>
-    <script>
-      requireAuth();
-    </script>
+    <script>requireAuth();</script>
   </head>
   <body>
     <div class="container">
       <aside class="sidebar">
-        <div class="sidebar-header">
-          <img src="./assets/Logo.png" alt="Logo" />
-        </div>
+        <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo" /></div>
         <ul>
-          <li>
-            <a href="inicio.html"
-              ><span class="material-icons-round">dashboard</span
-              ><span>Dashboard</span></a
-            >
-          </li>
-          <li>
-            <a href="pedidos.html"
-              ><span class="material-icons-round">inventory_2</span
-              ><span>Pedidos</span></a
-            >
-          </li>
-          <li>
-            <a href="clientes.html"
-              ><span class="material-icons-round">groups</span
-              ><span>Clientes</span></a
-            >
-          </li>
-          <li class="active">
-            <a href="produtos.html"
-              ><span class="material-icons-round">category</span
-              ><span>Produtos</span></a
-            >
-          </li>
-          <li>
-            <a href="filiais.html"
-              ><span class="material-icons-round">hub</span
-              ><span>Filiais</span></a
-            >
-          </li>
-          <li>
-            <a href="agregados.html"
-              ><span class="material-icons-round">warehouse</span
-              ><span>Agregados</span></a
-            >
-          </li>
-          <li>
-            <a href="rh.html"
-              ><span class="material-icons-round">badge</span><span>RH</span></a
-            >
-          </li>
-          <li>
-            <a href="financeiro.html"
-              ><span class="material-icons-round">payments</span
-              ><span>Financeiro</span></a
-            >
-          </li>
-          <li>
-            <a href="logistica.html"
-              ><span class="material-icons-round">local_shipping</span
-              ><span>Logística</span></a
-            >
-          </li>
+          <li><a href="inicio.html"><span class="material-icons-round">dashboard</span><span>Dashboard</span></a></li>
+          <li><a href="pedidos.html"><span class="material-icons-round">inventory_2</span><span>Pedidos</span></a></li>
+          <li><a href="filiais.html"><span class="material-icons-round">hub</span><span>Filiais</span></a></li>
+          <li class="active"><a href="produtos.html"><span class="material-icons-round">category</span><span>Produtos</span></a></li>
+          <li><a href="rh.html"><span class="material-icons-round">badge</span><span>RH</span></a></li>
+          <li><a href="clientes.html"><span class="material-icons-round">groups</span><span>Clientes</span></a></li>
+          <li><a href="agregados.html"><span class="material-icons-round">warehouse</span><span>Agregados</span></a></li>
+          <li><a href="financeiro.html"><span class="material-icons-round">payments</span><span>Relatórios</span></a></li>
+          <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span><span>Logística</span></a></li>
         </ul>
       </aside>
 
@@ -97,255 +36,114 @@
         <header class="header">
           <div class="search-box">
             <span class="material-icons-round">search</span>
-            <input
-              type="text"
-              id="input-busca"
-              placeholder="Buscar por nome ou SKU..."
-              onkeyup="aplicarFiltros('tabela-produtos')"
-            />
+            <input type="text" id="input-busca" placeholder="Buscar produto, SKU..." onkeyup="aplicarFiltros('tabela-produtos')" maxlength="60" />
           </div>
           <div class="header-right">
-            <div class="theme-toggle-wrap">
-              <span class="material-icons-round">dark_mode</span>
-              <button class="theme-toggle" onclick="toggleDarkMode()"></button>
-            </div>
-            <div class="user-menu" id="dropdownToggle">
-              <div class="profile-img-container">
-                <img
-                  id="avatar-nav"
-                  src="https://i.pravatar.cc/100"
-                  alt="Perfil"
-                  onclick="abrirZoom(this.src)"
-                />
+            <div class="theme-toggle-wrap"><button class="theme-toggle" onclick="toggleDarkMode()" aria-label="Alternar tema"></button></div>
+            <div class="header-user" id="dropdownToggle">
+              <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" class="header-user-avatar" onclick="event.stopPropagation(); abrirZoom(this.src);" />
+              <div class="header-user-info">
+                <span class="name" id="user-name-display">...</span>
+                <span class="role">Operations Lead</span>
               </div>
-              <div class="user-info">
-                <span id="user-name-display" class="user-name">...</span>
-                <span class="user-role">Administrador</span>
-              </div>
-              <span class="material-icons-round">expand_more</span>
+              <span class="material-icons-round header-user-chevron">expand_more</span>
               <div class="dropdown-content" id="profileDropdown">
-                <a href="#" onclick="abrirModalAvatar()"
-                  ><span class="material-icons-round">photo_camera</span>
-                  Alterar Foto</a
-                >
-                <a href="#" onclick="logout()" class="logout-link"
-                  ><span class="material-icons-round">logout</span> Sair</a
-                >
+                <a href="#" onclick="abrirModalAvatar(); return false;"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
+                <a href="#" onclick="logout(); return false;" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
               </div>
             </div>
           </div>
         </header>
 
         <div class="content">
-          <div class="page-header-pedidos"><h2>Catálogo de Produtos</h2></div>
-
-          <div class="produtos-summary" id="produtos-summary"></div>
-
-          <div class="filter-box">
-            <div class="filter-group">
-              <label>Status</label>
-              <select
-                id="select-filtro"
-                class="form-control"
-                onchange="aplicarFiltros('tabela-produtos')"
-              >
-                <option value="">Todos</option>
-                <option value="Completo">Completo</option>
-                <option value="Pendente">Pendente</option>
-              </select>
+          <div class="page-header-pedidos">
+            <div>
+              <h2>Catálogo de Produtos</h2>
+              <p class="page-subtitle">Os produtos são criados automaticamente a partir dos pedidos.</p>
             </div>
-            <div class="filter-group">
-              <label>Categoria</label>
-              <select
-                id="filtro-cat"
-                class="form-control"
-                onchange="aplicarFiltros('tabela-produtos')"
-              >
-                <option value="">Todas</option>
-                <option>Bebidas</option>
-                <option>Alimentos</option>
-                <option>Limpeza</option>
-                <option>Higiene</option>
-                <option>Eletrônicos</option>
-                <option>Vestuário</option>
-                <option>Ferramentas</option>
-                <option>Papelaria</option>
-                <option>Outros</option>
+            <div class="page-actions">
+              <select id="filtro-cat" class="form-control" onchange="aplicarFiltros('tabela-produtos')" style="height:40px; width:auto">
+                <option value="">Todas Categorias</option>
+                <option value="eletrônicos">Eletrônicos</option>
+                <option value="vestuário">Vestuário</option>
+                <option value="alimentos">Alimentos</option>
+                <option value="móveis">Móveis</option>
               </select>
+              <select id="filtro-filial" class="form-control" onchange="aplicarFiltros('tabela-produtos')" style="height:40px; width:auto"></select>
             </div>
           </div>
 
+          <div class="produtos-summary" id="produtos-summary"></div>
+
           <div class="table-wrapper">
-            <table class="table-dashboard">
-              <thead>
-                <tr>
-                  <th>Produto</th>
-                  <th>SKU</th>
-                  <th>Pedido Origem</th>
-                  <th>Filial</th>
-                  <th>Categoria</th>
-                  <th>Peso</th>
-                  <th>Volume</th>
-                  <th>Valor Declarado</th>
-                  <th>Unidade</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="tabela-produtos"></tbody>
-            </table>
+            <div class="table-scroll-area">
+              <table class="table-dashboard">
+                <thead>
+                  <tr>
+                    <th>Produto</th><th>SKU</th><th>Pedido</th><th>Filial</th><th>Categoria</th>
+                    <th>Peso</th><th>Volume</th><th>Preço</th><th>Un</th><th>Status</th><th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tabela-produtos"></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </main>
     </div>
 
-    <!-- MODAL ENRIQUECER -->
-    <div id="modalProduto" class="modal">
+    <!-- MODAL PRODUTO -->
+    <div id="modalProduto" class="modal" role="dialog" aria-modal="true">
       <div class="modal-content produto-modal-size">
-        <div class="modal-header"><h2>Enriquecer Cadastro</h2></div>
+        <div class="modal-header"><h2>Editar Produto</h2></div>
         <div class="modal-body">
-          <div class="filter-group produto-nome-grupo">
-            <label
-              >Produto
-              <span class="label-hint">(recebido do pedido)</span></label
-            >
-            <input
-              type="text"
-              id="prod-nome-display"
-              class="form-control input-readonly"
-              readonly
-            />
-          </div>
           <div class="produto-form-grid">
-            <div class="filter-group">
-              <label>SKU</label>
-              <input
-                type="text"
-                id="prod-sku"
-                class="form-control input-readonly"
-                readonly
-              />
-            </div>
-            <div class="filter-group">
-              <label>Categoria</label>
+            <div class="filter-group produto-nome-grupo"><label>Produto</label><input type="text" id="prod-nome-display" class="form-control input-readonly" readonly /></div>
+            <div class="filter-group"><label>SKU</label><input type="text" id="prod-sku" class="form-control input-readonly" readonly /></div>
+            <div class="filter-group"><label>Categoria</label>
               <select id="prod-categoria" class="form-control">
                 <option value="">Selecione...</option>
-                <option>Bebidas</option>
-                <option>Alimentos</option>
-                <option>Limpeza</option>
-                <option>Higiene</option>
-                <option>Eletrônicos</option>
-                <option>Vestuário</option>
-                <option>Ferramentas</option>
-                <option>Papelaria</option>
-                <option>Outros</option>
+                <option>Eletrônicos</option><option>Vestuário</option><option>Alimentos</option>
+                <option>Móveis</option><option>Outros</option>
               </select>
             </div>
-            <div class="filter-group">
-              <label>Peso (kg)</label>
-              <input
-                type="number"
-                id="prod-peso"
-                class="form-control"
-                placeholder="Ex: 1.5"
-                step="0.01"
-                min="0"
-              />
+            <div class="filter-group"><label>Filial</label><select id="prod-filial" class="form-control"></select></div>
+            <div class="filter-group"><label>Unidade</label>
+              <select id="prod-unidade" class="form-control"><option>UN</option><option>KG</option><option>CX</option><option>L</option></select>
             </div>
-            <div class="filter-group">
-              <label>Volume (m³)</label>
-              <input
-                type="number"
-                id="prod-volume"
-                class="form-control"
-                placeholder="Ex: 0.003"
-                step="0.0001"
-                min="0"
-              />
-            </div>
-            <div class="filter-group">
-              <label>Preço de Venda (R$)</label>
-              <input
-                type="number"
-                id="prod-preco"
-                class="form-control"
-                placeholder="Ex: 29.90"
-                step="0.01"
-                min="0"
-              />
-            </div>
-            <div class="filter-group">
-              <label>Unidade</label>
-              <select id="prod-unidade" class="form-control">
-                <option value="UN">UN — Unidade</option>
-                <option value="CX">CX — Caixa</option>
-                <option value="KG">KG — Quilograma</option>
-                <option value="LT">LT — Litro</option>
-                <option value="PC">PC — Peça</option>
-                <option value="FD">FD — Fardo</option>
-                <option value="DZ">DZ — Dúzia</option>
-              </select>
-            </div>
-            <div class="filter-group produto-descricao-grupo">
-              <label>Descrição</label>
-              <textarea
-                id="prod-descricao"
-                class="form-control"
-                placeholder="Detalhes adicionais..."
-              ></textarea>
-            </div>
+            <div class="filter-group"><label>Peso (kg)</label><input type="number" min="0" step="0.01" id="prod-peso" class="form-control" /></div>
+            <div class="filter-group"><label>Volume (kg cubado)</label><input type="number" min="0" step="0.01" id="prod-volume" class="form-control" /></div>
+            <div class="filter-group"><label>Preço de Venda (R$)</label><input type="number" min="0" step="0.01" id="prod-preco" class="form-control" /></div>
+            <div class="filter-group produto-descricao-grupo"><label>Descrição</label><textarea id="prod-descricao" class="form-control" maxlength="250"></textarea></div>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-secondary" onclick="fecharModal('modalProduto')">
-            Cancelar
-          </button>
-          <button class="btn-primary" onclick="salvarProduto()">
-            <span class="material-icons-round">save</span> Salvar
-          </button>
+          <button class="btn-secondary" onclick="fecharModal('modalProduto')">Cancelar</button>
+          <button class="btn-primary" onclick="salvarProduto()">Salvar</button>
         </div>
       </div>
     </div>
 
-    <!-- MODAIS PADRÃO -->
     <div id="modalAvatar" class="modal modal-avatar-hidden">
       <div class="modal-content">
         <div class="modal-header"><h2>Ajustar Foto</h2></div>
-        <div class="cropper-wrapper">
-          <img id="image-to-crop" src="" alt="" />
-        </div>
+        <div class="modal-body"><div class="cropper-wrapper"><img id="image-to-crop" src="" alt="" /></div></div>
         <div class="modal-footer">
-          <input
-            type="file"
-            id="inputImage"
-            accept="image/*"
-            class="input-file-hidden"
-          />
-          <button
-            class="btn-secondary"
-            onclick="document.getElementById('inputImage').click()"
-          >
-            Selecionar
-          </button>
+          <input type="file" id="inputImage" accept="image/*" class="input-file-hidden" />
+          <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
+          <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
           <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
-          <button class="btn-secondary" onclick="fecharModalAvatar()">
-            Cancelar
-          </button>
         </div>
       </div>
     </div>
-    <div id="modalZoom" onclick="fecharZoom()">
-      <img id="imgZoom" src="" alt="zoom" />
-    </div>
+    <div id="modalZoom" onclick="fecharZoom()"><img id="imgZoom" src="" alt="zoom" /></div>
 
     <script>
       window.onload = () => {
         renderSummary();
         carregarTabelaProdutos();
+        popularFiltroFilialProdutos();
       };
     </script>
   </body>
 </html>
-
-
-

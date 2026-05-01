@@ -1,95 +1,34 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="pt-br">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
-    <title>Pedidos | Distribuidora Serginho</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Pedidos | Serginho Leva Atrás</title>
     <link rel="stylesheet" href="./styles/style.css" />
-    <link rel="stylesheet" href="./styles/pedidos.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/icon?family=Material+Icons+Round"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="auth.js"></script>
     <script src="api.js"></script>
     <script src="ui-helper.js"></script>
     <script src="pedidos.js"></script>
-    <script>
-      requireAuth();
-    </script>
+    <script>requireAuth();</script>
   </head>
   <body>
     <div class="container">
       <aside class="sidebar">
-        <div class="sidebar-header">
-          <img src="./assets/Logo.png" alt="Logo" />
-        </div>
+        <div class="sidebar-header"><img src="./assets/Logo.png" alt="Logo" /></div>
         <ul>
-          <li>
-            <a href="inicio.html"
-              ><span class="material-icons-round">dashboard</span
-              ><span>Dashboard</span></a
-            >
-          </li>
-          <li class="active">
-            <a href="pedidos.html"
-              ><span class="material-icons-round">inventory_2</span
-              ><span>Pedidos</span></a
-            >
-          </li>
-          <li>
-            <a href="clientes.html"
-              ><span class="material-icons-round">groups</span
-              ><span>Clientes</span></a
-            >
-          </li>
-          <li>
-            <a href="produtos.html"
-              ><span class="material-icons-round">category</span
-              ><span>Produtos</span></a
-            >
-          </li>
-          <li>
-            <a href="filiais.html"
-              ><span class="material-icons-round">hub</span
-              ><span>Filiais</span></a
-            >
-          </li>
-          <li>
-            <a href="agregados.html"
-              ><span class="material-icons-round">warehouse</span
-              ><span>Agregados</span></a
-            >
-          </li>
-          <li>
-            <a href="rh.html"
-              ><span class="material-icons-round">badge</span><span>RH</span></a
-            >
-          </li>
-          <li>
-            <a href="financeiro.html"
-              ><span class="material-icons-round">payments</span
-              ><span>Financeiro</span></a
-            >
-          </li>
-          <li>
-            <a href="logistica.html"
-              ><span class="material-icons-round">local_shipping</span
-              ><span>Logística</span></a
-            >
-          </li>
+          <li><a href="inicio.html"><span class="material-icons-round">dashboard</span><span>Dashboard</span></a></li>
+          <li class="active"><a href="pedidos.html"><span class="material-icons-round">inventory_2</span><span>Pedidos</span></a></li>
+          <li><a href="filiais.html"><span class="material-icons-round">hub</span><span>Filiais</span></a></li>
+          <li><a href="produtos.html"><span class="material-icons-round">category</span><span>Produtos</span></a></li>
+          <li><a href="rh.html"><span class="material-icons-round">badge</span><span>RH</span></a></li>
+          <li><a href="clientes.html"><span class="material-icons-round">groups</span><span>Clientes</span></a></li>
+          <li><a href="agregados.html"><span class="material-icons-round">warehouse</span><span>Agregados</span></a></li>
+          <li><a href="financeiro.html"><span class="material-icons-round">payments</span><span>Relatórios</span></a></li>
+          <li><a href="logistica.html"><span class="material-icons-round">local_shipping</span><span>Logística</span></a></li>
         </ul>
       </aside>
 
@@ -97,93 +36,92 @@
         <header class="header">
           <div class="search-box">
             <span class="material-icons-round">search</span>
-            <input
-              type="text"
-              id="input-busca"
-              placeholder="Buscar ID ou cliente..."
-              onkeyup="aplicarFiltros('tabela-pedidos')"
-            />
+            <input type="text" id="input-busca" placeholder="Buscar pedidos, clientes..." onkeyup="aplicarFiltros('tabela-pedidos')" maxlength="60" />
           </div>
           <div class="header-right">
             <div class="theme-toggle-wrap">
-              <span class="material-icons-round">dark_mode</span>
-              <button class="theme-toggle" onclick="toggleDarkMode()"></button>
+              <button class="theme-toggle" onclick="toggleDarkMode()" aria-label="Alternar tema"></button>
             </div>
-            <button class="btn-primary" onclick="abrirModalNovoPedido()">
-              <span class="material-icons-round">add</span> Novo Pedido
-            </button>
-            <div class="user-menu" id="dropdownToggle">
-              <div class="profile-img-container">
-                <img
-                  id="avatar-nav"
-                  src="https://i.pravatar.cc/100"
-                  alt="Perfil"
-                  onclick="abrirZoom(this.src)"
-                />
+            <div class="header-user" id="dropdownToggle">
+              <img id="avatar-nav" src="https://i.pravatar.cc/100" alt="Perfil" class="header-user-avatar" onclick="event.stopPropagation(); abrirZoom(this.src);" />
+              <div class="header-user-info">
+                <span class="name" id="user-name-display">...</span>
+                <span class="role">Operations Lead</span>
               </div>
-              <div class="user-info">
-                <span id="user-name-display" class="user-name">...</span>
-                <span class="user-role">Administrador</span>
-              </div>
-              <span class="material-icons-round">expand_more</span>
+              <span class="material-icons-round header-user-chevron">expand_more</span>
               <div class="dropdown-content" id="profileDropdown">
-                <a href="#" onclick="abrirModalAvatar()"
-                  ><span class="material-icons-round">photo_camera</span>
-                  Alterar Foto</a
-                >
-                <a href="#" onclick="logout()" class="logout-link"
-                  ><span class="material-icons-round">logout</span> Sair</a
-                >
+                <a href="#" onclick="abrirModalAvatar(); return false;"><span class="material-icons-round">photo_camera</span> Alterar Foto</a>
+                <a href="#" onclick="logout(); return false;" class="logout-link"><span class="material-icons-round">logout</span> Sair</a>
               </div>
             </div>
           </div>
         </header>
 
         <div class="content">
-          <div class="page-header-pedidos"><h2>Gestão de Pedidos</h2></div>
-
-          <div class="filter-box filter-box-sm">
-            <div class="filter-group">
-              <label>Status</label>
-              <select
-                id="select-filtro"
-                class="form-control"
-                onchange="aplicarFiltros('tabela-pedidos')"
-              >
-                <option value="">Todos</option>
-                <option value="Pendente">Pendente</option>
-                <option value="Enviado">Enviado</option>
-                <option value="Entregue">Entregue</option>
-              </select>
+          <div class="page-header-pedidos">
+            <div>
+              <h2>Gestão de Pedidos</h2>
+              <p class="page-subtitle">Acompanhe e gerencie todos os envios ativos da sua rede.</p>
+            </div>
+            <div class="page-actions">
+              <button class="btn-secondary" onclick="exportarPedidos()">
+                <span class="material-icons-round">file_download</span><span>Exportar</span>
+              </button>
+              <button class="btn-primary" onclick="abrirModalNovoPedido()">
+                <span class="material-icons-round">add</span><span>Novo Pedido</span>
+              </button>
             </div>
           </div>
 
+          <div class="filter-box">
+            <span class="filter-box-icon"><span class="material-icons-round">filter_list</span> Filtros</span>
+            <div class="filter-group">
+              <select id="select-filtro" class="form-control" onchange="aplicarFiltros('tabela-pedidos')">
+                <option value="">Status: Todos</option>
+                <option value="pendente">Pendente</option>
+                <option value="enviado">Enviado</option>
+                <option value="entregue">Entregue</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <input type="date" id="filtro-data" class="form-control" onchange="aplicarFiltros('tabela-pedidos')" />
+            </div>
+            <div class="filter-group">
+              <select id="filtro-filial" class="form-control" onchange="aplicarFiltros('tabela-pedidos')"></select>
+            </div>
+            <a href="#" class="filter-clear" onclick="limparFiltrosPedidos(); return false;">Limpar Filtros</a>
+          </div>
+
           <div class="table-wrapper">
-            <table class="table-dashboard">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>Cliente</th>
-                  <th>Data</th>
-                  <th>Filial</th>
-                  <th>Frete</th>
-                  <th>Status</th>
-                  <th>Ações</th>
-                </tr>
-              </thead>
-              <tbody id="tabela-pedidos"></tbody>
-            </table>
+            <div class="table-scroll-area">
+              <table class="table-dashboard">
+                <thead>
+                  <tr>
+                    <th>ID Pedido</th>
+                    <th>Cliente</th>
+                    <th>Filial</th>
+                    <th>Data</th>
+                    <th>Frete</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+                <tbody id="tabela-pedidos"></tbody>
+              </table>
+            </div>
+            <div class="table-pagination" id="paginacao-pedidos">
+              <span id="paginacao-info">—</span>
+              <div class="pagination-controls" id="paginacao-controles"></div>
+            </div>
           </div>
         </div>
       </main>
     </div>
 
     <!-- MODAL PEDIDO -->
-    <div id="modalPedido" class="modal">
+    <div id="modalPedido" class="modal" role="dialog" aria-modal="true">
       <div class="modal-content pedido-modal-size">
-        <div class="modal-header">
-          <h2 id="modal-titulo">Registrar Novo Pedido</h2>
-        </div>
+        <div class="modal-header"><h2 id="modal-titulo">Registrar Novo Pedido</h2></div>
         <div class="modal-body">
           <div class="pedido-form-top">
             <div class="filter-group">
@@ -191,115 +129,72 @@
               <select id="select-cliente" class="form-control" onchange="atualizarEnderecoCliente(); atualizarPreviewFrete();"></select>
             </div>
             <div class="filter-group">
-              <label>Data</label>
+              <label>Filial de origem</label>
+              <select id="select-filial" class="form-control" onchange="atualizarPreviewFrete();"></select>
+            </div>
+            <div class="filter-group">
+              <label>Data do Pedido</label>
               <input type="date" id="data-pedido" class="form-control" />
             </div>
             <div class="filter-group">
-              <label>Filial responsável</label>
-              <select id="select-filial" class="form-control" onchange="atualizarPreviewFrete()"></select>
-            </div>
-            <div class="filter-group">
-              <label>Tipo de carga</label>
-              <select id="tipo-carga" class="form-control" onchange="atualizarPreviewFrete()">
-                <option>Normal</option>
-                <option>Frágil</option>
-                <option>Perigosa</option>
+              <label>Tipo da Carga</label>
+              <select id="tipo-carga" class="form-control" onchange="atualizarPreviewFrete();">
+                <option value="Normal">Normal</option>
+                <option value="Frágil">Frágil</option>
+                <option value="Perigosa">Perigosa</option>
               </select>
             </div>
           </div>
-          <div class="filter-group">
-            <label>Endereço de entrega</label>
-            <input type="text" id="endereco-entrega" class="form-control input-readonly" readonly />
+          <div class="filter-group filter-group-mb">
+            <label>Endereço de Entrega</label>
+            <textarea id="endereco-entrega" class="form-control" maxlength="250" placeholder="Será preenchido a partir do cliente"></textarea>
           </div>
-          <div class="produto-form-grid">
-            <div class="filter-group">
-              <label>Peso real (kg)</label>
-              <input type="number" id="peso-real" class="form-control" step="0.01" min="0" oninput="atualizarPreviewFrete()" />
-            </div>
-            <div class="filter-group">
-              <label>Comprimento (cm)</label>
-              <input type="number" id="comprimento" class="form-control" step="0.01" min="0" oninput="atualizarPreviewFrete()" />
-            </div>
-            <div class="filter-group">
-              <label>Largura (cm)</label>
-              <input type="number" id="largura" class="form-control" step="0.01" min="0" oninput="atualizarPreviewFrete()" />
-            </div>
-            <div class="filter-group">
-              <label>Altura (cm)</label>
-              <input type="number" id="altura" class="form-control" step="0.01" min="0" oninput="atualizarPreviewFrete()" />
-            </div>
+          <div class="pedido-form-top">
+            <div class="filter-group"><label>Peso real (kg)</label><input type="number" min="0" step="0.01" id="peso-real" class="form-control" oninput="atualizarPreviewFrete()" /></div>
+            <div class="filter-group"><label>Comprimento (cm)</label><input type="number" min="0" max="9999" id="comprimento" class="form-control" oninput="atualizarPreviewFrete()" /></div>
+            <div class="filter-group"><label>Largura (cm)</label><input type="number" min="0" max="9999" id="largura" class="form-control" oninput="atualizarPreviewFrete()" /></div>
+            <div class="filter-group"><label>Altura (cm)</label><input type="number" min="0" max="9999" id="altura" class="form-control" oninput="atualizarPreviewFrete()" /></div>
           </div>
           <div class="frete-options">
             <label><input type="checkbox" id="pedagio" onchange="atualizarPreviewFrete()" /> Pedágio</label>
             <label><input type="checkbox" id="taxa-risco" onchange="atualizarPreviewFrete()" /> Taxa de risco</label>
-            <label><input type="checkbox" id="seguro" onchange="atualizarPreviewFrete()" /> Seguro opcional</label>
+            <label><input type="checkbox" id="seguro" onchange="atualizarPreviewFrete()" /> Seguro</label>
           </div>
-          <div id="frete-preview" class="frete-preview">
-            Selecione cliente, filial e dimensões para calcular o frete.
-          </div>
-          <div class="filter-group">
-            <label>Produtos</label>
-            <div
-              id="lista-itens-selecionados"
-              class="lista-itens-container"
-            ></div>
-            <button class="btn-add-item" onclick="adicionarLinhaItem()">
-              <span class="material-icons-round">add_circle</span> Adicionar
-              Produto
-            </button>
+          <div class="frete-preview" id="frete-preview">Selecione cliente, filial e dimensões para calcular o frete.</div>
+          <div class="filter-group filter-group-mb">
+            <label>Itens do pedido</label>
+            <div id="lista-itens-selecionados" class="lista-itens-container"></div>
+            <button class="btn-add-item" onclick="adicionarLinhaItem()"><span class="material-icons-round">add</span> Adicionar Item</button>
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-secondary" onclick="cancelarModalPedido()">
-            Cancelar
-          </button>
-          <button class="btn-primary" onclick="salvarPedido()">
-            <span class="material-icons-round">check</span> Finalizar Pedido
-          </button>
+          <button class="btn-secondary" onclick="cancelarModalPedido()">Cancelar</button>
+          <button class="btn-primary" onclick="salvarPedido()">Salvar Pedido</button>
         </div>
       </div>
     </div>
 
-    <!-- MODAIS PADRÃO -->
     <div id="modalAvatar" class="modal modal-avatar-hidden">
       <div class="modal-content">
         <div class="modal-header"><h2>Ajustar Foto</h2></div>
-        <div class="cropper-wrapper">
-          <img id="image-to-crop" src="" alt="" />
-        </div>
+        <div class="modal-body"><div class="cropper-wrapper"><img id="image-to-crop" src="" alt="" /></div></div>
         <div class="modal-footer">
-          <input
-            type="file"
-            id="inputImage"
-            accept="image/*"
-            class="input-file-hidden"
-          />
-          <button
-            class="btn-secondary"
-            onclick="document.getElementById('inputImage').click()"
-          >
-            Selecionar
-          </button>
+          <input type="file" id="inputImage" accept="image/*" class="input-file-hidden" />
+          <button class="btn-secondary" onclick="document.getElementById('inputImage').click()">Selecionar</button>
+          <button class="btn-secondary" onclick="fecharModalAvatar()">Cancelar</button>
           <button class="btn-primary" onclick="salvarAvatar()">Salvar</button>
-          <button class="btn-secondary" onclick="fecharModalAvatar()">
-            Cancelar
-          </button>
         </div>
       </div>
     </div>
-    <div id="modalZoom" onclick="fecharZoom()">
-      <img id="imgZoom" src="" alt="zoom" />
-    </div>
+    <div id="modalZoom" onclick="fecharZoom()"><img id="imgZoom" src="" alt="zoom" /></div>
 
     <script>
       window.onload = () => {
         carregarTabelaPedidos();
         popularSelectClientes();
         popularSelectFiliaisPedido();
+        popularFiltroFilialPedidos();
       };
     </script>
   </body>
 </html>
-
-
-
