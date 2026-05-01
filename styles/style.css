@@ -2079,7 +2079,7 @@ textarea.form-control {
   .stats-grid::-webkit-scrollbar { display: none; }
   /* Um KPI por tela. flex-basis 100% = ocupa toda a área de conteúdo
      do stats-grid; com scroll-snap-align:start cada swipe encaixa
-     exatamente em um card. Sem peek do próximo. */
+     exatamente em um card. Sem peek do próximo */
   .stats-grid > .stat-card {
     flex: 0 0 100%;
     min-width: 0;
